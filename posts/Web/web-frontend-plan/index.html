@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Web开发笔记 - 前端总结计划 —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!--<meta name="keywords" content="sczyh30, blog"/>-->
+  <meta name="description" content="这半年修炼了不少前端的知识~本来想今晚上系统地总结总结前端开发相关的东西的（把以前写的八九个文档规整规整），结果在家收拾书房，收拾东西收拾了几个小时。。那只有等过几天咯~今天就先列个总结计划吧，前端总结主要分为两部分：开发篇和性能优化篇~前端开发对我来说本不是重点，但俗话说得好，不会做前端的后端不是好后端。毕竟不搞搞前端，设计出的网页自己看着都不舒服，做外包接单子的时候想做个好看而符合要求的前端还">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web开发笔记 - 前端总结计划">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Web/web-frontend-plan/index.html">
+<meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:description" content="这半年修炼了不少前端的知识~本来想今晚上系统地总结总结前端开发相关的东西的（把以前写的八九个文档规整规整），结果在家收拾书房，收拾东西收拾了几个小时。。那只有等过几天咯~今天就先列个总结计划吧，前端总结主要分为两部分：开发篇和性能优化篇~前端开发对我来说本不是重点，但俗话说得好，不会做前端的后端不是好后端。毕竟不搞搞前端，设计出的网页自己看着都不舒服，做外包接单子的时候想做个好看而符合要求的前端还">
+<meta property="og:updated_time" content="2015-12-18T07:12:24.068Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Web开发笔记 - 前端总结计划">
+<meta name="twitter:description" content="这半年修炼了不少前端的知识~本来想今晚上系统地总结总结前端开发相关的东西的（把以前写的八九个文档规整规整），结果在家收拾书房，收拾东西收拾了几个小时。。那只有等过几天咯~今天就先列个总结计划吧，前端总结主要分为两部分：开发篇和性能优化篇~前端开发对我来说本不是重点，但俗话说得好，不会做前端的后端不是好后端。毕竟不搞搞前端，设计出的网页自己看着都不舒服，做外包接单子的时候想做个好看而符合要求的前端还">
+  
+    <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true
+      }
+  </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/AIO/" style="font-size: 10px;">AIO</a> <a href="/tags/AMQP/" style="font-size: 10px;">AMQP</a> <a href="/tags/Algorithm/" style="font-size: 13.75px;">Algorithm</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/C/" style="font-size: 17.5px;">C++</a> <a href="/tags/C-11/" style="font-size: 10px;">C++ 11</a> <a href="/tags/CE3/" style="font-size: 10px;">CE3</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Chemistry/" style="font-size: 11.25px;">Chemistry</a> <a href="/tags/Compiler/" style="font-size: 10px;">Compiler</a> <a href="/tags/Database/" style="font-size: 11.25px;">Database</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Engine/" style="font-size: 10px;">Engine</a> <a href="/tags/FRP/" style="font-size: 10px;">FRP</a> <a href="/tags/Functional-Programming/" style="font-size: 11.25px;">Functional Programming</a> <a href="/tags/G1/" style="font-size: 10px;">G1</a> <a href="/tags/GC/" style="font-size: 13.75px;">GC</a> <a href="/tags/GDB/" style="font-size: 10px;">GDB</a> <a href="/tags/Game/" style="font-size: 11.25px;">Game</a> <a href="/tags/HashMap/" style="font-size: 11.25px;">HashMap</a> <a href="/tags/Haskell/" style="font-size: 10px;">Haskell</a> <a href="/tags/HotSpot/" style="font-size: 11.25px;">HotSpot</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 18.75px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Klass-oop/" style="font-size: 10px;">Klass-oop</a> <a href="/tags/LinkedList/" style="font-size: 10px;">LinkedList</a> <a href="/tags/Linux/" style="font-size: 11.25px;">Linux</a> <a href="/tags/Mathematical-Logic/" style="font-size: 10px;">Mathematical Logic</a> <a href="/tags/Metaspace/" style="font-size: 10px;">Metaspace</a> <a href="/tags/Network/" style="font-size: 16.25px;">Network</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Object-Model/" style="font-size: 13.75px;">Object Model</a> <a href="/tags/RabbitMQ/" style="font-size: 10px;">RabbitMQ</a> <a href="/tags/Reflection/" style="font-size: 11.25px;">Reflection</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/STL/" style="font-size: 11.25px;">STL</a> <a href="/tags/Scala/" style="font-size: 11.25px;">Scala</a> <a href="/tags/Sort/" style="font-size: 10px;">Sort</a> <a href="/tags/Struct/" style="font-size: 10px;">Struct</a> <a href="/tags/Summary/" style="font-size: 13.75px;">Summary</a> <a href="/tags/TCP/" style="font-size: 15px;">TCP</a> <a href="/tags/UE4/" style="font-size: 10px;">UE4</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/Web/" style="font-size: 12.5px;">Web</a> <a href="/tags/event/" style="font-size: 10px;">event</a> <a href="/tags/functional/" style="font-size: 10px;">functional</a> <a href="/tags/中间件/" style="font-size: 10px;">中间件</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/内存区域/" style="font-size: 10px;">内存区域</a> <a href="/tags/前端/" style="font-size: 12.5px;">前端</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/并发/" style="font-size: 11.25px;">并发</a> <a href="/tags/开发/" style="font-size: 17.5px;">开发</a> <a href="/tags/异步/" style="font-size: 11.25px;">异步</a> <a href="/tags/性能/" style="font-size: 10px;">性能</a> <a href="/tags/性能优化/" style="font-size: 10px;">性能优化</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 11.25px;">数据库</a> <a href="/tags/架构/" style="font-size: 11.25px;">架构</a> <a href="/tags/线程安全/" style="font-size: 10px;">线程安全</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Fighting</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-web-frontend-plan" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Web/web-frontend-plan/" class="article-date">
+      <time datetime="2015-08-13T12:27:28.000Z" itemprop="datePublished">2015-08-13</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Web开发笔记 - 前端总结计划
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Web/">Web</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Web/">Web</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/前端/">前端</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发/">开发</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>这半年修炼了不少前端的知识~本来想今晚上系统地总结总结前端开发相关的东西的（把以前写的八九个文档规整规整），结果在家收拾书房，收拾东西收拾了几个小时。。那只有等过几天咯~<br>今天就先列个总结计划吧，前端总结主要分为两部分：开发篇和性能优化篇~<br>前端开发对我来说本不是重点，但俗话说得好，<strong>不会做前端的后端不是好后端</strong>。毕竟不搞搞前端，设计出的网页自己看着都不舒服，做外包接单子的时候想做个好看而符合要求的前端还很麻烦（对于给设计图然后要求前端自动化测试的，主动逃），因此就学了学前端的核心内容（设计学不来，给FEX的各位大牛跪了）。<br>毕竟做一个真正的full-stack dev&amp;arch是很难的(本渣渣逃→_→ 所以了解了解前端性能优化还是很有必要的。</p>
+<hr>
+<h2 id="总结计划-开发篇">总结计划-开发篇</h2><ul>
+<li><strong>页面布局与设计</strong></li>
+<li><strong>CSS 3</strong> + JS动画</li>
+<li>CSS Enhancer（主要是<strong>Sass</strong>，Less没用过。另外，模块化工具<strong>PostCSS</strong>值得关注）</li>
+<li>响应式页面的设计</li>
+<li><strong>Bootstrap</strong> &amp; Flat-UI（个人比较喜欢这个）</li>
+<li>JQuery UI（当时撸搓比的教务系统就用了这个，还算凑合吧。然而学校URP连这个都不用。。）</li>
+<li><strong>JQuery</strong>及其各种插件 （基于DOM）</li>
+<li><strong>AngularJS</strong>（典型的MVVM或者叫MVW框架，非常喜欢其设计思想，是最近重点研究的对象。最大特点是数据双向绑定+DI。思想更接近于后端的思想，与Spring MVC及安卓的MVVM框架有异曲同工之妙。写的时候要抛掉JQuery的DOM Selector的思想！）</li>
+<li><strong>模板引擎</strong>（EJS和Jade。Jade那诡异的语法呀！！！我只能呵呵了。。无奈写静态博客配合Node.JS构建的时候还是老老实实用了EJS。。其实这两个在性能上貌似也有些许差别，没深入研究。）</li>
+<li><strong>ReactJS</strong>（View层框架，很喜欢它的Virtual DOM的设计，优化了性能。它的Material Design UI插件很不错~同时React Native支持用JS写Native App，成功的应用为天猫iOS客户端。10月份将会支持android端，到时候可以一试，可以写一些不需要太好性能的小应用。）</li>
+<li><strong>模块化</strong>（ES6已经有模块化了，然而Java 9的模块化提案还在热火朝天的讨论呢。。论Jigsaw与OSGI之争。。悲惨）</li>
+<li>前端构建工具，主要是<strong>Gulp.js</strong>及<strong>Grunt</strong>（package.json及Gruntfile的写法），重点是构建思想（和Gradle有些许相同）</li>
+<li>前端依赖包管理，主要是<strong>bower</strong>和<strong>npm</strong>（NPM用了淘宝的镜像后速度终于快多了！）</li>
+<li><strong>ES6</strong>初步总结（好多非常好的新特性有木有有木有！很有用！）</li>
+</ul>
+<hr>
+<h2 id="总结计划-性能篇">总结计划-性能篇</h2><ul>
+<li><strong>前端与后端的分离思考 - 参考阿里</strong></li>
+<li><strong>SPA应用的性能优化</strong></li>
+<li>前端开发的ASM - <strong>WebAssembly</strong>（类似于汇编的玩意，还在不断讨论中。在Github上参与这个项目，大家又是讨论GC又是讨论各种指令又是在YY大犇@dcodeIO设计的WASM的LOGO，讨论的不亦乐乎。就是喜欢这种开源社区活跃的氛围和对开发的这种热爱！）</li>
+<li>资源加载的一些探讨</li>
+</ul>
+<hr>
+<p>未开待续。<br>坐等过几天来填坑。。<br>踏歌长行，梦想永在。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Web/web-frontend-plan/">Web开发笔记 - 前端总结计划</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 sczyh30 的个人博客">sczyh30</a></p>
+        <p><span>发布时间:</span>2015年08月13日</p>
+        <!--<p><span>最后更新:</span>2015年12月18日 - 15时12分</p>-->
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Web/web-frontend-plan/" title="Web开发笔记 - 前端总结计划">http://www.sczyh30.com/posts/Web/web-frontend-plan/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Web/web-frontend-plan/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0" target = "_blank">知识共享-保持署名-非商用-相同方式共享 4.0 (CC BY-NC-SA 4.0)</a><br/>转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">
+                    链表相关算法总结
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Summary/database-transaction-lock/">
+                    数据库事务中的隔离级别和锁
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#总结计划-开发篇"><span class="toc-number">1.</span> <span class="toc-text">总结计划-开发篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结计划-性能篇"><span class="toc-number">2.</span> <span class="toc-text">总结计划-性能篇</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- duoshuo comment start -->
+    <div class="ds-thread" data-thread-key="posts/Web/web-frontend-plan/" data-title="Web开发笔记 - 前端总结计划" data-url="http://www.sczyh30.com/posts/Web/web-frontend-plan/"></div>
+    <!-- duoshuo comment end -->
+    <!-- duoshuo public js start -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name: 'sczyh30'};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        /*ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';*/
+        ds.src = 'http://www.sczyh30.com/assets/embed.js'
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- duoshuo public js end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Algorithm/algorithm-linkedlist-cycle-join/" title="上一篇: 链表相关算法总结">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Summary/database-transaction-lock/" title="下一篇: 数据库事务中的隔离级别和锁">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-for-expression-detail/">Scala | for表达式的底层转换</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">IO模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model Summary III</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">C++ 11 Move Sementics/Perfect Forwarding</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-2/">Inside The C++ Object Model Summary II</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model Summary I</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/amqp-rabbitmq/">消息队列中间件-RabbitMQ总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-event-dispatcher/">Android事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-01/">Android View视图绘制总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表|unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-performance-1/">对Android应用性能优化的一些总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android_summary_2/">安卓开发中的一些总结（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-copyArray/">arrayCopy方法底层探究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/os-learning-1/">操作系统相关知识杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结(性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-plan/">Web开发笔记 - 前端总结计划</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-transaction-lock/">数据库事务中的隔离级别和锁</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-advanced-a1/">高级算法总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/compiler-a01/">编译原理相关 | C++编译器总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-sql-01/">数据库知识总结（一） - 基本SQL</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2016 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30.
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

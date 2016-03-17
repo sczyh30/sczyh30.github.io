@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Data Structure Assignment Presentation</title>
+		<meta name="author" content="sczyh30">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+        <link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="fuck.css">
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+        <div class="theme-font-quicksand theme-color-mint-beige" style="width: 100%; height: 100%;">
+    <div class="reveal">
+        <div class="slides">
+            <section data-background="img/bg-02.jpg" data-background-transition="convex">
+                <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 156px; height: auto;">
+                    <div class="sl-block-content" style="border-width: 1px; z-index: 11;">
+                        <h1>Data Structure Assignment PRESENTATION</h1>
+                        <p>&nbsp;</p>
+                        <p>0x5f3759df-Hacker Team</p>
+                        <p>2015.12</p>
+                    </div>
+                </div>
+                <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 476px; left: 480px; top: 31px;">
+                    <div class="sl-block-content" style="z-index: 12;">
+                        <p>Samsara&nbsp;Pistachio</p>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 63px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 11;">
+                        <h1>Members</h1>
+                    </div>
+                </div>
+                <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 846px; left: 80px; top: 240px;">
+                    <div class="sl-block-content" style="z-index: 12;" data-has-custom-html="">
+                        <ul>
+                            <li>
+                                <span style="font-size:1.2em;">赵奕豪（后端、前端架构设计及开发）</span>
+                            </li>
+                            <li>
+                                <span style="font-size:1.2em;">
+                                    <span style="line-height: 54.6px;">刘超（数据库设计）</span>
+                                </span>
+                            </li>
+                            <li>
+                                <span style="font-size:1.2em;">石德宝（数据结构设计）</span>
+                            </li>
+                            <li>
+                                <span style="font-size:1.2em;">王文晟（UI设计）</span>
+                            </li>
+                            <li>
+                                <span style="font-size:1.2em;">任格平（测试开发）</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 43px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>Introduction</h1>
+                    </div>
+                </div>
+                <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 186px; top: 587px;">
+                    <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="1">
+                        <p>LICENSE : MIT</p>
+                        <p>DOC LICENCE : CC-BY 4.0</p>
+                    </div>
+                </div>
+                <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 161px; height: auto;">
+                    <div class="sl-block-content fragment" style="border-width: 1px; z-index: 13;" data-fragment-index="0">
+                        <h1>
+                            <span style="color:#FFFFE0">A BOOK MANAGEMENT SYSTEM</span>
+                        </h1>
+                        <p>
+                            <span style="color:#FFFFE0">in Java /&nbsp;Scala</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="stack">
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 24px; height: auto;">
+                        <div class="sl-block-content">
+                            <h1>
+                                <span style="font-size:1.0em">Backend Architecture</span>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 105px; top: 280px; height: auto;">
+                        <div class="sl-block-content">
+                            <ul>
+                                <li>Database Design</li>
+                                <li>Business Layer</li>
+                                <li>High Availability Architecture</li>
+                                <li>Security Architecture</li>
+                                <li>High Performance Architecture</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 43px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>Structure</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 332.143px; height: 450px; left: 316.5px; top: 174px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="0">
+                            <img data-natural-width="341" data-natural-height="462" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092703/project_structure.png"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 55px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h2>Business Layer</h2>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 140px;">
+                        <div class="sl-block-content" style="z-index: 12;">
+                            <p>Basic Logic : CRUD</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 402.959px; height: 471px; left: 279px; top: 199px;">
+                        <div class="sl-block-content" style="z-index: 14;">
+                            <img data-natural-width="610" data-natural-height="713" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092446/ORM.PNG"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 55px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h2>Business Layer</h2>
+                            <p>Pistachio API</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 220px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="0">
+                            <p>
+                                <span style="color:#FFFF00">RESTful API</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 280px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="0">
+                            <p>HTTP Request : GET / POST / PUT / DELETE</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 370px;">
+                        <div class="sl-block-content fragment" style="z-index: 14;" data-fragment-index="1">
+                            <p>Example: 
+                                <span style="color:#FFFF00">POST</span>&nbsp;/api/book/:id
+                            </p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 640px; height: 245.766px; left: 180px; top: 420px;">
+                        <div class="sl-block-content fragment" style="z-index: 15;" data-fragment-index="2">
+                            <img data-natural-width="888" data-natural-height="341" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092744/json_data.png"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 54px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h2 style="color:rgb(255, 255, 255)">BUSINESS LAYER</h2>
+                            <p style="color:rgb(255, 255, 255)">Cache</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 200px; top: 210px;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <ul>
+                                <li class="fragment" data-fragment-index="0">LRU Cache (LinkedList + HashMap)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 200px; top: 319px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="1">
+                            <p>AMQP(Publisher-Subscriber Model)</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 485.196px; height: 222px; left: 238px; top: 393px;">
+                        <div class="sl-block-content fragment" style="z-index: 14;" data-fragment-index="2">
+                            <img data-natural-width="636" data-natural-height="291" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092455/pubsub.PNG"/>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 876px; left: 42px; top: 630px;">
+                        <div class="sl-block-content fragment" style="z-index: 15;" data-fragment-index="3">
+                            <p>
+                                <span style="font-size:0.7em">Related DS/AG : LRU Cache | Queue</span>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 55px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h2>Business Layer</h2>
+                            <p>OOP Enhancement</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 173px; top: 210px;">
+                        <div class="sl-block-content" style="z-index: 12;">
+                            <ul>
+                                <li class="fragment" data-fragment-index="0">
+                                    <span style="color:#FFFF00">Dependency Injection</span>
+                                </li>
+                                <li class="fragment" data-fragment-index="1">
+                                    <span style="color:#FFFF00">Interface Oriented</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 394.113px; height: 373px; left: 283px; top: 304px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="2">
+                            <img data-natural-width="560" data-natural-height="530" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092452/di.PNG"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 55px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h2>Business Layer</h2>
+                            <p>OOP Enhancement</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 191px; top: 210px;">
+                        <div class="sl-block-content" style="z-index: 12;">
+                            <ul>
+                                <li class="fragment" data-fragment-index="0">
+                                    <span style="color:#FFFF00">AOP (Aspect Oriented Programming)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 300px; height: 409.363px; left: 70px; top: 270px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="1">
+                            <img data-natural-width="502" data-natural-height="685" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092410/dynamic-proxy.PNG"/>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 493.013px; height: 392px; left: 428px; top: 279px;">
+                        <div class="sl-block-content fragment" style="z-index: 14;" data-fragment-index="2">
+                            <img data-natural-width="859" data-natural-height="683" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092415/ds.png"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 43px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>HIGH AVALIABiLITY</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 448px; height: 448.627px; left: 251px; top: 150px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="0">
+                            <img data-natural-width="715" data-natural-height="716" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092429/Avaliable.PNG"/>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 175px; top: 618px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="0">
+                            <p>A simple cluster</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 60px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>SECURITY</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 210px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="0">
+                            <ul>
+                                <li>Encryption: SHA-256 +&nbsp;
+                                    <strong>PBKDF2</strong>
+                                </li>
+                                <li>SQL Injection</li>
+                                <li>XSS</li>
+                                <li>CSRF</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 724px; left: 118px; top: 521px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="2">
+                            <p>
+                                <strong>
+                                    <span style="color:#FF8C00">DO NOT TRUST ANY INPUT FROM&nbsp;USER！</span>
+                                </strong>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 656px; height: 64.4216px; left: 152px; top: 400px;">
+                        <div class="sl-block-content fragment" style="z-index: 14;" data-fragment-index="1">
+                            <img data-natural-width="835" data-natural-height="82" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092433/QQ__20151225144520.jpg"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 60px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>SECURITY</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="width: 205.926px; height: 192px; left: 377px; top: 464px;">
+                        <div class="sl-block-content fragment" style="z-index: 10;" data-fragment-index="1">
+                            <img data-natural-width="695" data-natural-height="648" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092417/death-cow.jpg"/>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 903px; left: 45px; top: 186px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="0">
+                            <p>
+                                <span style="font-size:0.7em">POST api/book/1/**/anD/**/(SELeCt/**/9921/**/fROm(SELeCt/**/counT(*),CONCAT(cHar(
+                                    <br/>
+58,117,113,107,58),(SELeCt/**/(case/**/whEN/**/(9921=9921)/**/THeN/**/1/**/elsE/**/0/**/
+                                    <br/>
+ENd)),cHar(58,106,104,104,58),FLOOR(RanD(0)*2))x/**/fROm/**/information_schema.tables/**/
+                                    <br/>
+group/**/bY/**/x)a)
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 60px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>HIGH PERFORMANCE</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 363px;">
+                        <div class="sl-block-content fragment" style="z-index: 11;" data-fragment-index="2">
+                            <p>
+                                <span style="color:#FFFF00">JVM Optimization</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 878px; left: 67px; top: 435px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="3">
+                            <ul>
+                                <li class="">GC Strategy :&nbsp;Use Concurrent Mark-Sweep(Old Gen) + Parallel Scavenge(Young Gen)</li>
+                                <li>GC&nbsp;Pretenure : Promotion Threshold</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 183px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-has-custom-html="" data-fragment-index="0">
+                            <p>
+                                <span style="color:#FFFF00;">Basic Optimization</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 160px; top: 241px;">
+                        <div class="sl-block-content fragment" style="z-index: 15;" data-has-custom-html="" data-fragment-index="1">
+                            <ul>
+                                <li>Lazy Load</li>
+                                <li>Singleton Object</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section class="stack">
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 31px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>Frontend ARCHITECTURE</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 74px; top: 264px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 12;">
+                            <ul>
+                                <li>Decouple F-B</li>
+                                <li>MVVM Architecture</li>
+                                <li>Components</li>
+                                <li>Performance Optimization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 70px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>NEW FEATURES...</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 173px; top: 241px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="0">
+                            <p>ES 6 and ES 7</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 323px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="1">
+                            <p>Webpack (Modularization)</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 388.205px; height: 259px; left: 286px; top: 409px;">
+                        <div class="sl-block-content" style="z-index: 14;">
+                            <img data-natural-width="658" data-natural-height="439" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092387/QQ__20151114193904.jpg"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 22px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>OVERVIEW</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 858.83px; height: 439px; left: 51px; top: 150px;">
+                        <div class="sl-block-content" style="z-index: 12;">
+                            <img data-natural-width="1344" data-natural-height="687" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092386/frontend-overview.PNG"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 43px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>DECOUPLEING</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 180px; top: 199px;">
+                        <div class="sl-block-content fragment" style="z-index: 11;" data-fragment-index="0">
+                            <p>Frontend over-coupled with Backend</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 180px; top: 294px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="1">
+                            <p>Now, let's decouple</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 191px; top: 390px;">
+                        <div class="sl-block-content fragment" style="z-index: 14;" data-fragment-index="0">
+                            <p>Motivation: The backend could be&nbsp;engaged in the business logic</p>
+                            <p>Others, frontend could make it!</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 863px; left: 49px; top: 43px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>MVVM Architecture
+                                <br/>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 181px; top: 560px;">
+                        <div class="sl-block-content fragment" style="z-index: 11;" data-fragment-index="1">
+                            <p>An essential evolution</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 687.059px; height: 365px; left: 137px; top: 158px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="0">
+                            <img data-natural-width="1600" data-natural-height="850" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092122/mvvm.png"/>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 180px; top: 621px;">
+                        <div class="sl-block-content fragment" style="z-index: 14;" data-fragment-index="2">
+                            <p>MVC =&gt; MVP =&gt; MVVM</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 863px; left: 49px; top: 43px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>Components</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 831px; left: 65px; top: 521px;">
+                        <div class="sl-block-content" style="z-index: 12;">
+                            <p>Numerous reusable components =&gt; Application</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 584.11px; height: 226px; left: 80px; top: 193px;">
+                        <div class="sl-block-content" style="z-index: 13;">
+                            <img data-natural-width="1406" data-natural-height="544" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092124/components.png"/>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 140.272px; height: 332px; left: 756px; top: 140px;">
+                        <div class="sl-block-content" style="z-index: 14;">
+                            <img data-natural-width="199" data-natural-height="471" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092388/QQ__20151225130351.jpg"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 851px; left: 49px; top: 43px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>Performance Optimization</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 791px; left: 79px; top: 280px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="0">
+                            <p>Major : Reduce the number of HTTP request</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 373px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="1">
+                            <ul>
+                                <li>CSS/JS Code optimization</li>
+                                <li>Using CDN</li>
+                                <li>Resource loading order adjustment</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 945.913px; height: 42px; left: 7px; top: 582px;">
+                        <div class="sl-block-content fragment" style="z-index: 14;" data-fragment-index="2">
+                            <img data-natural-width="1554" data-natural-height="69" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092112/QQ__20151225005603.jpg"/>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section class="stack">
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 43px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>DATABASE DESIGN</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 451px; height: auto;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="1">
+                            <ul>
+                                <li>Database Design</li>
+                                <li>Database Transaction</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 425.06px; height: 241px; left: 247px; top: 171px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="0">
+                            <img data-natural-width="321" data-natural-height="182" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092718/mysql.jpg"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 928.102px; height: 569px; left: 16px; top: 42px;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <img data-natural-width="1468" data-natural-height="900" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092720/diagram.png"/>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 25px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>Database transaction</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 219px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="0">
+                            <ul>
+                                <li>
+                                    <h1>
+                                        <span style="font-size:0.5em">Atomic</span>
+                                    </h1>
+                                </li>
+                                <li>
+                                    <h1>
+                                        <span style="font-size:0.5em">Consistency</span>
+                                    </h1>
+                                </li>
+                                <li>
+                                    <h1>
+                                        <span style="font-size:0.5em">Isolation</span>
+                                    </h1>
+                                </li>
+                                <li>
+                                    <h1>
+                                        <span style="font-size:0.5em">Durability</span>
+                                    </h1>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section class="stack">
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 29px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>Basic DS</h1>
+                            <p>ArrayList</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 200px; top: 230px;">
+                        <div class="sl-block-content" style="z-index: 13;">
+                            <ul>
+                                <li>Definition</li>
+                                <li>Implementation</li>
+                                <li>Features</li>
+                                <li>Advantages</li>
+                                <li>Disadvantages</li>
+                            </ul>
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 316px; left: 363px; top: 490px;">
+                        <div class="sl-block-content" style="z-index: 14; text-align: left;">
+                            <p>Usage : List&lt;Entity&gt;</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 29px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>Basic DS</h1>
+                            <p>Queue</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 518px; left: 221px; top: 216px;">
+                        <div class="sl-block-content" style="z-index: 13;">
+                            <ul>
+                                <li>Definition</li>
+                                <li>Storage</li>
+                            </ul>
+                            <p>stored in order</p>
+                            <p>chain store</p>
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 354px; left: 303px; top: 490px;">
+                        <div class="sl-block-content" style="z-index: 14; text-align: left;">
+                            <p>Usage : Message Queue</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section class="stack">
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 22px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>UI DESIGN</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 660px; height: 477.108px; left: 160px; top: 119px;">
+                        <div class="sl-block-content" style="z-index: 12;">
+                            <img data-natural-width="1245" data-natural-height="900" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092698/page_web_home.png"/>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 160px; top: 611px;">
+                        <div class="sl-block-content" style="z-index: 13;">
+                            <p>Very, very simple</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 80px; top: 22px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 10;">
+                            <h1>UI DESIGN</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="image" style="min-width: 30px; min-height: 30px; width: 474.758px; height: 482px; left: 243px; top: 126px;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <img data-natural-width="590" data-natural-height="599" data-src="https://s3.amazonaws.com/media-p.slid.es/uploads/414696/images/2092699/page_mobile.png"/>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 630px;">
+                        <div class="sl-block-content" style="z-index: 13;">
+                            <p>Responsive</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section class="stack">
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 88px; top: 43px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>Unit TEST</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 177px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="0">
+                            <p>Type Problem</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 241px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="0">
+                            <ul>
+                                <li>Question：collecting and editing</li>
+                                <li>Solution：comparison</li>
+                            </ul>
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 180px; top: 401px;">
+                        <div class="sl-block-content fragment" style="z-index: 14;" data-fragment-index="1">
+                            <p>Identifier</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 207px; top: 451px;">
+                        <div class="sl-block-content fragment" style="z-index: 15;" data-fragment-index="1">
+                            <ul>
+                                <li>Question：illegally</li>
+                                <li>Solution：operation and maintenance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="sl-block" data-block-type="text" style="width: 800px; left: 88px; top: 43px; height: auto;">
+                        <div class="sl-block-content" style="z-index: 11;">
+                            <h1>TEST</h1>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 180px; top: 177px;">
+                        <div class="sl-block-content fragment" style="z-index: 12;" data-fragment-index="0">
+                            <p>Range</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 180px; top: 241px;">
+                        <div class="sl-block-content fragment" style="z-index: 13;" data-fragment-index="0">
+                            <ul>
+                                <li class="">Question：borrow and return</li>
+                                <li>Solution：judge</li>
+                            </ul>
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 180px; top: 401px;">
+                        <div class="sl-block-content fragment" style="z-index: 14;" data-fragment-index="1">
+                            <p>Null Object</p>
+                        </div>
+                    </div>
+                    <div class="sl-block" data-block-type="text" style="height: auto; width: 600px; left: 180px; top: 471px;">
+                        <div class="sl-block-content fragment" style="z-index: 15;" data-fragment-index="1">
+                            <p>
+                                <span style="color:#FFFF00">No NullPointerException !!!!!!</span>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section>
+                <div class="sl-block" data-block-type="text" style="width: 800px; left: 113px; top: 197px; height: auto;">
+                    <div class="sl-block-content" style="z-index: 10;">
+                        <h1>THE END</h1>
+                    </div>
+                </div>
+                <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 773px; left: 113px; top: 350px;">
+                    <div class="sl-block-content" style="z-index: 11;">
+                        <p>Follow us on GitHub:</p>
+                        <p>
+                            <a href="https://github.com/0x5f3759df-Hacker/pistachio" target="_blank">https://github.com/0x5f3759df-Hacker/pistachio</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 476px; left: 480px; top: 31px;">
+                    <div class="sl-block-content" style="z-index: 13;">
+                        <p>Samsara&nbsp;Pistachio</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: false,
+
+				transition: 'convex', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

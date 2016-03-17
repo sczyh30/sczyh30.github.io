@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>gdb用法总结 —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!--<meta name="keywords" content="sczyh30, blog"/>-->
+  <meta name="description" content="以前写C++时，遇到需要调试的程序都是放在VS下进行debug，方便快捷。但是某些时候需要在Linux下进行debug，这时候显然不能用VS了，所以要祭出我们的法宝-gdbGDB是一个由GNU开源组织发布的、UNIX/LINUX操作系统下的、基于命令行的、功能强大的程序调试工具。这里总结一下gdb的一些常用命令和简单使用方法，为以后调试Hotspot JVM以及Golang编译的程序做准备。（顺便">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gdb用法总结">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Develop/gdb-simple/index.html">
+<meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:description" content="以前写C++时，遇到需要调试的程序都是放在VS下进行debug，方便快捷。但是某些时候需要在Linux下进行debug，这时候显然不能用VS了，所以要祭出我们的法宝-gdbGDB是一个由GNU开源组织发布的、UNIX/LINUX操作系统下的、基于命令行的、功能强大的程序调试工具。这里总结一下gdb的一些常用命令和简单使用方法，为以后调试Hotspot JVM以及Golang编译的程序做准备。（顺便">
+<meta property="og:image" content="http://7xkkgd.com1.z0.glb.clouddn.com/gdb-simple-01.jpg">
+<meta property="og:image" content="http://7xkkgd.com1.z0.glb.clouddn.com/gdb-simple-02.jpg">
+<meta property="og:updated_time" content="2016-02-26T05:40:03.927Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="gdb用法总结">
+<meta name="twitter:description" content="以前写C++时，遇到需要调试的程序都是放在VS下进行debug，方便快捷。但是某些时候需要在Linux下进行debug，这时候显然不能用VS了，所以要祭出我们的法宝-gdbGDB是一个由GNU开源组织发布的、UNIX/LINUX操作系统下的、基于命令行的、功能强大的程序调试工具。这里总结一下gdb的一些常用命令和简单使用方法，为以后调试Hotspot JVM以及Golang编译的程序做准备。（顺便">
+  
+    <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true
+      }
+  </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/AIO/" style="font-size: 10px;">AIO</a> <a href="/tags/AMQP/" style="font-size: 10px;">AMQP</a> <a href="/tags/Algorithm/" style="font-size: 13.75px;">Algorithm</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/C/" style="font-size: 17.5px;">C++</a> <a href="/tags/C-11/" style="font-size: 10px;">C++ 11</a> <a href="/tags/CE3/" style="font-size: 10px;">CE3</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Chemistry/" style="font-size: 11.25px;">Chemistry</a> <a href="/tags/Compiler/" style="font-size: 10px;">Compiler</a> <a href="/tags/Database/" style="font-size: 11.25px;">Database</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Engine/" style="font-size: 10px;">Engine</a> <a href="/tags/FRP/" style="font-size: 10px;">FRP</a> <a href="/tags/Functional-Programming/" style="font-size: 11.25px;">Functional Programming</a> <a href="/tags/G1/" style="font-size: 10px;">G1</a> <a href="/tags/GC/" style="font-size: 13.75px;">GC</a> <a href="/tags/GDB/" style="font-size: 10px;">GDB</a> <a href="/tags/Game/" style="font-size: 11.25px;">Game</a> <a href="/tags/HashMap/" style="font-size: 11.25px;">HashMap</a> <a href="/tags/Haskell/" style="font-size: 10px;">Haskell</a> <a href="/tags/HotSpot/" style="font-size: 11.25px;">HotSpot</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 18.75px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Klass-oop/" style="font-size: 10px;">Klass-oop</a> <a href="/tags/LinkedList/" style="font-size: 10px;">LinkedList</a> <a href="/tags/Linux/" style="font-size: 11.25px;">Linux</a> <a href="/tags/Mathematical-Logic/" style="font-size: 10px;">Mathematical Logic</a> <a href="/tags/Metaspace/" style="font-size: 10px;">Metaspace</a> <a href="/tags/Network/" style="font-size: 16.25px;">Network</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Object-Model/" style="font-size: 13.75px;">Object Model</a> <a href="/tags/RabbitMQ/" style="font-size: 10px;">RabbitMQ</a> <a href="/tags/Reflection/" style="font-size: 11.25px;">Reflection</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/STL/" style="font-size: 11.25px;">STL</a> <a href="/tags/Scala/" style="font-size: 11.25px;">Scala</a> <a href="/tags/Sort/" style="font-size: 10px;">Sort</a> <a href="/tags/Struct/" style="font-size: 10px;">Struct</a> <a href="/tags/Summary/" style="font-size: 13.75px;">Summary</a> <a href="/tags/TCP/" style="font-size: 15px;">TCP</a> <a href="/tags/UE4/" style="font-size: 10px;">UE4</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/Web/" style="font-size: 12.5px;">Web</a> <a href="/tags/event/" style="font-size: 10px;">event</a> <a href="/tags/functional/" style="font-size: 10px;">functional</a> <a href="/tags/中间件/" style="font-size: 10px;">中间件</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/内存区域/" style="font-size: 10px;">内存区域</a> <a href="/tags/前端/" style="font-size: 12.5px;">前端</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/并发/" style="font-size: 11.25px;">并发</a> <a href="/tags/开发/" style="font-size: 17.5px;">开发</a> <a href="/tags/异步/" style="font-size: 11.25px;">异步</a> <a href="/tags/性能/" style="font-size: 10px;">性能</a> <a href="/tags/性能优化/" style="font-size: 10px;">性能优化</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 11.25px;">数据库</a> <a href="/tags/架构/" style="font-size: 11.25px;">架构</a> <a href="/tags/线程安全/" style="font-size: 10px;">线程安全</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Fighting</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-gdb-simple" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Develop/gdb-simple/" class="article-date">
+      <time datetime="2015-09-11T17:12:36.000Z" itemprop="datePublished">2015-09-12</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      gdb用法总结
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Develop/">Develop</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/">C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GDB/">GDB</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>以前写C++时，遇到需要调试的程序都是放在VS下进行debug，方便快捷。但是某些时候需要在Linux下进行debug，这时候显然不能用VS了，所以要祭出我们的法宝-gdb<br>GDB是一个由GNU开源组织发布的、UNIX/LINUX操作系统下的、基于命令行的、功能强大的程序调试工具。<br>这里总结一下gdb的一些常用命令和简单使用方法，为以后调试Hotspot JVM以及Golang编译的程序做准备。（顺便吐槽一下Golang，都出到1.5版本了官方还不发布一个调试器，还得借助gdb。。）</p>
+<hr>
+<p>放上一段简单的程序(klass.cpp):<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;iostream&gt;</span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;string&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::endl;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> Bean &#123;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        T object;</span><br><span class="line">        <span class="built_in">string</span> name;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="function"><span class="keyword">explicit</span> <span class="title">Bean</span><span class="params">()</span> </span>&#123;&#125;;</span><br><span class="line">        <span class="function"><span class="keyword">explicit</span> <span class="title">Bean</span><span class="params">(T obj,<span class="built_in">string</span> name)</span></span>;</span><br><span class="line">        T&amp; getObject();</span><br><span class="line">        <span class="built_in">string</span>&amp; getName() &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>-&gt;name;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">inline</span> <span class="keyword">bool</span> <span class="keyword">operator</span>==(<span class="keyword">const</span> Bean&lt;T&gt;&amp; bean);</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> BeanFactory &#123;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        Bean&lt;T&gt; bean;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="keyword">virtual</span> Bean&lt;T&gt; getBean() = <span class="number">0</span>;</span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">debug</span><span class="params">(<span class="built_in">string</span> s)</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> ApplicationContext : <span class="keyword">public</span> BeanFactory&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        Bean&lt;T&gt; bean;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        <span class="function"><span class="keyword">explicit</span> <span class="title">ApplicationContext</span><span class="params">()</span></span>;</span><br><span class="line">        <span class="function"><span class="keyword">explicit</span> <span class="title">ApplicationContext</span><span class="params">(Bean&lt;T&gt; bean)</span></span>;</span><br><span class="line">        ApplicationContext(<span class="keyword">const</span> BeanFactory&lt;T&gt;&amp; b) = <span class="keyword">delete</span>;</span><br><span class="line">        <span class="keyword">virtual</span> Bean&lt;T&gt; getBean();</span><br><span class="line">        <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">debug</span><span class="params">(<span class="built_in">string</span> s)</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">Bean&lt;T&gt;::Bean(T obj,<span class="built_in">string</span> name):object(obj),name(name)&#123;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">T&amp; Bean&lt;T&gt;::getObject() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>-&gt;object;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">inline</span> <span class="keyword">bool</span> Bean&lt;T&gt;::<span class="keyword">operator</span>==(<span class="keyword">const</span> Bean&lt;T&gt;&amp; bean) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>-&gt;object == bean.getObject;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">ApplicationContext&lt;T&gt;::ApplicationContext() &#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;bean = <span class="keyword">nullptr</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">ApplicationContext&lt;T&gt;::ApplicationContext(Bean&lt;T&gt; bean) &#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;bean = bean;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">Bean&lt;T&gt; ApplicationContext&lt;T&gt;::getBean() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>-&gt;bean;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">void</span> ApplicationContext&lt;T&gt;::debug(<span class="built_in">string</span> s) &#123;</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"debug:"</span>&lt;&lt;bean.getName()&lt;&lt;<span class="string">" + "</span>&lt;&lt;s&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Bean&lt;<span class="built_in">string</span>&gt; bean(<span class="string">"Scala"</span>,<span class="string">"fucking"</span>);</span><br><span class="line">    BeanFactory&lt;<span class="built_in">string</span>&gt; *context = <span class="keyword">new</span> ApplicationContext&lt;<span class="built_in">string</span>&gt;(bean);</span><br><span class="line">    context-&gt;debug(<span class="string">"hahaha"</span>);</span><br><span class="line">    context-&gt;debug(bean.getObject());</span><br><span class="line">    <span class="keyword">delete</span> context;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>编译：<code>g++ klass.cpp -o klass -g -std=c++11</code><br><strong>注意</strong>：需要调试的时候，最好在用g++编译的时候加上-g参数，以便将源代码信息编译到可执行文件中。当然玩逆向的话就看汇编代码吧→_→<br>进入gdb，然后使用<code>file <filename></filename></code>命令加载文件。<br>然后可使用<code>r</code>命令(run)执行可执行文件。若没下断点，则相当于正常执行：<br><figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">debug:</span>fucking + hahaha</span><br><span class="line"><span class="label">debug:</span>fucking + Scala</span><br></pre></td></tr></table></figure></p>
+<p>下面在main函数处下一个断点(Breakpoint)：<code>b main</code><br>反馈：<code>Breakpoint 1 at 0x400e61: file klass.cpp, line 75.</code>表示断点地址在0x400e61处<br>然后我们再次使用<code>r</code>命令执行，程序将停在断点处：<br><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">Breakpoint</span> <span class="tag">1</span>, <span class="tag">main</span> () <span class="tag">at</span> <span class="tag">klass</span><span class="class">.cpp</span><span class="pseudo">:75</span></span><br><span class="line"><span class="tag">75</span>      <span class="tag">int</span> <span class="tag">main</span>() &#123;</span><br></pre></td></tr></table></figure></p>
+<p>此界面中可以查看汇编代码、表达式、历史记录、内存使用、寄存器值、源代码（如果有的话）、堆栈信息和线程信息<br><img src="http://7xkkgd.com1.z0.glb.clouddn.com/gdb-simple-01.jpg" alt="gdb"><br>接着使用<code>s</code>命令(step into)步入执行下面的语句，遇到函数调用则步入此函数。在生成Bean对象实例的时候步入Bean的构造函数：<br><img src="http://7xkkgd.com1.z0.glb.clouddn.com/gdb-simple-02.jpg" alt="Bean的构造函数信息"><br>顺着下去，可以观察完整的过程。这里只是总结gdb的使用，就不再阐述了。<br>下面是关于断点的一些用法：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>解释</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>b &lt;行号&gt;</td>
+<td>在此行号处下断点</td>
+<td>b 75</td>
+</tr>
+<tr>
+<td>b &lt;函数名称&gt;</td>
+<td>在此函数处下断点</td>
+<td>b service</td>
+</tr>
+<tr>
+<td>b *&lt;函数名称&gt;</td>
+<td>在此函数的入口点（prolog）处下断点</td>
+<td>b *main</td>
+</tr>
+<tr>
+<td>b *&lt;函数地址&gt;</td>
+<td>在此函数地址处下断点</td>
+<td>b *0x400e61</td>
+</tr>
+<tr>
+<td>d &lt;编号&gt;</td>
+<td>删除指定编号的断点或删除所有断点</td>
+<td>d</td>
+</tr>
+</tbody>
+</table>
+<p>查看某个变量可以用<code>p &lt;变量名&gt;</code>命令，比如查看bean的详细信息：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;</span>&gt; p bean         </span><br><span class="line"><span class="variable">$1</span> = &#123;             </span><br><span class="line">  object = <span class="string">"Scala"</span>,</span><br><span class="line">  name = <span class="string">"fucking"</span> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>继续执行可以用<code>c</code>命令，若下面还有断点则中断到下一个断点。<br>若需要看本行代码对应的汇编代码可用<code>display /i $pc</code>命令，这样就能在Outputs一栏显示出当前汇编代码，比如：<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">debug<span class="value">:fucking + hahaha</span><br><span class="line"></span><br><span class="line">Breakpoint <span class="number">4</span>, main () at klass.cpp:<span class="number">79</span></span><br><span class="line"><span class="number">79</span>              context-&gt;<span class="function">debug</span>(bean.<span class="function">getObject</span>());</span></span><br><span class="line">1<span class="value">: x/i <span class="variable">$pc</span></span><br><span class="line">=&gt; <span class="number">0</span>x400f8f &lt;<span class="function">main</span>()+<span class="number">313</span>&gt;:       mov    <span class="function">-0x48</span>(%rbp),%rax</span></span><br></pre></td></tr></table></figure></p>
+<p>若想逐行汇编代码步入执行，可以用<code>si</code>命令。<br>下面总结一下step命令：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>s</td>
+<td>step into(单步跟踪进入）</td>
+</tr>
+<tr>
+<td>n</td>
+<td>step over（单步跟踪）</td>
+</tr>
+<tr>
+<td>si</td>
+<td>逐行汇编代码步入</td>
+</tr>
+<tr>
+<td>ni</td>
+<td>逐行汇编代码步出</td>
+</tr>
+</tbody>
+</table>
+<p>还有一个非常有用的命令就是<code>i &lt;信息&gt;</code>，用于显示对应信息，简单总结一下常用的：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>i args</td>
+<td>显示当前栈帧上的变量信息</td>
+</tr>
+<tr>
+<td>i address &lt;name&gt;</td>
+<td>显示对应对象、方法或变量name的地址</td>
+</tr>
+<tr>
+<td>i breakpoints（缩写<code>i b</code>）</td>
+<td>显示当前的所有断点</td>
+</tr>
+<tr>
+<td>i variables</td>
+<td>显示当前所有的静态变量和全局变量</td>
+</tr>
+<tr>
+<td>i vtbl &lt;object&gt;</td>
+<td>显示object对象的虚函数表(vtable)</td>
+</tr>
+<tr>
+<td>i frame（缩写<code>i f</code></td>
+<td>显示栈帧信息</td>
+</tr>
+<tr>
+<td>i registers(缩写<code>i r</code>）</td>
+<td>显示寄存器信息</td>
+</tr>
+</tbody>
+</table>
+<p>比如查看context对象的虚函数表：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="prompt">&gt;&gt;</span>&gt; i vtbl context</span><br><span class="line"><span class="symbol">warning:</span> <span class="constant">RTTI</span> symbol <span class="keyword">not</span> found <span class="keyword">for</span> <span class="class"><span class="keyword">class</span> '<span class="title">ApplicationContext</span><span class="inheritance">&lt;<span class="parent">std::string</span></span>&gt;'</span></span><br><span class="line">vtable <span class="keyword">for</span> <span class="string">'BeanFactory&lt;std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; &gt;'</span> @ <span class="number">0x401530</span> (subobject @ <span class="number">0x603070</span>)<span class="symbol">:</span></span><br><span class="line">[<span class="number">0</span>]<span class="symbol">:</span> <span class="number">0x40139a</span> &lt;<span class="constant">ApplicationContext</span>&lt;<span class="symbol">std:</span><span class="symbol">:string&gt;</span><span class="symbol">:</span><span class="symbol">:getBean</span>()&gt;</span><br><span class="line">[<span class="number">1</span>]<span class="symbol">:</span> <span class="number">0x4013c8</span> &lt;<span class="constant">ApplicationContext</span>&lt;<span class="symbol">std:</span><span class="symbol">:string&gt;</span><span class="symbol">:</span><span class="symbol">:debug</span>(<span class="symbol">std:</span><span class="symbol">:string</span>)&gt;</span><br></pre></td></tr></table></figure></p>
+<p>最后退出当然是命令<code>q</code>咯~<br>后面将用gdb调试HotSpot JVM以便更深入地了解JVM的运行原理。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Develop/gdb-simple/">gdb用法总结</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 sczyh30 的个人博客">sczyh30</a></p>
+        <p><span>发布时间:</span>2015年09月12日</p>
+        <!--<p><span>最后更新:</span>2016年02月26日 - 13时40分</p>-->
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Develop/gdb-simple/" title="gdb用法总结">http://www.sczyh30.com/posts/Develop/gdb-simple/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Develop/gdb-simple/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0" target = "_blank">知识共享-保持署名-非商用-相同方式共享 4.0 (CC BY-NC-SA 4.0)</a><br/>转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Develop/android_summary_2/">
+                    安卓开发中的一些总结（2）
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Algorithm/algorithm-cache/">
+                    缓存算法（页面置换算法）总结
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- duoshuo comment start -->
+    <div class="ds-thread" data-thread-key="posts/Develop/gdb-simple/" data-title="gdb用法总结" data-url="http://www.sczyh30.com/posts/Develop/gdb-simple/"></div>
+    <!-- duoshuo comment end -->
+    <!-- duoshuo public js start -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name: 'sczyh30'};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        /*ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';*/
+        ds.src = 'http://www.sczyh30.com/assets/embed.js'
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- duoshuo public js end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Develop/android_summary_2/" title="上一篇: 安卓开发中的一些总结（2）">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Algorithm/algorithm-cache/" title="下一篇: 缓存算法（页面置换算法）总结">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-for-expression-detail/">Scala | for表达式的底层转换</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">IO模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model Summary III</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">C++ 11 Move Sementics/Perfect Forwarding</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-2/">Inside The C++ Object Model Summary II</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model Summary I</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/amqp-rabbitmq/">消息队列中间件-RabbitMQ总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-event-dispatcher/">Android事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-01/">Android View视图绘制总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表|unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-performance-1/">对Android应用性能优化的一些总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android_summary_2/">安卓开发中的一些总结（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-copyArray/">arrayCopy方法底层探究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/os-learning-1/">操作系统相关知识杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结(性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-plan/">Web开发笔记 - 前端总结计划</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-transaction-lock/">数据库事务中的隔离级别和锁</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-advanced-a1/">高级算法总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/compiler-a01/">编译原理相关 | C++编译器总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-sql-01/">数据库知识总结（一） - 基本SQL</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2016 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30.
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

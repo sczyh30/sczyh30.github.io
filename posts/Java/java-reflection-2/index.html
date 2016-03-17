@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>深入解析Java反射（2） - invoke方法 —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!--<meta name="keywords" content="Java, 反射, invoke , sczyh30, blog"/>-->
+  <meta name="description" content="上篇文章中回顾了一下Java反射相关的基础内容。这一节我们来深入研究Method类中的invoke方法，探寻它的奥秘。注:本篇文章的所有源码都基于OpenJDK 1.8。
+
+一、引入即使没有学过反射，大家也一定会见过invoke方法。因为很多方法调用都是靠invoke方法，所以很多异常的抛出都会定位到invoke方法，比如下面的情形大家会很熟悉:123456java.lang.NullPointe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入解析Java反射（2） - invoke方法">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Java/java-reflection-2/index.html">
+<meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:description" content="上篇文章中回顾了一下Java反射相关的基础内容。这一节我们来深入研究Method类中的invoke方法，探寻它的奥秘。注:本篇文章的所有源码都基于OpenJDK 1.8。
+
+一、引入即使没有学过反射，大家也一定会见过invoke方法。因为很多方法调用都是靠invoke方法，所以很多异常的抛出都会定位到invoke方法，比如下面的情形大家会很熟悉:123456java.lang.NullPointe">
+<meta property="og:image" content="http://img.blog.csdn.net/20150626130739796">
+<meta property="og:updated_time" content="2016-02-26T07:35:34.629Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入解析Java反射（2） - invoke方法">
+<meta name="twitter:description" content="上篇文章中回顾了一下Java反射相关的基础内容。这一节我们来深入研究Method类中的invoke方法，探寻它的奥秘。注:本篇文章的所有源码都基于OpenJDK 1.8。
+
+一、引入即使没有学过反射，大家也一定会见过invoke方法。因为很多方法调用都是靠invoke方法，所以很多异常的抛出都会定位到invoke方法，比如下面的情形大家会很熟悉:123456java.lang.NullPointe">
+  
+    <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true
+      }
+  </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/AIO/" style="font-size: 10px;">AIO</a> <a href="/tags/AMQP/" style="font-size: 10px;">AMQP</a> <a href="/tags/Algorithm/" style="font-size: 13.75px;">Algorithm</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/C/" style="font-size: 17.5px;">C++</a> <a href="/tags/C-11/" style="font-size: 10px;">C++ 11</a> <a href="/tags/CE3/" style="font-size: 10px;">CE3</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Chemistry/" style="font-size: 11.25px;">Chemistry</a> <a href="/tags/Compiler/" style="font-size: 10px;">Compiler</a> <a href="/tags/Database/" style="font-size: 11.25px;">Database</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Engine/" style="font-size: 10px;">Engine</a> <a href="/tags/FRP/" style="font-size: 10px;">FRP</a> <a href="/tags/Functional-Programming/" style="font-size: 11.25px;">Functional Programming</a> <a href="/tags/G1/" style="font-size: 10px;">G1</a> <a href="/tags/GC/" style="font-size: 13.75px;">GC</a> <a href="/tags/GDB/" style="font-size: 10px;">GDB</a> <a href="/tags/Game/" style="font-size: 11.25px;">Game</a> <a href="/tags/HashMap/" style="font-size: 11.25px;">HashMap</a> <a href="/tags/Haskell/" style="font-size: 10px;">Haskell</a> <a href="/tags/HotSpot/" style="font-size: 11.25px;">HotSpot</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 18.75px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Klass-oop/" style="font-size: 10px;">Klass-oop</a> <a href="/tags/LinkedList/" style="font-size: 10px;">LinkedList</a> <a href="/tags/Linux/" style="font-size: 11.25px;">Linux</a> <a href="/tags/Mathematical-Logic/" style="font-size: 10px;">Mathematical Logic</a> <a href="/tags/Metaspace/" style="font-size: 10px;">Metaspace</a> <a href="/tags/Network/" style="font-size: 16.25px;">Network</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Object-Model/" style="font-size: 13.75px;">Object Model</a> <a href="/tags/RabbitMQ/" style="font-size: 10px;">RabbitMQ</a> <a href="/tags/Reflection/" style="font-size: 11.25px;">Reflection</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/STL/" style="font-size: 11.25px;">STL</a> <a href="/tags/Scala/" style="font-size: 11.25px;">Scala</a> <a href="/tags/Sort/" style="font-size: 10px;">Sort</a> <a href="/tags/Struct/" style="font-size: 10px;">Struct</a> <a href="/tags/Summary/" style="font-size: 13.75px;">Summary</a> <a href="/tags/TCP/" style="font-size: 15px;">TCP</a> <a href="/tags/UE4/" style="font-size: 10px;">UE4</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/Web/" style="font-size: 12.5px;">Web</a> <a href="/tags/event/" style="font-size: 10px;">event</a> <a href="/tags/functional/" style="font-size: 10px;">functional</a> <a href="/tags/中间件/" style="font-size: 10px;">中间件</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/内存区域/" style="font-size: 10px;">内存区域</a> <a href="/tags/前端/" style="font-size: 12.5px;">前端</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/并发/" style="font-size: 11.25px;">并发</a> <a href="/tags/开发/" style="font-size: 17.5px;">开发</a> <a href="/tags/异步/" style="font-size: 11.25px;">异步</a> <a href="/tags/性能/" style="font-size: 10px;">性能</a> <a href="/tags/性能优化/" style="font-size: 10px;">性能优化</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 11.25px;">数据库</a> <a href="/tags/架构/" style="font-size: 11.25px;">架构</a> <a href="/tags/线程安全/" style="font-size: 10px;">线程安全</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Fighting</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-java-reflection-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Java/java-reflection-2/" class="article-date">
+      <time datetime="2015-06-24T16:00:00.000Z" itemprop="datePublished">2015-06-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      深入解析Java反射（2） - invoke方法
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Reflection/">Reflection</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>上篇文章中回顾了一下Java反射相关的基础内容。这一节我们来深入研究Method类中的invoke方法，探寻它的奥秘。<br>注:本篇文章的所有源码都基于OpenJDK 1.8。</p>
+<hr>
+<h1 id="一、引入">一、引入</h1><p>即使没有学过反射，大家也一定会见过invoke方法。因为很多方法调用都是靠invoke方法，所以很多异常的抛出都会定位到invoke方法，比如下面的情形大家会很熟悉:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java.lang.NullPointerException</span><br><span class="line">  at ......</span><br><span class="line">  at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</span><br><span class="line">  at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:<span class="number">62</span>)</span><br><span class="line">  at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<span class="number">43</span>)</span><br><span class="line">  at java.lang.reflect.Method.invoke(Method.java:<span class="number">497</span>)</span><br></pre></td></tr></table></figure></p>
+<p>大家在看到异常抛出时，除了想要排除Bug，是不是同时也对这个神秘的invoke乃至invoke0方法有一些好奇呢？我们下面就来揭开它神秘的面纱，探寻底层的机制。</p>
+<h1 id="二、浅析invoke过程">二、浅析invoke过程</h1><p>上一篇文章我们讲过，invoke方法用来在运行时动态地调用某个实例的方法。它的实现如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@CallerSensitive</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object obj, Object... args)</span></span><br><span class="line">    <span class="keyword">throws</span> IllegalAccessException, IllegalArgumentException,</span><br><span class="line">       InvocationTargetException</span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!override) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!Reflection.quickCheckMemberAccess(clazz, modifiers)) &#123;</span><br><span class="line">            Class&lt;?&gt; caller = Reflection.getCallerClass();</span><br><span class="line">            checkAccess(caller, clazz, obj, modifiers);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    MethodAccessor ma = methodAccessor;             <span class="comment">// read volatile</span></span><br><span class="line">    <span class="keyword">if</span> (ma == <span class="keyword">null</span>) &#123;</span><br><span class="line">        ma = acquireMethodAccessor();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ma.invoke(obj, args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们根据invoke方法的实现，将其分为以下几步：</p>
+<h2 id="1、权限检查">1、权限检查</h2><p>invoke方法会首先检查AccessibleObject的override属性的值。AccessibleObject 类是 Field、Method 和 Constructor 对象的基类。它提供了将反射的对象标记为在使用时取消默认 Java 语言访问控制检查的能力。<br>override的值默认是false,表示需要权限调用规则，调用方法时需要检查权限;我们也可以用setAccessible方法设置为true,若override的值为true，表示忽略权限规则，调用方法时无需检查权限（也就是说可以调用任意的private方法，违反了封装）。<br>如果override属性为默认值false，则进行进一步的权限检查：<br>（1）首先用Reflection.quickCheckMemberAccess(clazz, modifiers)方法检查方法是否为public，如果是的话跳出本步；如果不是public方法，那么用Reflection.getCallerClass()方法获取调用这个方法的Class对象，这是一个native方法:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@CallerSensitive</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> Class&lt;?&gt; getCallerClass();</span><br></pre></td></tr></table></figure></p>
+<p>在OpenJDK的源码中找到此方法的JNI入口(Reflection.c):<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">JNIEXPORT jclass JNICALL <span class="title">Java_sun_reflect_Reflection_getCallerClass__</span></span><br><span class="line"><span class="params">(JNIEnv *env, jclass unused)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> JVM_GetCallerClass(env, JVM_CALLER_DEPTH);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其中JVM_GetCallerClass的源码如下，有兴趣的可以研究一下(位于jvm.cpp):<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">JVM_ENTRY(jclass, JVM_GetCallerClass(JNIEnv* env, <span class="keyword">int</span> depth))</span><br><span class="line">  JVMWrapper(<span class="string">"JVM_GetCallerClass"</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Pre-JDK 8 and early builds of JDK 8 don't have a CallerSensitive annotation; or</span></span><br><span class="line">  <span class="comment">// sun.reflect.Reflection.getCallerClass with a depth parameter is provided</span></span><br><span class="line">  <span class="comment">// temporarily for existing code to use until a replacement API is defined.</span></span><br><span class="line">  <span class="keyword">if</span> (SystemDictionary::reflect_CallerSensitive_klass() == NULL || depth != JVM_CALLER_DEPTH) &#123;</span><br><span class="line">    Klass* k = thread-&gt;security_get_caller_class(depth);</span><br><span class="line">    <span class="keyword">return</span> (k == NULL) ? NULL : (jclass) JNIHandles::make_local(env, k-&gt;java_mirror());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Getting the class of the caller frame.</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// The call stack at this point looks something like this:</span></span><br><span class="line">  <span class="comment">//</span></span><br><span class="line">  <span class="comment">// [0] [ @CallerSensitive public sun.reflect.Reflection.getCallerClass ]</span></span><br><span class="line">  <span class="comment">// [1] [ @CallerSensitive API.method                                   ]</span></span><br><span class="line">  <span class="comment">// [.] [ (skipped intermediate frames)                                 ]</span></span><br><span class="line">  <span class="comment">// [n] [ caller                                                        ]</span></span><br><span class="line">  <span class="function">vframeStream <span class="title">vfst</span><span class="params">(thread)</span></span>;</span><br><span class="line">  <span class="comment">// Cf. LibraryCallKit::inline_native_Reflection_getCallerClass</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> n = <span class="number">0</span>; !vfst.at_end(); vfst.security_next(), n++) &#123;</span><br><span class="line">    Method* m = vfst.method();</span><br><span class="line">    assert(m != NULL, <span class="string">"sanity"</span>);</span><br><span class="line">    <span class="keyword">switch</span> (n) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">      <span class="comment">// This must only be called from Reflection.getCallerClass</span></span><br><span class="line">      <span class="keyword">if</span> (m-&gt;intrinsic_id() != vmIntrinsics::_getCallerClass) &#123;</span><br><span class="line">        THROW_MSG_NULL(vmSymbols::java_lang_InternalError(), <span class="string">"JVM_GetCallerClass must only be called from Reflection.getCallerClass"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// fall-through</span></span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">      <span class="comment">// Frame 0 and 1 must be caller sensitive.</span></span><br><span class="line">      <span class="keyword">if</span> (!m-&gt;caller_sensitive()) &#123;</span><br><span class="line">        THROW_MSG_NULL(vmSymbols::java_lang_InternalError(), err_msg(<span class="string">"CallerSensitive annotation expected at frame %d"</span>, n));</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">if</span> (!m-&gt;is_ignored_by_security_stack_walk()) &#123;</span><br><span class="line">        <span class="comment">// We have reached the desired frame; return the holder class.</span></span><br><span class="line">        <span class="keyword">return</span> (jclass) JNIHandles::make_local(env, m-&gt;method_holder()-&gt;java_mirror());</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> NULL;</span><br><span class="line">JVM_END</span><br></pre></td></tr></table></figure></p>
+<p>获取了这个Class对象caller后用checkAccess方法做一次快速的权限校验，其实现为:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">volatile</span> Object securityCheckCache;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">checkAccess</span><span class="params">(Class&lt;?&gt; caller, Class&lt;?&gt; clazz, Object obj, <span class="keyword">int</span> modifiers)</span></span><br><span class="line">        <span class="keyword">throws</span> IllegalAccessException</span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (caller == clazz) &#123;  <span class="comment">// 快速校验</span></span><br><span class="line">            <span class="keyword">return</span>;             <span class="comment">// 权限通过校验</span></span><br><span class="line">        &#125;</span><br><span class="line">        Object cache = securityCheckCache;  <span class="comment">// read volatile</span></span><br><span class="line">        Class&lt;?&gt; targetClass = clazz;</span><br><span class="line">        <span class="keyword">if</span> (obj != <span class="keyword">null</span></span><br><span class="line">            &amp;&amp; Modifier.isProtected(modifiers)</span><br><span class="line">            &amp;&amp; ((targetClass = obj.getClass()) != clazz)) &#123;</span><br><span class="line">            <span class="comment">// Must match a 2-list of &#123; caller, targetClass &#125;.</span></span><br><span class="line">            <span class="keyword">if</span> (cache <span class="keyword">instanceof</span> Class[]) &#123;</span><br><span class="line">                Class&lt;?&gt;[] cache2 = (Class&lt;?&gt;[]) cache;</span><br><span class="line">                <span class="keyword">if</span> (cache2[<span class="number">1</span>] == targetClass &amp;&amp;</span><br><span class="line">                    cache2[<span class="number">0</span>] == caller) &#123;</span><br><span class="line">                    <span class="keyword">return</span>;     <span class="comment">// ACCESS IS OK</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// (Test cache[1] first since range check for [1]</span></span><br><span class="line">                <span class="comment">// subsumes range check for [0].)</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cache == caller) &#123;</span><br><span class="line">            <span class="comment">// Non-protected case (or obj.class == this.clazz).</span></span><br><span class="line">            <span class="keyword">return</span>;             <span class="comment">// ACCESS IS OK</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// If no return, fall through to the slow path.</span></span><br><span class="line">        slowCheckMemberAccess(caller, clazz, obj, modifiers, targetClass);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先先执行一次快速校验，一旦调用方法的Class正确则权限检查通过。<br>若未通过，则创建一个缓存，中间再进行一堆检查（比如检验是否为protected属性）。<br>如果上面的所有权限检查都未通过，那么将执行更详细的检查，其实现为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Keep all this slow stuff out of line:</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">slowCheckMemberAccess</span><span class="params">(Class&lt;?&gt; caller, Class&lt;?&gt; clazz, Object obj, <span class="keyword">int</span> modifiers,</span><br><span class="line">                           Class&lt;?&gt; targetClass)</span></span><br><span class="line">    <span class="keyword">throws</span> IllegalAccessException</span><br><span class="line"></span>&#123;</span><br><span class="line">    Reflection.ensureMemberAccess(caller, clazz, obj, modifiers);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Success: Update the cache.</span></span><br><span class="line">    Object cache = ((targetClass == clazz)</span><br><span class="line">                    ? caller</span><br><span class="line">                    : <span class="keyword">new</span> Class&lt;?&gt;[] &#123; caller, targetClass &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Note:  The two cache elements are not volatile,</span></span><br><span class="line">    <span class="comment">// but they are effectively final.  The Java memory model</span></span><br><span class="line">    <span class="comment">// guarantees that the initializing stores for the cache</span></span><br><span class="line">    <span class="comment">// elements will occur before the volatile write.</span></span><br><span class="line">    securityCheckCache = cache;         <span class="comment">// write volatile</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>大体意思就是，用Reflection.ensureMemberAccess方法继续检查权限，若检查通过就更新缓存，这样下一次同一个类调用同一个方法时就不用执行权限检查了，这是一种简单的缓存机制。由于JMM的happens-before规则能够保证缓存初始化能够在写缓存之前发生，因此两个cache不需要声明为volatile。<br>到这里，前期的权限检查工作就结束了。如果没有通过检查则会抛出异常，如果通过了检查则会到下一步。</p>
+<h2 id="2、调用MethodAccessor的invoke方法">2、调用MethodAccessor的invoke方法</h2><p>Method.invoke()实际上并不是自己实现的反射调用逻辑，而是委托给sun.reflect.MethodAccessor来处理。<br>首先要了解Method对象的基本构成，每个Java方法有且只有一个Method对象作为root，它相当于根对象，对用户不可见。当我们创建Method对象时，我们代码中获得的Method对象都相当于它的副本（或引用）。root对象持有一个MethodAccessor对象，所以所有获取到的Method对象都共享这一个MethodAccessor对象，因此必须保证它在内存中的可见性。root对象其声明及注释为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> MethodAccessor methodAccessor;</span><br><span class="line"><span class="comment">// For sharing of MethodAccessors. This branching structure is</span></span><br><span class="line"><span class="comment">// currently only two levels deep (i.e., one root Method and</span></span><br><span class="line"><span class="comment">// potentially many Method objects pointing to it.)</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// If this branching structure would ever contain cycles, deadlocks can</span></span><br><span class="line"><span class="comment">// occur in annotation code.</span></span><br><span class="line"><span class="keyword">private</span> Method  root;</span><br></pre></td></tr></table></figure></p>
+<p>那么MethodAccessor到底是个啥玩意呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** This interface provides the declaration for</span><br><span class="line">    java.lang.reflect.Method.invoke(). Each Method object is</span><br><span class="line">    configured with a (possibly dynamically-generated) class which</span><br><span class="line">    implements this interface.</span><br><span class="line">*/</span></span><br><span class="line">	<span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MethodAccessor</span> </span>&#123;</span><br><span class="line">    <span class="comment">/** Matches specification in &#123;<span class="doctag">@link</span> java.lang.reflect.Method&#125; */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object obj, Object[] args)</span></span><br><span class="line">        <span class="keyword">throws</span> IllegalArgumentException, InvocationTargetException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到MethodAccessor是一个接口，定义了invoke方法。分析其Usage可得它的具体实现类有:</p>
+<ul>
+<li>sun.reflect.DelegatingMethodAccessorImpl</li>
+<li>sun.reflect.MethodAccessorImpl</li>
+<li>sun.reflect.NativeMethodAccessorImpl</li>
+</ul>
+<p>第一次调用一个Java方法对应的Method对象的invoke()方法之前，实现调用逻辑的MethodAccessor对象还没有创建；等第一次调用时才新创建MethodAccessor并更新给root，然后调用MethodAccessor.invoke()完成反射调用：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// <span class="doctag"><span class="keyword">NOTE</span></span> that there is no synchronization used here. It is correct</span></span><br><span class="line"><span class="comment">// (though not efficient) to generate more than one MethodAccessor</span></span><br><span class="line"><span class="comment">// for a given Method. However, avoiding synchronization will</span></span><br><span class="line"><span class="comment">// probably make the implementation more scalable.</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> MethodAccessor <span class="title">acquireMethodAccessor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// First check to see if one has been created yet, and take it</span></span><br><span class="line">    <span class="comment">// if so</span></span><br><span class="line">    MethodAccessor tmp = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (root != <span class="keyword">null</span>) tmp = root.getMethodAccessor();</span><br><span class="line">    <span class="keyword">if</span> (tmp != <span class="keyword">null</span>) &#123;</span><br><span class="line">        methodAccessor = tmp;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// Otherwise fabricate one and propagate it up to the root</span></span><br><span class="line">        tmp = reflectionFactory.newMethodAccessor(<span class="keyword">this</span>);</span><br><span class="line">        setMethodAccessor(tmp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> tmp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到methodAccessor实例由reflectionFactory对象操控生成，它在AccessibleObject下的声明如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Reflection factory used by subclasses for creating field,</span></span><br><span class="line"><span class="comment">// method, and constructor accessors. Note that this is called</span></span><br><span class="line"><span class="comment">// very early in the bootstrapping process.</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> ReflectionFactory reflectionFactory =</span><br><span class="line">    AccessController.doPrivileged(</span><br><span class="line">        <span class="keyword">new</span> sun.reflect.ReflectionFactory.GetReflectionFactoryAction());</span><br></pre></td></tr></table></figure>
+<p>再研究一下sun.reflect.ReflectionFactory类的源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReflectionFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> initted = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Permission reflectionFactoryAccessPerm</span><br><span class="line">        = <span class="keyword">new</span> RuntimePermission(<span class="string">"reflectionFactoryAccess"</span>);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ReflectionFactory soleInstance = <span class="keyword">new</span> ReflectionFactory();</span><br><span class="line">    <span class="comment">// Provides access to package-private mechanisms in java.lang.reflect</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> LangReflectAccess langReflectAccess;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这里设计得非常巧妙</span></span><br><span class="line">    <span class="comment">// "Inflation" mechanism. Loading bytecodes to implement</span></span><br><span class="line">    <span class="comment">// Method.invoke() and Constructor.newInstance() currently costs</span></span><br><span class="line">    <span class="comment">// 3-4x more than an invocation via native code for the first</span></span><br><span class="line">    <span class="comment">// invocation (though subsequent invocations have been benchmarked</span></span><br><span class="line">    <span class="comment">// to be over 20x faster). Unfortunately this cost increases</span></span><br><span class="line">    <span class="comment">// startup time for certain applications that use reflection</span></span><br><span class="line">    <span class="comment">// intensively (but only once per class) to bootstrap themselves.</span></span><br><span class="line">    <span class="comment">// To avoid this penalty we reuse the existing JVM entry points</span></span><br><span class="line">    <span class="comment">// for the first few invocations of Methods and Constructors and</span></span><br><span class="line">    <span class="comment">// then switch to the bytecode-based implementations.</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// Package-private to be accessible to NativeMethodAccessorImpl</span></span><br><span class="line">    <span class="comment">// and NativeConstructorAccessorImpl</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> noInflation        = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span>     inflationThreshold = <span class="number">15</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//......</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//这是生成MethodAccessor的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MethodAccessor <span class="title">newMethodAccessor</span><span class="params">(Method method)</span> </span>&#123;</span><br><span class="line">        checkInitted();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (noInflation &amp;&amp; !ReflectUtil.isVMAnonymousClass(method.getDeclaringClass())) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> MethodAccessorGenerator().</span><br><span class="line">                generateMethod(method.getDeclaringClass(),</span><br><span class="line">                               method.getName(),</span><br><span class="line">                               method.getParameterTypes(),</span><br><span class="line">                               method.getReturnType(),</span><br><span class="line">                               method.getExceptionTypes(),</span><br><span class="line">                               method.getModifiers());</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            NativeMethodAccessorImpl acc =</span><br><span class="line">                <span class="keyword">new</span> NativeMethodAccessorImpl(method);</span><br><span class="line">            DelegatingMethodAccessorImpl res =</span><br><span class="line">                <span class="keyword">new</span> DelegatingMethodAccessorImpl(acc);</span><br><span class="line">            acc.setParent(res);</span><br><span class="line">            <span class="keyword">return</span> res;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//......</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">/** We have to defer full initialization of this class until after</span><br><span class="line">    the static initializer is run since java.lang.reflect.Method's</span><br><span class="line">    static initializer (more properly, that for</span><br><span class="line">    java.lang.reflect.AccessibleObject) causes this class's to be</span><br><span class="line">    run, before the system properties are set up. */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">checkInitted</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (initted) <span class="keyword">return</span>;</span><br><span class="line">        AccessController.doPrivileged(</span><br><span class="line">            <span class="keyword">new</span> PrivilegedAction&lt;Void&gt;() &#123;</span><br><span class="line">                <span class="function"><span class="keyword">public</span> Void <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    <span class="comment">// Tests to ensure the system properties table is fully</span></span><br><span class="line">                    <span class="comment">// initialized. This is needed because reflection code is</span></span><br><span class="line">                    <span class="comment">// called very early in the initialization process (before</span></span><br><span class="line">                    <span class="comment">// command-line arguments have been parsed and therefore</span></span><br><span class="line">                    <span class="comment">// these user-settable properties installed.) We assume that</span></span><br><span class="line">                    <span class="comment">// if System.out is non-null then the System class has been</span></span><br><span class="line">                    <span class="comment">// fully initialized and that the bulk of the startup code</span></span><br><span class="line">                    <span class="comment">// has been run.</span></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (System.out == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="comment">// java.lang.System not yet fully initialized</span></span><br><span class="line">                        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    String val = System.getProperty(<span class="string">"sun.reflect.noInflation"</span>);</span><br><span class="line">                    <span class="keyword">if</span> (val != <span class="keyword">null</span> &amp;&amp; val.equals(<span class="string">"true"</span>)) &#123;</span><br><span class="line">                        noInflation = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    val = System.getProperty(<span class="string">"sun.reflect.inflationThreshold"</span>);</span><br><span class="line">                    <span class="keyword">if</span> (val != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            inflationThreshold = Integer.parseInt(val);</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">                            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Unable to parse property sun.reflect.inflationThreshold"</span>, e);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    initted = <span class="keyword">true</span>;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>观察前面的声明部分的注释，我们可以发现一些有趣的东西。就像注释里说的，实际的MethodAccessor实现有两个版本，一个是Java版本，一个是native版本，两者各有特点。初次启动时Method.invoke()和Constructor.newInstance()方法采用native方法要比Java方法快3-4倍，而启动后native方法又要消耗额外的性能而慢于Java方法。也就是说，Java实现的版本在初始化时需要较多时间，但长久来说性能较好；native版本正好相反，启动时相对较快，但运行时间长了之后速度就比不过Java版了。这是HotSpot的优化方式带来的性能特性，同时也是许多虚拟机的共同点：跨越native边界会对优化有阻碍作用，它就像个黑箱一样让虚拟机难以分析也将其内联，于是运行时间长了之后反而是托管版本的代码更快些。</p>
+<p>为了尽可能地减少性能损耗，HotSpot JDK采用“inflation”的技巧：让Java方法在被反射调用时，开头若干次使用native版，等反射调用次数超过阈值时则生成一个专用的MethodAccessor实现类，生成其中的invoke()方法的字节码，以后对该Java方法的反射调用就会使用Java版本。 这项优化是从JDK 1.4开始的。</p>
+<p>研究ReflectionFactory.newMethodAccessor()生产MethodAccessor对象的逻辑，一开始(native版)会生产NativeMethodAccessorImpl和DelegatingMethodAccessorImpl两个对象。<br>DelegatingMethodAccessorImpl的源码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Delegates its invocation to another MethodAccessorImpl and can</span><br><span class="line">    change its delegate at run time. */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DelegatingMethodAccessorImpl</span> <span class="keyword">extends</span> <span class="title">MethodAccessorImpl</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> MethodAccessorImpl delegate;</span><br><span class="line"></span><br><span class="line">    DelegatingMethodAccessorImpl(MethodAccessorImpl delegate) &#123;</span><br><span class="line">        setDelegate(delegate);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object obj, Object[] args)</span></span><br><span class="line">        <span class="keyword">throws</span> IllegalArgumentException, InvocationTargetException</span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> delegate.invoke(obj, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setDelegate</span><span class="params">(MethodAccessorImpl delegate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.delegate = delegate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>它其实是一个中间层，方便在native版与Java版的MethodAccessor之间进行切换。<br>然后下面就是native版MethodAccessor的Java方面的声明：<br>sun.reflect.NativeMethodAccessorImpl：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Used only for the first few invocations of a Method; afterward,</span><br><span class="line">    switches to bytecode-based implementation */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NativeMethodAccessorImpl</span> <span class="keyword">extends</span> <span class="title">MethodAccessorImpl</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Method method;</span><br><span class="line">    <span class="keyword">private</span> DelegatingMethodAccessorImpl parent;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> numInvocations;</span><br><span class="line"></span><br><span class="line">    NativeMethodAccessorImpl(Method method) &#123;</span><br><span class="line">        <span class="keyword">this</span>.method = method;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object obj, Object[] args)</span></span><br><span class="line">        <span class="keyword">throws</span> IllegalArgumentException, InvocationTargetException</span><br><span class="line">    </span>&#123;</span><br><span class="line">        <span class="comment">// We can't inflate methods belonging to vm-anonymous classes because</span></span><br><span class="line">        <span class="comment">// that kind of class can't be referred to by name, hence can't be</span></span><br><span class="line">        <span class="comment">// found from the generated bytecode.</span></span><br><span class="line">        <span class="keyword">if</span> (++numInvocations &gt; ReflectionFactory.inflationThreshold()</span><br><span class="line">                &amp;&amp; !ReflectUtil.isVMAnonymousClass(method.getDeclaringClass())) &#123;</span><br><span class="line">            MethodAccessorImpl acc = (MethodAccessorImpl)</span><br><span class="line">                <span class="keyword">new</span> MethodAccessorGenerator().</span><br><span class="line">                    generateMethod(method.getDeclaringClass(),</span><br><span class="line">                                   method.getName(),</span><br><span class="line">                                   method.getParameterTypes(),</span><br><span class="line">                                   method.getReturnType(),</span><br><span class="line">                                   method.getExceptionTypes(),</span><br><span class="line">                                   method.getModifiers());</span><br><span class="line">            parent.setDelegate(acc);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> invoke0(method, obj, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setParent</span><span class="params">(DelegatingMethodAccessorImpl parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.parent = parent;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">native</span> Object <span class="title">invoke0</span><span class="params">(Method m, Object obj, Object[] args)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>每次NativeMethodAccessorImpl.invoke()方法被调用时，程序调用计数器都会增加1，看看是否超过阈值；一旦超过，则调用MethodAccessorGenerator.generateMethod()来生成Java版的MethodAccessor的实现类，并且改变DelegatingMethodAccessorImpl所引用的MethodAccessor为Java版。后续经由DelegatingMethodAccessorImpl.invoke()调用到的就是Java版的实现了。<br>到这里，我们已经追寻到native版的invoke方法在Java一侧声明的最底层 - invoke0了，下面我们将深入到HotSpot JVM中去研究其具体实现。</p>
+<h1 id="三、寻根溯源_-_在JVM层面探究invoke0方法">三、寻根溯源 - 在JVM层面探究invoke0方法</h1><p>invoke0方法是一个native方法,它在HotSpot JVM里调用JVM_InvokeMethod函数:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">JNIEXPORT jobject JNICALL <span class="title">Java_sun_reflect_NativeMethodAccessorImpl_invoke0</span></span><br><span class="line"><span class="params">(JNIEnv *env, jclass unused, jobject m, jobject obj, jobjectArray args)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> JVM_InvokeMethod(env, m, obj, args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>openjdk/hotspot/src/share/vm/prims/jvm.cpp<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">JVM_ENTRY(jobject, JVM_InvokeMethod(JNIEnv *env, jobject method, jobject obj, jobjectArray args0))</span><br><span class="line">  JVMWrapper(<span class="string">"JVM_InvokeMethod"</span>);</span><br><span class="line">  Handle method_handle;</span><br><span class="line">  <span class="keyword">if</span> (thread-&gt;stack_available((address) &amp;method_handle) &gt;= JVMInvokeMethodSlack) &#123;</span><br><span class="line">    method_handle = Handle(THREAD, JNIHandles::resolve(method));</span><br><span class="line">    <span class="function">Handle <span class="title">receiver</span><span class="params">(THREAD, JNIHandles::resolve(obj)</span>)</span>;</span><br><span class="line">    <span class="function">objArrayHandle <span class="title">args</span><span class="params">(THREAD, objArrayOop(JNIHandles::resolve(args0)</span>))</span>;</span><br><span class="line">    oop result = Reflection::invoke_method(method_handle(), receiver, args, CHECK_NULL);</span><br><span class="line">    jobject res = JNIHandles::make_local(env, result);</span><br><span class="line">    <span class="keyword">if</span> (JvmtiExport::should_post_vm_object_alloc()) &#123;</span><br><span class="line">      oop <span class="keyword">ret_t</span>ype = java_lang_reflect_Method::<span class="keyword">return_t</span>ype(method_handle());</span><br><span class="line">      assert(<span class="keyword">ret_t</span>ype != NULL, <span class="string">"sanity check: ret_type oop must not be NULL!"</span>);</span><br><span class="line">      <span class="keyword">if</span> (java_lang_Class::is_primitive(<span class="keyword">ret_t</span>ype)) &#123;</span><br><span class="line">        <span class="comment">// Only for primitive type vm allocates memory for java object.</span></span><br><span class="line">        <span class="comment">// See box() method.</span></span><br><span class="line">        JvmtiExport::post_vm_object_alloc(JavaThread::current(), result);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    THROW_0(vmSymbols::java_lang_StackOverflowError());</span><br><span class="line">  &#125;</span><br><span class="line">JVM_END</span><br></pre></td></tr></table></figure></p>
+<p>其关键部分为Reflection::invoke_method:<br>openjdk/hotspot/src/share/vm/runtime/reflection.cpp<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">oop Reflection::invoke_method(oop method_mirror, Handle receiver, objArrayHandle args, TRAPS) &#123;</span><br><span class="line">  oop mirror             = java_lang_reflect_Method::clazz(method_mirror);</span><br><span class="line">  <span class="keyword">int</span> slot               = java_lang_reflect_Method::slot(method_mirror);</span><br><span class="line">  <span class="keyword">bool</span> override          = java_lang_reflect_Method::override(method_mirror) != <span class="number">0</span>;</span><br><span class="line">  <span class="function">objArrayHandle <span class="title">ptypes</span><span class="params">(THREAD, objArrayOop(java_lang_reflect_Method::parameter_types(method_mirror)</span>))</span>;</span><br><span class="line"></span><br><span class="line">  oop <span class="keyword">return_t</span>ype_mirror = java_lang_reflect_Method::<span class="keyword">return_t</span>ype(method_mirror);</span><br><span class="line">  BasicType rtype;</span><br><span class="line">  <span class="keyword">if</span> (java_lang_Class::is_primitive(<span class="keyword">return_t</span>ype_mirror)) &#123;</span><br><span class="line">    rtype = <span class="keyword">basic_type_mirror_to_basic_t</span>ype(<span class="keyword">return_t</span>ype_mirror, CHECK_NULL);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    rtype = T_OBJECT;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">instanceKlassHandle <span class="title">klass</span><span class="params">(THREAD, java_lang_Class::as_Klass(mirror)</span>)</span>;</span><br><span class="line">  Method* m = klass-&gt;method_with_idnum(slot);</span><br><span class="line">  <span class="keyword">if</span> (m == NULL) &#123;</span><br><span class="line">    THROW_MSG_0(vmSymbols::java_lang_InternalError(), <span class="string">"invoke"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function">methodHandle <span class="title">method</span><span class="params">(THREAD, m)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> invoke(klass, method, receiver, override, ptypes, rtype, args, <span class="keyword">true</span>, THREAD);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里面又会涉及到Java的对象模型(klass和oop)，以后继续补充。(<strong>留坑</strong>)</p>
+<h1 id="四、寻根溯源_-_Java版的实现">四、寻根溯源 - Java版的实现</h1><p>Java版MethodAccessor的生成使用MethodAccessorGenerator实现，由于代码太长，这里就不贴代码了，只贴一下开头的注释：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Generator for sun.reflect.MethodAccessor and</span><br><span class="line">    sun.reflect.ConstructorAccessor objects using bytecodes to</span><br><span class="line">    implement reflection. A java.lang.reflect.Method or</span><br><span class="line">    java.lang.reflect.Constructor object can delegate its invoke or</span><br><span class="line">    newInstance method to an accessor using native code or to one</span><br><span class="line">    generated by this class. (Methods and Constructors were merged</span><br><span class="line">    together in this class to ensure maximum code sharing.) */</span></span><br></pre></td></tr></table></figure></p>
+<p>这里运用了asm动态生成字节码技术（sun.reflect.ClassFileAssembler)，原理比较复杂，后面讲到AOP要用到asm技术的时候再深入了解一下吧。</p>
+<h1 id="五、本篇总结">五、本篇总结</h1><p>简单地画了个图表示invoke方法的过程，日后再更时序图：<br><img src="http://img.blog.csdn.net/20150626130739796" alt="invoke方法的过程"></p>
+<h1 id="六、番外篇">六、番外篇</h1><p>1、MagicAccessorImpl是什么鬼？<br>原本Java的安全机制使得不同类之间不是任意信息都可见，但JDK里面专门设了个MagicAccessorImpl标记类开了个后门来允许不同类之间信息可以互相访问（由JVM管理）：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** &lt;P&gt; MagicAccessorImpl (named for parity with FieldAccessorImpl and</span><br><span class="line">    others, not because it actually implements an interface) is a</span><br><span class="line">    marker class in the hierarchy. All subclasses of this class are</span><br><span class="line">    "magically" granted access by the VM to otherwise inaccessible</span><br><span class="line">    fields and methods of other classes. It is used to hold the code</span><br><span class="line">    for dynamically-generated FieldAccessorImpl and MethodAccessorImpl</span><br><span class="line">    subclasses. (Use of the word "unsafe" was avoided in this class's</span><br><span class="line">    name to avoid confusion with &#123;<span class="doctag">@link</span> sun.misc.Unsafe&#125;.) &lt;/P&gt;</span><br><span class="line"></span><br><span class="line">    &lt;P&gt; The bug fix for 4486457 also necessitated disabling</span><br><span class="line">    verification for this class and all subclasses, as opposed to just</span><br><span class="line">    SerializationConstructorAccessorImpl and subclasses, to avoid</span><br><span class="line">    having to indicate to the VM which of these dynamically-generated</span><br><span class="line">    stub classes were known to be able to pass the verifier. &lt;/P&gt;</span><br><span class="line"></span><br><span class="line">    &lt;P&gt; Do not change the name of this class without also changing the</span><br><span class="line">    VM's code. &lt;/P&gt; */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MagicAccessorImpl</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2、@CallerSensitive注解又是什么鬼？<br>详见：<a href="http://openjdk.java.net/jeps/176" target="_blank" rel="external">JEP 176: Mechanical Checking of Caller-Sensitive Methods</a></p>
+<blockquote>
+<p>Summary: Improve the security of the JDK’s method-handle implementation by replacing the existing hand-maintained list of caller-sensitive methods with a mechanism that accurately identifies such methods and allows their callers to be discovered reliably.</p>
+</blockquote>
+<p>JDK 1.8才引进了这个注解，因此在老版本的反射实现里并没有这个玩意。这是它的定义：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * A method annotated <span class="doctag">@CallerSensitive</span> is sensitive to its calling class,</span><br><span class="line"> * via &#123;<span class="doctag">@link</span> sun.reflect.Reflection#getCallerClass Reflection.getCallerClass&#125;,</span><br><span class="line"> * or via some equivalent.</span><br><span class="line"> *</span><br><span class="line"> * <span class="doctag">@author</span> John R. Rose</span><br><span class="line"> */</span></span><br><span class="line"><span class="annotation">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="annotation">@Target</span>(&#123;METHOD&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="annotation">@interface</span> CallerSensitive &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>简而言之，用@CallerSensitive注解修饰的方法从一开始就知道具体调用它的对象，这样就不用再经过一系列的检查才能确定具体调用它的对象了。它实际上是调用sun.reflect.Reflection.getCallerClass方法。<br>Reflection类位于调用栈中的0帧位置，sun.reflect.Reflection.getCallerClass()方法返回调用栈中从0帧开始的第x帧中的类实例。该方法提供的机制可用于确定调用者类，从而实现“感知调用者（Caller Sensitive）”的行为，即允许应用程序根据调用类或调用栈中的其它类来改变其自身的行为。</p>
+<hr>
+<h1 id="Reference">Reference</h1><p>[1]<a href="http://openjdk.java.net/jeps/176" target="_blank" rel="external">JEP 176: Mechanical Checking of Caller-Sensitive Methods</a><br>[2]<a href="http://stackoverflow.com/questions/22626808/what-does-the-sun-reflect-callersensitive-annotation-mean" target="_blank" rel="external">StackOverflow上关于@CallerSensitive的回答</a><br>[3]<a href="http://rednaxelafx.iteye.com/blog/548536" target="_blank" rel="external">关于反射调用方法的一个log (R大的一篇文章)</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 sczyh30 的个人博客">sczyh30</a></p>
+        <p><span>发布时间:</span>2015年06月25日</p>
+        <!--<p><span>最后更新:</span>2016年02月26日 - 15时35分</p>-->
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Java/java-reflection-2/" title="深入解析Java反射（2） - invoke方法">http://www.sczyh30.com/posts/Java/java-reflection-2/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Java/java-reflection-2/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0" target = "_blank">知识共享-保持署名-非商用-相同方式共享 4.0 (CC BY-NC-SA 4.0)</a><br/>转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Java/jvm-metaspace/">
+                    深入探究JVM | 探秘Metaspace
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Java/jvm-memory/">
+                    深入探究JVM | Java的内存区域解析
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一、引入"><span class="toc-number">1.</span> <span class="toc-text">一、引入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二、浅析invoke过程"><span class="toc-number">2.</span> <span class="toc-text">二、浅析invoke过程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1、权限检查"><span class="toc-number">2.1.</span> <span class="toc-text">1、权限检查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2、调用MethodAccessor的invoke方法"><span class="toc-number">2.2.</span> <span class="toc-text">2、调用MethodAccessor的invoke方法</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三、寻根溯源_-_在JVM层面探究invoke0方法"><span class="toc-number">3.</span> <span class="toc-text">三、寻根溯源 - 在JVM层面探究invoke0方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#四、寻根溯源_-_Java版的实现"><span class="toc-number">4.</span> <span class="toc-text">四、寻根溯源 - Java版的实现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#五、本篇总结"><span class="toc-number">5.</span> <span class="toc-text">五、本篇总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#六、番外篇"><span class="toc-number">6.</span> <span class="toc-text">六、番外篇</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Reference"><span class="toc-number">7.</span> <span class="toc-text">Reference</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- duoshuo comment start -->
+    <div class="ds-thread" data-thread-key="posts/Java/java-reflection-2/" data-title="深入解析Java反射（2） - invoke方法" data-url="http://www.sczyh30.com/posts/Java/java-reflection-2/"></div>
+    <!-- duoshuo comment end -->
+    <!-- duoshuo public js start -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name: 'sczyh30'};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        /*ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';*/
+        ds.src = 'http://www.sczyh30.com/assets/embed.js'
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- duoshuo public js end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Java/jvm-metaspace/" title="上一篇: 深入探究JVM | 探秘Metaspace">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Java/jvm-memory/" title="下一篇: 深入探究JVM | Java的内存区域解析">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-for-expression-detail/">Scala | for表达式的底层转换</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">IO模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model Summary III</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">C++ 11 Move Sementics/Perfect Forwarding</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-2/">Inside The C++ Object Model Summary II</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model Summary I</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/amqp-rabbitmq/">消息队列中间件-RabbitMQ总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-event-dispatcher/">Android事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-01/">Android View视图绘制总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表|unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-performance-1/">对Android应用性能优化的一些总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android_summary_2/">安卓开发中的一些总结（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-copyArray/">arrayCopy方法底层探究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/os-learning-1/">操作系统相关知识杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结(性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-plan/">Web开发笔记 - 前端总结计划</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-transaction-lock/">数据库事务中的隔离级别和锁</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-advanced-a1/">高级算法总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/compiler-a01/">编译原理相关 | C++编译器总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-sql-01/">数据库知识总结（一） - 基本SQL</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2016 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30.
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

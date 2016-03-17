@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java基础技术细节总结 - 语言规范 —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!--<meta name="keywords" content="sczyh30, blog"/>-->
+  <meta name="description" content="开发莫忘基础，写业务写多了很多基础内容容易忘。这里将寻根溯源，总结Java语言规范和基础类中的一些细节问题。所有关于Java语言规范的细节问题，都可以参考  The Java® Language Specification, Java SE 8 Edition(JLS8) .
+本文将不断补充。。
+小数化为整数
+Math.floor(x)返回小于等于x的最接近整数，返回类型为double;
+Math">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java基础技术细节总结 - 语言规范">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Java/java-basic-summary-01/index.html">
+<meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:description" content="开发莫忘基础，写业务写多了很多基础内容容易忘。这里将寻根溯源，总结Java语言规范和基础类中的一些细节问题。所有关于Java语言规范的细节问题，都可以参考  The Java® Language Specification, Java SE 8 Edition(JLS8) .
+本文将不断补充。。
+小数化为整数
+Math.floor(x)返回小于等于x的最接近整数，返回类型为double;
+Math">
+<meta property="og:updated_time" content="2016-03-08T04:03:29.351Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java基础技术细节总结 - 语言规范">
+<meta name="twitter:description" content="开发莫忘基础，写业务写多了很多基础内容容易忘。这里将寻根溯源，总结Java语言规范和基础类中的一些细节问题。所有关于Java语言规范的细节问题，都可以参考  The Java® Language Specification, Java SE 8 Edition(JLS8) .
+本文将不断补充。。
+小数化为整数
+Math.floor(x)返回小于等于x的最接近整数，返回类型为double;
+Math">
+  
+    <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true
+      }
+  </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/AIO/" style="font-size: 10px;">AIO</a> <a href="/tags/AMQP/" style="font-size: 10px;">AMQP</a> <a href="/tags/Algorithm/" style="font-size: 13.75px;">Algorithm</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/C/" style="font-size: 17.5px;">C++</a> <a href="/tags/C-11/" style="font-size: 10px;">C++ 11</a> <a href="/tags/CE3/" style="font-size: 10px;">CE3</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Chemistry/" style="font-size: 11.25px;">Chemistry</a> <a href="/tags/Compiler/" style="font-size: 10px;">Compiler</a> <a href="/tags/Database/" style="font-size: 11.25px;">Database</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Engine/" style="font-size: 10px;">Engine</a> <a href="/tags/FRP/" style="font-size: 10px;">FRP</a> <a href="/tags/Functional-Programming/" style="font-size: 11.25px;">Functional Programming</a> <a href="/tags/G1/" style="font-size: 10px;">G1</a> <a href="/tags/GC/" style="font-size: 13.75px;">GC</a> <a href="/tags/GDB/" style="font-size: 10px;">GDB</a> <a href="/tags/Game/" style="font-size: 11.25px;">Game</a> <a href="/tags/HashMap/" style="font-size: 11.25px;">HashMap</a> <a href="/tags/Haskell/" style="font-size: 10px;">Haskell</a> <a href="/tags/HotSpot/" style="font-size: 11.25px;">HotSpot</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 18.75px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Klass-oop/" style="font-size: 10px;">Klass-oop</a> <a href="/tags/LinkedList/" style="font-size: 10px;">LinkedList</a> <a href="/tags/Linux/" style="font-size: 11.25px;">Linux</a> <a href="/tags/Mathematical-Logic/" style="font-size: 10px;">Mathematical Logic</a> <a href="/tags/Metaspace/" style="font-size: 10px;">Metaspace</a> <a href="/tags/Network/" style="font-size: 16.25px;">Network</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Object-Model/" style="font-size: 13.75px;">Object Model</a> <a href="/tags/RabbitMQ/" style="font-size: 10px;">RabbitMQ</a> <a href="/tags/Reflection/" style="font-size: 11.25px;">Reflection</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/STL/" style="font-size: 11.25px;">STL</a> <a href="/tags/Scala/" style="font-size: 11.25px;">Scala</a> <a href="/tags/Sort/" style="font-size: 10px;">Sort</a> <a href="/tags/Struct/" style="font-size: 10px;">Struct</a> <a href="/tags/Summary/" style="font-size: 13.75px;">Summary</a> <a href="/tags/TCP/" style="font-size: 15px;">TCP</a> <a href="/tags/UE4/" style="font-size: 10px;">UE4</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/Web/" style="font-size: 12.5px;">Web</a> <a href="/tags/event/" style="font-size: 10px;">event</a> <a href="/tags/functional/" style="font-size: 10px;">functional</a> <a href="/tags/中间件/" style="font-size: 10px;">中间件</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/内存区域/" style="font-size: 10px;">内存区域</a> <a href="/tags/前端/" style="font-size: 12.5px;">前端</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/并发/" style="font-size: 11.25px;">并发</a> <a href="/tags/开发/" style="font-size: 17.5px;">开发</a> <a href="/tags/异步/" style="font-size: 11.25px;">异步</a> <a href="/tags/性能/" style="font-size: 10px;">性能</a> <a href="/tags/性能优化/" style="font-size: 10px;">性能优化</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 11.25px;">数据库</a> <a href="/tags/架构/" style="font-size: 11.25px;">架构</a> <a href="/tags/线程安全/" style="font-size: 10px;">线程安全</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Fighting</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-java-basic-summary-01" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Java/java-basic-summary-01/" class="article-date">
+      <time datetime="2015-09-17T16:00:00.000Z" itemprop="datePublished">2015-09-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java基础技术细节总结 - 语言规范
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/基础/">基础</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>开发莫忘基础，写业务写多了很多基础内容容易忘。这里将寻根溯源，总结Java语言规范和基础类中的一些细节问题。所有关于Java语言规范的细节问题，都可以参考  <em>The Java® Language Specification, Java SE 8 Edition</em>(JLS8) .</p>
+<p>本文将不断补充。。</p>
+<h2 id="小数化为整数">小数化为整数</h2><ul>
+<li><code>Math.floor(x)</code>返回小于等于x的最接近整数，返回类型为double;</li>
+<li><code>Math.round(x)</code>相当于四舍五入，返回值为long或int;</li>
+<li><code>Math.ceil(x)</code>返回大于等于x的最接近整数，返回类型为double。</li>
+</ul>
+<h2 id="静态块与构造块">静态块与构造块</h2><p><strong>静态块</strong>：用static申明，JVM加载类时执行，仅执行一次且优先于主函数。<br><strong>构造块</strong>：类中直接用{}定义，每一次创建对象时执行，相当于往构造器最前面加上构造块的内容（很像往每个构造器那里插了内联函数，构造块就相当于内联函数）。</p>
+<p>执行顺序优先级：静态块&gt;构造块&gt;构造方法</p>
+<p>有继承关系时，执行顺序通常是：父类静态块=&gt;子类静态块=&gt;父类构造块=&gt;父类构造方法=&gt;子类构造块=&gt;子类构造方法<br>测试：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Derived();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> </span>&#123;</span><br><span class="line">        <span class="keyword">static</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"fucking =&gt; Base::static"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#123;</span><br><span class="line">            System.out.println(<span class="string">"fucking =&gt; Base::before"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Base</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"Base::Base&lt;init&gt;"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Derived</span> <span class="keyword">extends</span> <span class="title">Base</span> </span>&#123;</span><br><span class="line">        <span class="keyword">static</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"fucking =&gt; Derived::static"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#123;</span><br><span class="line">            System.out.println(<span class="string">"fucking =&gt; Derived::before"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Derived</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>();</span><br><span class="line">            System.out.println(<span class="string">"Derived::Derived&lt;init&gt;"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fucking =&gt; Base::<span class="keyword">static</span></span><br><span class="line">fucking =&gt; Derived::<span class="keyword">static</span></span><br><span class="line">fucking =&gt; Base::before</span><br><span class="line">Base::Base&lt;init&gt;</span><br><span class="line">fucking =&gt; Derived::before</span><br><span class="line">Derived::Derived&lt;init&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="运算符规则_-_加法规则">运算符规则 - 加法规则</h2><p>代码片段：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span> b1 = <span class="number">1</span>, b2 = <span class="number">2</span>, b3, b6;</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">byte</span> b4 = <span class="number">4</span>, b5 = <span class="number">6</span>;</span><br><span class="line">b6 = b4 + b5;</span><br><span class="line">b3 = (b1 + b2);</span><br><span class="line">System.out.println(b3 + b6);</span><br></pre></td></tr></table></figure></p>
+<p>结果：第四行编译错误<br>表达式的数据类型自动提升, 关于类型的自动提升，注意下面的规则。<br>①所有的byte,short,char型的值将被提升为int型；<br>②如果有一个操作数是long型，计算结果是long型；<br>③如果有一个操作数是float型，计算结果是float型；<br>④如果有一个操作数是double型，计算结果是double型；<br>而声明为final的变量会被JVM优化，因此第三句在编译时就会优化为b6 = 10，不会出现问题。</p>
+<h2 id="float_x_与“零值”比较的if语句">float x 与“零值”比较的if语句</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (fabs(x) &lt; <span class="number">0.00001f</span>)</span><br></pre></td></tr></table></figure>
+<p>float类型的还有double类型的，这些小数类型在趋近于0的时候不会直接等于零，一般都是无限趋近于0。因此不能用==来判断。应该用<code>|x-0| &lt; err</code>来判断，这里|x-0|表示绝对值，err表示限定误差<br>用程序表示就是<code>fabs(x) &lt; 0.00001f</code></p>
+<h2 id="关于try和finally">关于try和finally</h2><p>1、首先执行到try里的return，但是有finally语句还要执行，于是先执行return后面的语句，例如（x++），把要返回的值保存到局部变量。<br>2、执行finally语句的内容，其中有return语句，这时就会忽略try中的return，直接返回。</p>
+<p>返回值问题。可以认为try（或者catch）中的return语句的返回值放入线程栈的顶部：如果返回值是基本类型则顶部存放的就是值，如果返回值是引用类型，则顶部存放的是引用。finally中的return语句可以修改引用所对应的对象，无法修改基本类型。但不管是基本类型还是引用类型，都可以被finally返回的“具体值”具体值覆盖。</p>
+<h2 id="抽象类与接口">抽象类与接口</h2><p>抽象类中可以有普通成员变量，接口中没有普通成员变量。这里主要是理解接口的意义：<strong>提供功能的统一接口</strong>。<br>Java 8开始，接口可以提供默认方法(default)，可以有具体实现。</p>
+<h2 id="三目运算符的类型转换问题">三目运算符的类型转换问题</h2><p>三目运算符里的类型必须一致，比如下面的代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">int</span> i = <span class="number">40</span>;</span><br><span class="line">String as_e1 = String.valueOf(i &lt; <span class="number">50</span> ? <span class="number">233</span> : <span class="number">666</span>);</span><br><span class="line">String as_e2 = String.valueOf(i &lt; <span class="number">50</span> ? <span class="number">233</span> : <span class="number">666.0</span>);</span><br><span class="line">assertEquals(<span class="keyword">true</span>, as_e1.equals(as_e2));</span><br></pre></td></tr></table></figure></p>
+<p>结果是测试不通过，这里就涉及到三元操作符的转换规则：<br>（1）如果两个操作数无法转换，则不进行转换，返回Object对象<br>（2）如果两个操作数是正常的类型，那么按照正常情况进行类型转换，比如int =&gt; long =&gt; float =&gt; double<br>（3）如果两个操作数都是字面量数字，那么返回范围较大的类型</p>
+<h2 id="Java中自增操作符的一些陷阱">Java中自增操作符的一些陷阱</h2><p>观察下面的一段代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AutoIncTraps</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            count = count++;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码的打印结果是0，也就是说自增在这里并没有什么卵用，这和C++是不一样的。反编译一下看一下字节码（main函数部分）：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="title">main</span><span class="params">([Ljava/lang/String;)</span>V</span><br><span class="line">   L0</span><br><span class="line">    LINENUMBER 6 L0</span><br><span class="line">    ICONST_0</span><br><span class="line">    ISTORE 1</span><br><span class="line">   L1</span><br><span class="line">    LINENUMBER 7 L1</span><br><span class="line">    ICONST_0</span><br><span class="line">    ISTORE 2</span><br><span class="line">   L2</span><br><span class="line">   FRAME APPEND [I I]</span><br><span class="line">    ILOAD 2</span><br><span class="line">    BIPUSH 10</span><br><span class="line">    IF_ICMPGE L3</span><br><span class="line">   L4</span><br><span class="line">    LINENUMBER 8 L4</span><br><span class="line">    ILOAD 1</span><br><span class="line">    IINC 1 1</span><br><span class="line">    ISTORE 1</span><br><span class="line">   L5</span><br><span class="line">    LINENUMBER 7 L5</span><br><span class="line">    IINC 2 1</span><br><span class="line">    GOTO L2</span><br><span class="line">   L3</span><br><span class="line">    LINENUMBER 10 L3</span><br><span class="line">   FRAME CHOP 1</span><br><span class="line">    GETSTATIC java/lang/System.out : Ljava/io/PrintStream</span>;</span><br><span class="line">    ILOAD <span class="number">1</span></span><br><span class="line">    INVOKEVIRTUAL java/io/PrintStream.println (I)V</span><br><span class="line">   L6</span><br><span class="line">    LINENUMBER <span class="number">11</span> L6</span><br><span class="line">    RETURN</span><br></pre></td></tr></table></figure></p>
+<p>这里相当于创建了一个局部变量存放count++，但没有返回，因此count相当于没变。看了字节码后可能没感觉，写一下编译器处理后的代码吧：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AutoIncTraps</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AutoIncTraps</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; ++i) &#123;</span><br><span class="line">            <span class="keyword">int</span> var3 = count + <span class="number">1</span>;</span><br><span class="line">            count = count;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        System.out.println(count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>总结一下这里count的处理流程：<br>（1）JVM把count值（其值是0）拷贝到临时变量区。<br>（2）count值加1，这时候count的值是1。<br>（3）返回临时变量区的值，注意这个值是0，没有修改过。<br>（4）返回值赋值给count，此时count值被重置成0。<br>单纯看这一个的字节码比较抽象，来看一下这三句的字节码，比较一下更容易理解：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">count = ++count;</span><br><span class="line">count = count++;</span><br><span class="line">count++;</span><br></pre></td></tr></table></figure></p>
+<p>字节码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> L4</span><br><span class="line"> LINENUMBER <span class="number">9</span> L4</span><br><span class="line"> IINC <span class="number">1</span> <span class="number">1</span></span><br><span class="line"> ILOAD <span class="number">1</span></span><br><span class="line"> ISTORE <span class="number">1</span></span><br><span class="line">L5</span><br><span class="line"> LINENUMBER <span class="number">10</span> L5</span><br><span class="line"> ILOAD <span class="number">1</span></span><br><span class="line"> IINC <span class="number">1</span> <span class="number">1</span></span><br><span class="line"> ISTORE <span class="number">1</span></span><br><span class="line">L6</span><br><span class="line"> LINENUMBER <span class="number">11</span> L6</span><br><span class="line"> IINC <span class="number">1</span> <span class="number">1</span></span><br></pre></td></tr></table></figure></p>
+<p>另外，<strong>自增操作不是原子操作</strong>，在后边总结并发编程的时候会涉及到。</p>
+<h2 id="instanceof操作符的注意事项">instanceof操作符的注意事项</h2><p>instanceof操作符左右两边的操作数必须有继承或派生关系，否则不会编译成功。<br>因此，instanceof操作符只能用于对象，不能用于基本类型（不会自动拆包）。<br>下面是一些典型的例子：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FuckingIOF</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;Object&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        list.add(<span class="string">"String"</span> <span class="keyword">instanceof</span> Object);</span><br><span class="line">        list.add(<span class="keyword">new</span> String() <span class="keyword">instanceof</span> Object);</span><br><span class="line">        list.add(<span class="keyword">new</span> Object() <span class="keyword">instanceof</span> String);</span><br><span class="line">        <span class="comment">//list.add('a' instanceof Character); //此句会编译错误</span></span><br><span class="line">        list.add(<span class="keyword">null</span> <span class="keyword">instanceof</span> String);</span><br><span class="line">        list.add((String)<span class="keyword">null</span> <span class="keyword">instanceof</span> String);</span><br><span class="line">        list.add(<span class="keyword">null</span> <span class="keyword">instanceof</span> Object);</span><br><span class="line">        list.add(<span class="keyword">new</span> Generic&lt;String&gt;().isDataInstance(<span class="string">""</span>));</span><br><span class="line">        list.forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Generic</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isDataInstance</span><span class="params">(T t)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t <span class="keyword">instanceof</span> Date;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行结果和分析：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">true</span> =&gt; String是Object的子类</span><br><span class="line"><span class="keyword">true</span> =&gt; 同上</span><br><span class="line"><span class="keyword">false</span> =&gt; 同上</span><br><span class="line"><span class="keyword">false</span> =&gt; Java语言规范规定<span class="keyword">null</span> <span class="keyword">instanceof</span> ? 都是<span class="keyword">false</span></span><br><span class="line"><span class="keyword">false</span> =&gt; 同上，无论怎么转换还是<span class="keyword">null</span></span><br><span class="line"><span class="keyword">false</span> =&gt; 同上</span><br><span class="line"><span class="keyword">false</span> =&gt; 由于Java泛型在编译时会进行类型擦除，因此这里相当于Object <span class="keyword">instanceof</span> Date了</span><br></pre></td></tr></table></figure></p>
+<h2 id="类的继承中构造器的调用">类的继承中构造器的调用</h2><p>如果父类没有无参构造器，那么子类在调用构造器的时候就要显示地调用父类的构造器(super)。<br>比如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">fucker</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Base</span> </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> String s;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Base</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.s = str;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Derived</span> <span class="keyword">extends</span> <span class="title">Base</span> </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> String Did;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Derived</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">           <span class="comment">//super(str);</span></span><br><span class="line">            <span class="keyword">this</span>.Did = str;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>此程序若不显示调用父类构造器则会无法编译。此问题在IDE中会自动提示。</p>
+<h2 id="诡异的NaN类型">诡异的NaN类型</h2><p>根据 <em>JLS8 4.2.3</em>，对NaN有以下规定：</p>
+<ul>
+<li>The numerical comparison operators &lt; , &lt;= , &gt; , and &gt;= return false if either or both operands are NaN (§15.20.1).</li>
+<li>The equality operator == returns false if either operand is NaN.</li>
+<li>In particular, (x<y) =="!(x">=y) will be false if x or y is NaN.</y)></li>
+<li>The inequality operator != returns true if either operand is NaN (§15.21.1).</li>
+<li>In particular, x!=x is true if and only if x is NaN.</li>
+</ul>
+<p>注意到<code>Double.NaN == Double.NaN</code>返回<strong>false</strong>，这其实是遵循了IEEE 754 standard。NaN代表一个非正常的数（比如除以0得到的数），其定义为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * A constant holding a Not-a-Number (NaN) value of type</span><br><span class="line"> * &#123;<span class="doctag">@code</span> double&#125;. It is equivalent to the value returned by</span><br><span class="line"> * &#123;<span class="doctag">@code</span> Double.longBitsToDouble(0x7ff8000000000000L)&#125;.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">double</span> NaN = <span class="number">0.0</span>d / <span class="number">0.0</span>;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Integer类的静态缓存/valueOf和parseInt的对比">Integer类的静态缓存/valueOf和parseInt的对比</h2><p>这个问题是在StackOverflow上看到的。以下三个表达式：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(Integer.valueOf(<span class="string">"127"</span>) == Integer.valueOf(<span class="string">"127"</span>));</span><br><span class="line">System.out.println(Integer.valueOf(<span class="string">"128"</span>) == Integer.valueOf(<span class="string">"128"</span>));</span><br><span class="line">System.out.println(Integer.parseInt(<span class="string">"128"</span>) == Integer.valueOf(<span class="string">"128"</span>));</span><br></pre></td></tr></table></figure></p>
+<p>结果分别是：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="keyword">true</span></span><br></pre></td></tr></table></figure></p>
+<p>为什么是这样的结果呢？我们看一下valueOf方法的源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Integer <span class="title">valueOf</span><span class="params">(String s)</span> <span class="keyword">throws</span> NumberFormatException </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Integer.valueOf(parseInt(s, <span class="number">10</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Integer <span class="title">valueOf</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)</span><br><span class="line">        <span class="keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Integer(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到<code>valueOf</code>方法是在<code>parseInt</code>方法的基础上加了一个读取缓存的过程。我们再看一下IntegerCache类的源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * Cache to support the object identity semantics of autoboxing for values between</span><br><span class="line"> * -128 and 127 (inclusive) as required by JLS.</span><br><span class="line"> *</span><br><span class="line"> * The cache is initialized on first usage.  The size of the cache</span><br><span class="line"> * may be controlled by the &#123;<span class="doctag">@code</span> -XX:AutoBoxCacheMax=&lt;size&gt;&#125; option.</span><br><span class="line"> * During VM initialization, java.lang.Integer.IntegerCache.high property</span><br><span class="line"> * may be set and saved in the private system properties in the</span><br><span class="line"> * sun.misc.VM class.</span><br><span class="line"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">IntegerCache</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> low = -<span class="number">128</span>;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> high;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> Integer cache[];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="comment">// high value may be configured by property</span></span><br><span class="line">        <span class="keyword">int</span> h = <span class="number">127</span>;</span><br><span class="line">        String integerCacheHighPropValue =</span><br><span class="line">            sun.misc.VM.getSavedProperty(<span class="string">"java.lang.Integer.IntegerCache.high"</span>);</span><br><span class="line">        <span class="keyword">if</span> (integerCacheHighPropValue != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">int</span> i = parseInt(integerCacheHighPropValue);</span><br><span class="line">                i = Math.max(i, <span class="number">127</span>);</span><br><span class="line">                <span class="comment">// Maximum array size is Integer.MAX_VALUE</span></span><br><span class="line">                h = Math.min(i, Integer.MAX_VALUE - (-low) -<span class="number">1</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span>( NumberFormatException nfe) &#123;</span><br><span class="line">                <span class="comment">// If the property cannot be parsed into an int, ignore it.</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        high = h;</span><br><span class="line"></span><br><span class="line">        cache = <span class="keyword">new</span> Integer[(high - low) + <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">int</span> j = low;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; cache.length; k++)</span><br><span class="line">            cache[k] = <span class="keyword">new</span> Integer(j++);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// range [-128, 127] must be interned (JLS7 5.1.7)</span></span><br><span class="line">        <span class="keyword">assert</span> IntegerCache.high &gt;= <span class="number">127</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">IntegerCache</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>原来JVM会缓存一部分的Integer对象（默认范围为<code>-128 - 127</code>），在通过<code>valueOf</code>获取Integer对象时，如果是缓存范围内的就直接返回缓存的Integer对象，否则就会new一个Integer对象。返回的上限可通过JVM的参数<code>-XX:AutoBoxCacheMax=&lt;size&gt;</code>设置，而且不能小于127（参照JLS 5.1.7）。这样我们就可以解释<code>Integer.valueOf(&quot;127&quot;) == Integer.valueOf(&quot;127&quot;)</code>为什么是true了，因为它们获取的都是同一个缓存对象，而默认情况下<code>Integer.valueOf(&quot;128&quot;) == Integer.valueOf(&quot;128&quot;)</code>等效于<code>new Integer(128) == new Integer(128)</code>,结果自然是false。<br>我们再来看一下<code>parseInt</code>方法的原型，它返回一个原生int值：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">parseInt</span><span class="params">(String s)</span> <span class="keyword">throws</span> NumberFormatException</span></span><br></pre></td></tr></table></figure></p>
+<p>由于一个原生值与一个包装值比较时，包装类型会自动拆包，因此<code>Integer.parseInt(&quot;128&quot;) == Integer.valueOf(&quot;128&quot;)</code>就等效于<code>128 == 128</code>，结果自然是true。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 sczyh30 的个人博客">sczyh30</a></p>
+        <p><span>发布时间:</span>2015年09月18日</p>
+        <!--<p><span>最后更新:</span>2016年03月08日 - 12时03分</p>-->
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Java/java-basic-summary-01/" title="Java基础技术细节总结 - 语言规范">http://www.sczyh30.com/posts/Java/java-basic-summary-01/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Java/java-basic-summary-01/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0" target = "_blank">知识共享-保持署名-非商用-相同方式共享 4.0 (CC BY-NC-SA 4.0)</a><br/>转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Java/java-hashcode-equal/">
+                    hashCode方法及equals方法的规范
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Develop/android_summary_2/">
+                    安卓开发中的一些总结（2）
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#小数化为整数"><span class="toc-number">1.</span> <span class="toc-text">小数化为整数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#静态块与构造块"><span class="toc-number">2.</span> <span class="toc-text">静态块与构造块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运算符规则_-_加法规则"><span class="toc-number">3.</span> <span class="toc-text">运算符规则 - 加法规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#float_x_与“零值”比较的if语句"><span class="toc-number">4.</span> <span class="toc-text">float x 与“零值”比较的if语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关于try和finally"><span class="toc-number">5.</span> <span class="toc-text">关于try和finally</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#抽象类与接口"><span class="toc-number">6.</span> <span class="toc-text">抽象类与接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三目运算符的类型转换问题"><span class="toc-number">7.</span> <span class="toc-text">三目运算符的类型转换问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java中自增操作符的一些陷阱"><span class="toc-number">8.</span> <span class="toc-text">Java中自增操作符的一些陷阱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#instanceof操作符的注意事项"><span class="toc-number">9.</span> <span class="toc-text">instanceof操作符的注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#类的继承中构造器的调用"><span class="toc-number">10.</span> <span class="toc-text">类的继承中构造器的调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#诡异的NaN类型"><span class="toc-number">11.</span> <span class="toc-text">诡异的NaN类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Integer类的静态缓存/valueOf和parseInt的对比"><span class="toc-number">12.</span> <span class="toc-text">Integer类的静态缓存/valueOf和parseInt的对比</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- duoshuo comment start -->
+    <div class="ds-thread" data-thread-key="posts/Java/java-basic-summary-01/" data-title="Java基础技术细节总结 - 语言规范" data-url="http://www.sczyh30.com/posts/Java/java-basic-summary-01/"></div>
+    <!-- duoshuo comment end -->
+    <!-- duoshuo public js start -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name: 'sczyh30'};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        /*ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';*/
+        ds.src = 'http://www.sczyh30.com/assets/embed.js'
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- duoshuo public js end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Java/java-hashcode-equal/" title="上一篇: hashCode方法及equals方法的规范">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Develop/android_summary_2/" title="下一篇: 安卓开发中的一些总结（2）">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-for-expression-detail/">Scala | for表达式的底层转换</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">IO模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model Summary III</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">C++ 11 Move Sementics/Perfect Forwarding</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-2/">Inside The C++ Object Model Summary II</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model Summary I</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/amqp-rabbitmq/">消息队列中间件-RabbitMQ总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-event-dispatcher/">Android事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-01/">Android View视图绘制总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表|unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-performance-1/">对Android应用性能优化的一些总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android_summary_2/">安卓开发中的一些总结（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-copyArray/">arrayCopy方法底层探究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/os-learning-1/">操作系统相关知识杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结(性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-plan/">Web开发笔记 - 前端总结计划</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-transaction-lock/">数据库事务中的隔离级别和锁</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-advanced-a1/">高级算法总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/compiler-a01/">编译原理相关 | C++编译器总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-sql-01/">数据库知识总结（一） - 基本SQL</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2016 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30.
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

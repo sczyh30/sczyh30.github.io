@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>深入探究JVM | klass-oop对象模型研究 —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!--<meta name="keywords" content="sczyh30, blog"/>-->
+  <meta name="description" content="之前理解有些偏差，因此最近重新写了这篇文章。
+最近对JVM兴趣大增（其实是想回归C艹的怀抱了）~当我们在写Java代码的时候，我们会面对着无数个接口，类，对象和方法。但我们有木有想过，Java中的这些对象、类和方法，在HotSpot JVM中的结构又是怎么样呢？HotSpot JVM底层都是C++实现的，那么Java的对象模型与C++对象模型之间又有什么关系呢？今天就来分析一下HotSpot JV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入探究JVM | klass-oop对象模型研究">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Java/jvm-klass-oop/index.html">
+<meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:description" content="之前理解有些偏差，因此最近重新写了这篇文章。
+最近对JVM兴趣大增（其实是想回归C艹的怀抱了）~当我们在写Java代码的时候，我们会面对着无数个接口，类，对象和方法。但我们有木有想过，Java中的这些对象、类和方法，在HotSpot JVM中的结构又是怎么样呢？HotSpot JVM底层都是C++实现的，那么Java的对象模型与C++对象模型之间又有什么关系呢？今天就来分析一下HotSpot JV">
+<meta property="og:updated_time" content="2016-03-17T14:32:24.922Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入探究JVM | klass-oop对象模型研究">
+<meta name="twitter:description" content="之前理解有些偏差，因此最近重新写了这篇文章。
+最近对JVM兴趣大增（其实是想回归C艹的怀抱了）~当我们在写Java代码的时候，我们会面对着无数个接口，类，对象和方法。但我们有木有想过，Java中的这些对象、类和方法，在HotSpot JVM中的结构又是怎么样呢？HotSpot JVM底层都是C++实现的，那么Java的对象模型与C++对象模型之间又有什么关系呢？今天就来分析一下HotSpot JV">
+  
+    <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true
+      }
+  </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/AIO/" style="font-size: 10px;">AIO</a> <a href="/tags/AMQP/" style="font-size: 10px;">AMQP</a> <a href="/tags/Algorithm/" style="font-size: 13.75px;">Algorithm</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/C/" style="font-size: 17.5px;">C++</a> <a href="/tags/C-11/" style="font-size: 10px;">C++ 11</a> <a href="/tags/CE3/" style="font-size: 10px;">CE3</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Chemistry/" style="font-size: 11.25px;">Chemistry</a> <a href="/tags/Compiler/" style="font-size: 10px;">Compiler</a> <a href="/tags/Database/" style="font-size: 11.25px;">Database</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Engine/" style="font-size: 10px;">Engine</a> <a href="/tags/FRP/" style="font-size: 10px;">FRP</a> <a href="/tags/Functional-Programming/" style="font-size: 11.25px;">Functional Programming</a> <a href="/tags/G1/" style="font-size: 10px;">G1</a> <a href="/tags/GC/" style="font-size: 13.75px;">GC</a> <a href="/tags/GDB/" style="font-size: 10px;">GDB</a> <a href="/tags/Game/" style="font-size: 11.25px;">Game</a> <a href="/tags/HashMap/" style="font-size: 11.25px;">HashMap</a> <a href="/tags/Haskell/" style="font-size: 10px;">Haskell</a> <a href="/tags/HotSpot/" style="font-size: 11.25px;">HotSpot</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 18.75px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Klass-oop/" style="font-size: 10px;">Klass-oop</a> <a href="/tags/LinkedList/" style="font-size: 10px;">LinkedList</a> <a href="/tags/Linux/" style="font-size: 11.25px;">Linux</a> <a href="/tags/Mathematical-Logic/" style="font-size: 10px;">Mathematical Logic</a> <a href="/tags/Metaspace/" style="font-size: 10px;">Metaspace</a> <a href="/tags/Network/" style="font-size: 16.25px;">Network</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Object-Model/" style="font-size: 13.75px;">Object Model</a> <a href="/tags/RabbitMQ/" style="font-size: 10px;">RabbitMQ</a> <a href="/tags/Reflection/" style="font-size: 11.25px;">Reflection</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/STL/" style="font-size: 11.25px;">STL</a> <a href="/tags/Scala/" style="font-size: 11.25px;">Scala</a> <a href="/tags/Sort/" style="font-size: 10px;">Sort</a> <a href="/tags/Struct/" style="font-size: 10px;">Struct</a> <a href="/tags/Summary/" style="font-size: 13.75px;">Summary</a> <a href="/tags/TCP/" style="font-size: 15px;">TCP</a> <a href="/tags/UE4/" style="font-size: 10px;">UE4</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/Web/" style="font-size: 12.5px;">Web</a> <a href="/tags/event/" style="font-size: 10px;">event</a> <a href="/tags/functional/" style="font-size: 10px;">functional</a> <a href="/tags/中间件/" style="font-size: 10px;">中间件</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/内存区域/" style="font-size: 10px;">内存区域</a> <a href="/tags/前端/" style="font-size: 12.5px;">前端</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/并发/" style="font-size: 11.25px;">并发</a> <a href="/tags/开发/" style="font-size: 17.5px;">开发</a> <a href="/tags/异步/" style="font-size: 11.25px;">异步</a> <a href="/tags/性能/" style="font-size: 10px;">性能</a> <a href="/tags/性能优化/" style="font-size: 10px;">性能优化</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 11.25px;">数据库</a> <a href="/tags/架构/" style="font-size: 11.25px;">架构</a> <a href="/tags/线程安全/" style="font-size: 10px;">线程安全</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Fighting</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-jvm-klass-oop" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Java/jvm-klass-oop/" class="article-date">
+      <time datetime="2016-01-05T16:00:00.000Z" itemprop="datePublished">2016-01-06</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      深入探究JVM | klass-oop对象模型研究
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Klass-oop/">Klass-oop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Object-Model/">Object Model</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><em>之前理解有些偏差，因此最近重新写了这篇文章。</em></p>
+<p>最近对JVM兴趣大增（其实是想回归C艹的怀抱了）~<br>当我们在写Java代码的时候，我们会面对着无数个接口，类，对象和方法。但我们有木有想过，Java中的这些对象、类和方法，在HotSpot JVM中的结构又是怎么样呢？HotSpot JVM底层都是C++实现的，那么Java的对象模型与C++对象模型之间又有什么关系呢？今天就来分析一下HotSpot JVM中的对象模型：oop-klass model，它们的源码位于openjdk-8/openjdk/hotspot/src/share/vm/oops文件夹内。</p>
+<p><strong>注：本文对应的OpenJDK版本为openjdk-8u76-b02。对于不同的版本(openjdk-7, openjdk-8, openjdk-9)，其对应的HotSpot JVM的对象模型有些许差别（7和8的差别比较大）</strong></p>
+<hr>
+<h1 id="oop-klass_model概述">oop-klass model概述</h1><p>HotSpot JVM并没有根据Java实例对象直接通过虚拟机映射到新建的C++对象，而是设计了一个oop-klass model。</p>
+<p>当时第一次看到oop，我的第一反应就是Object-oriented programming，其实这里的oop指的是Ordinary Object Pointer（普通对象指针），它用来表示对象的实例信息，看起来像个指针实际上是藏在指针里的对象。而klass则是Java中的<code>java.lang.Class</code>类在JVM Native层里的对等体，用来描述Java类，包含<strong>元数据和方法信息</strong>。</p>
+<p>那么为何要设计这样一个一分为二的对象模型呢？这是因为HotSopt JVM的设计者不想让每个对象中都含有一个vtable（虚函数表），所以就把对象模型拆成klass和oop，其中oop中不含有任何虚函数，而klass就含有虚函数表，可以进行method dispatch。这个模型其实是参照的<strong>Strongtalk VM</strong>底层的对象模型。</p>
+<h1 id="体系总览">体系总览</h1><p>在<code>oopsHierarchy.hpp</code>里定义了oop和klass各自的体系。<br>这是oop的体系：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">class</span> oopDesc*                            oop;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">class</span>   instanceOopDesc*            instanceOop;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">class</span>   arrayOopDesc*                    arrayOop;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">class</span>     objArrayOopDesc*            objArrayOop;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">class</span>     typeArrayOopDesc*            typeArrayOop;</span><br></pre></td></tr></table></figure></p>
+<p>注意由于Java 8引入了Metaspace，OpenJDK 1.8里对象模型的实现与1.7有很大的不同。原先存于PermGen的数据都移至Metaspace，因此它们的C++类型都继承于<code>MetaspaceObj</code>类(定义见<code>vm/memory/allocation.hpp</code>)，表示元空间的数据。</p>
+<p>这是元数据的体系：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The metadata hierarchy is separate from the oop hierarchy</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//      class MetaspaceObj</span></span><br><span class="line"><span class="keyword">class</span>   ConstMethod;</span><br><span class="line"><span class="keyword">class</span>   ConstantPoolCache;</span><br><span class="line"><span class="keyword">class</span>   MethodData;</span><br><span class="line"><span class="comment">//      class Metadata</span></span><br><span class="line"><span class="keyword">class</span>   Method;</span><br><span class="line"><span class="keyword">class</span>   ConstantPool;</span><br><span class="line"><span class="comment">//      class CHeapObj</span></span><br><span class="line"><span class="keyword">class</span>   CompiledICHolder;</span><br></pre></td></tr></table></figure></p>
+<p>这是klass的体系：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The klass hierarchy is separate from the oop hierarchy.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> Klass;</span><br><span class="line"><span class="keyword">class</span>   InstanceKlass;</span><br><span class="line"><span class="keyword">class</span>     InstanceMirrorKlass;</span><br><span class="line"><span class="keyword">class</span>     InstanceClassLoaderKlass;</span><br><span class="line"><span class="keyword">class</span>     InstanceRefKlass;</span><br><span class="line"><span class="keyword">class</span>   ArrayKlass;</span><br><span class="line"><span class="keyword">class</span>     ObjArrayKlass;</span><br><span class="line"><span class="keyword">class</span>     TypeArrayKlass;</span><br></pre></td></tr></table></figure></p>
+<p>注意klass代表元数据，继承自<code>Metadata</code>类，因此像<code>Method</code>、<code>ConstantPool</code>都会以成员变量（或指针）的形式存在于klass体系中。</p>
+<p>以下是JDK 1.7中的类在JDK 1.8中的存在形式：</p>
+<ul>
+<li><code>klassOop</code>-&gt;<code>Klass*</code></li>
+<li><code>klassKlass</code>不再需要</li>
+<li><code>methodOop</code>-&gt;<code>Method*</code></li>
+<li><code>methodDataOop</code>-&gt; <code>MethodData*</code></li>
+<li><code>constMethodOop</code> -&gt; <code>ConstMethod*</code></li>
+<li><code>constantPoolOop</code> -&gt; <code>ConstantPool*</code></li>
+<li><code>constantPoolCacheOop</code> -&gt; <code>ConstantPoolCache*</code></li>
+</ul>
+<h1 id="klass">klass</h1><p>一个Klass对象代表一个类的元数据（相当于<code>java.lang.Class</code>对象）。它提供：</p>
+<ul>
+<li>language level class object (method dictionary etc.)</li>
+<li>provide vm dispatch behavior for the object</li>
+</ul>
+<p>所有的函数都被整合到一个C++类中。</p>
+<p>Klass对象的继承关系：<code>xxxKlass &lt;:&lt; Klass &lt;:&lt; Metadata &lt;:&lt; MetaspaceObj</code></p>
+<p>klass对象的布局如下：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//  Klass layout:</span></span><br><span class="line"><span class="comment">//    [C++ vtbl ptr  ] (contained in Metadata)</span></span><br><span class="line"><span class="comment">//    [layout_helper ]</span></span><br><span class="line"><span class="comment">//    [super_check_offset   ] for fast subtype checks</span></span><br><span class="line"><span class="comment">//    [name          ]</span></span><br><span class="line"><span class="comment">//    [secondary_super_cache] for fast subtype checks</span></span><br><span class="line"><span class="comment">//    [secondary_supers     ] array of 2ndary supertypes</span></span><br><span class="line"><span class="comment">//    [primary_supers 0]</span></span><br><span class="line"><span class="comment">//    [primary_supers 1]</span></span><br><span class="line"><span class="comment">//    [primary_supers 2]</span></span><br><span class="line"><span class="comment">//    ...</span></span><br><span class="line"><span class="comment">//    [primary_supers 7]</span></span><br><span class="line"><span class="comment">//    [java_mirror   ]</span></span><br><span class="line"><span class="comment">//    [super         ]</span></span><br><span class="line"><span class="comment">//    [subklass      ] first subclass</span></span><br><span class="line"><span class="comment">//    [next_sibling  ] link to chain additional subklasses</span></span><br><span class="line"><span class="comment">//    [next_link     ]</span></span><br><span class="line"><span class="comment">//    [class_loader_data]</span></span><br><span class="line"><span class="comment">//    [modifier_flags]</span></span><br><span class="line"><span class="comment">//    [access_flags  ]</span></span><br><span class="line"><span class="comment">//    [last_biased_lock_bulk_revocation_time] (64 bits)</span></span><br><span class="line"><span class="comment">//    [prototype_header]</span></span><br><span class="line"><span class="comment">//    [biased_lock_revocation_count]</span></span><br><span class="line"><span class="comment">//    [_modified_oops]</span></span><br><span class="line"><span class="comment">//    [_accumulated_modified_oops]</span></span><br><span class="line"><span class="comment">//    [trace_id]</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="oop">oop</h1><p><code>oop</code>类型其实是<code>oopDesc*</code>。在Java程序运行的过程中，每创建一个新的对象，在JVM内部就会相应地创建一个对应类型的oop对象。各种oop类的共同基类为<code>oopDesc</code>类。</p>
+<p>JVM内部，一个Java对象在内存中的布局可以连续分成两部分：<code>instanceOopDesc</code>和实例数据。<code>instanceOopDesc</code>和<code>arrayOopDesc</code>又称为对象头。</p>
+<p><code>instanceOopDesc</code>对象头包含两部分信息：<strong>Mark Word</strong> 和 <strong>元数据指针</strong>(<code>Klass*</code>)：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">volatile</span> markOop  _mark;</span><br><span class="line">  <span class="keyword">union</span> _metadata &#123;</span><br><span class="line">    Klass*      _klass;</span><br><span class="line">    narrowKlass _compressed_klass;</span><br><span class="line">  &#125; _metadata;</span><br></pre></td></tr></table></figure></p>
+<p>分别来看一下：</p>
+<ul>
+<li><strong>Mark Word</strong>：instanceOopDesc中的<code>_mark</code>成员。它用于存储对象的运行时记录信息，如哈希值、GC分代年龄(Age)、锁状态标志（偏向锁、轻量级锁、重量级锁）、线程持有的锁、偏向线程ID、偏向时间戳等。Mark Word允许压缩</li>
+<li><strong>元数据指针</strong>：instanceOopDesc中的<code>_metadata</code>成员，它是联合体，可以表示未压缩的Klass指针(<code>_klass</code>)和压缩的Klass指针。对应的klass指针指向一个存储类的元数据的Klass对象</li>
+</ul>
+<p>下面我们来分析一下，执行<code>new A()</code>的时候，JVM Native里发生了什么。首先，如果这个类没有被加载过，JVM就会进行类的加载，并在JVM内部创建一个<strong>instanceKlass</strong>对象表示这个类的运行时元数据（相当于Java层的<code>Class</code>对象。到初始化的时候（执行<code>invokespecial A::&lt;init&gt;</code>），JVM就会创建一个<br><strong>instanceOopDesc</strong>对象表示这个对象的实例，然后进行Mark Word的填充，将元数据指针指向Klass对象，并填充实例变量。</p>
+<p>根据对JVM的理解，我们可以想到，元数据——<strong>instanceKlass</strong>对象会存在元空间（方法区），而对象实例——<strong>instanceOopDesc</strong>会存在Java堆。Java虚拟机栈中会存有这个对象实例的引用。</p>
+<p><em>未完待续。。。</em></p>
+<hr>
+<h1 id="参考文档">参考文档</h1><ul>
+<li><a href="http://openjdk.java.net/groups/hotspot/docs/StorageManagement.html" target="_blank" rel="external">HotSpot Docs - Storage Management</a></li>
+<li><a href="https://code.google.com/archive/p/strongtalk/wikis/VMTypesForSmalltalkObjects.wiki" target="_blank" rel="external">Strongtalk - VMTypesForSmalltalkObjects.wiki（讲述了”oop”的历史）</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 sczyh30 的个人博客">sczyh30</a></p>
+        <p><span>发布时间:</span>2016年01月06日</p>
+        <!--<p><span>最后更新:</span>2016年03月17日 - 22时32分</p>-->
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Java/jvm-klass-oop/" title="深入探究JVM | klass-oop对象模型研究">http://www.sczyh30.com/posts/Java/jvm-klass-oop/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Java/jvm-klass-oop/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0" target = "_blank">知识共享-保持署名-非商用-相同方式共享 4.0 (CC BY-NC-SA 4.0)</a><br/>转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Network/network-basis/">
+                    计算机网络相关知识总结
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/C-C/inside-cpp-object-model-summary-3/">
+                    Inside The C++ Object Model Summary III
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#oop-klass_model概述"><span class="toc-number">1.</span> <span class="toc-text">oop-klass model概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#体系总览"><span class="toc-number">2.</span> <span class="toc-text">体系总览</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#klass"><span class="toc-number">3.</span> <span class="toc-text">klass</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#oop"><span class="toc-number">4.</span> <span class="toc-text">oop</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考文档"><span class="toc-number">5.</span> <span class="toc-text">参考文档</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- duoshuo comment start -->
+    <div class="ds-thread" data-thread-key="posts/Java/jvm-klass-oop/" data-title="深入探究JVM | klass-oop对象模型研究" data-url="http://www.sczyh30.com/posts/Java/jvm-klass-oop/"></div>
+    <!-- duoshuo comment end -->
+    <!-- duoshuo public js start -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name: 'sczyh30'};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        /*ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';*/
+        ds.src = 'http://www.sczyh30.com/assets/embed.js'
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- duoshuo public js end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Network/network-basis/" title="上一篇: 计算机网络相关知识总结">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/C-C/inside-cpp-object-model-summary-3/" title="下一篇: Inside The C++ Object Model Summary III">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-for-expression-detail/">Scala | for表达式的底层转换</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">IO模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model Summary III</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">C++ 11 Move Sementics/Perfect Forwarding</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-2/">Inside The C++ Object Model Summary II</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model Summary I</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/amqp-rabbitmq/">消息队列中间件-RabbitMQ总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-event-dispatcher/">Android事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-01/">Android View视图绘制总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表|unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-performance-1/">对Android应用性能优化的一些总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android_summary_2/">安卓开发中的一些总结（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-copyArray/">arrayCopy方法底层探究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/os-learning-1/">操作系统相关知识杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结(性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-plan/">Web开发笔记 - 前端总结计划</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-transaction-lock/">数据库事务中的隔离级别和锁</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-advanced-a1/">高级算法总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/compiler-a01/">编译原理相关 | C++编译器总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-sql-01/">数据库知识总结（一） - 基本SQL</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2016 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30.
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

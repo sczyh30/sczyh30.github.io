@@ -1,0 +1,20 @@
+{
+	"dataResult" : {
+		"errorCode" : "886",
+		"errorMsg" : "none"},
+	"user" : {
+		"id" : "6666",
+		"account" : "sczyh30",
+		"username" : "sczyh30",
+		"password" : "123456",
+		"portrait" : "005tNQILjw1ew59yazkc5j30c806wgmg",
+		"temp_token" : "197DA4C56AX13DA21D" ,
+		"fans" : "23333",
+		"followers" : "1",
+		"score" : "6000",
+		"activities_number" : "24",
+		"location" : "西电",
+		"tips":"踏歌长行，梦想永在。",
+		"gender" : "1"
+	}
+}

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Web开发笔记 - 前端总结(开发篇) —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!--<meta name="keywords" content="sczyh30, blog"/>-->
+  <meta name="description" content="终于从老家回来咯~有时间总结总结啦~这是Web前端开发篇~此笔记会不断补充。部分不重要的就不放上来了。
+
+CSS相关CSS Position四种定位：static,relative,absolute,fixed
+
+static position是HTML元素的默认值，即没有定位，元素出现在正常的流中。静态定位的元素不会受到top, bottom, left, right影响。
+fixed posi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web开发笔记 - 前端总结(开发篇)">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Web/web-frontend-01/index.html">
+<meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:description" content="终于从老家回来咯~有时间总结总结啦~这是Web前端开发篇~此笔记会不断补充。部分不重要的就不放上来了。
+
+CSS相关CSS Position四种定位：static,relative,absolute,fixed
+
+static position是HTML元素的默认值，即没有定位，元素出现在正常的流中。静态定位的元素不会受到top, bottom, left, right影响。
+fixed posi">
+<meta property="og:image" content="http://www.runoob.com/images/box-model.gif">
+<meta property="og:updated_time" content="2015-12-18T07:09:37.814Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Web开发笔记 - 前端总结(开发篇)">
+<meta name="twitter:description" content="终于从老家回来咯~有时间总结总结啦~这是Web前端开发篇~此笔记会不断补充。部分不重要的就不放上来了。
+
+CSS相关CSS Position四种定位：static,relative,absolute,fixed
+
+static position是HTML元素的默认值，即没有定位，元素出现在正常的流中。静态定位的元素不会受到top, bottom, left, right影响。
+fixed posi">
+  
+    <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true
+      }
+  </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/AIO/" style="font-size: 10px;">AIO</a> <a href="/tags/AMQP/" style="font-size: 10px;">AMQP</a> <a href="/tags/Algorithm/" style="font-size: 13.75px;">Algorithm</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/C/" style="font-size: 17.5px;">C++</a> <a href="/tags/C-11/" style="font-size: 10px;">C++ 11</a> <a href="/tags/CE3/" style="font-size: 10px;">CE3</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Chemistry/" style="font-size: 11.25px;">Chemistry</a> <a href="/tags/Compiler/" style="font-size: 10px;">Compiler</a> <a href="/tags/Database/" style="font-size: 11.25px;">Database</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Engine/" style="font-size: 10px;">Engine</a> <a href="/tags/FRP/" style="font-size: 10px;">FRP</a> <a href="/tags/Functional-Programming/" style="font-size: 11.25px;">Functional Programming</a> <a href="/tags/G1/" style="font-size: 10px;">G1</a> <a href="/tags/GC/" style="font-size: 13.75px;">GC</a> <a href="/tags/GDB/" style="font-size: 10px;">GDB</a> <a href="/tags/Game/" style="font-size: 11.25px;">Game</a> <a href="/tags/HashMap/" style="font-size: 11.25px;">HashMap</a> <a href="/tags/Haskell/" style="font-size: 10px;">Haskell</a> <a href="/tags/HotSpot/" style="font-size: 11.25px;">HotSpot</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 18.75px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Klass-oop/" style="font-size: 10px;">Klass-oop</a> <a href="/tags/LinkedList/" style="font-size: 10px;">LinkedList</a> <a href="/tags/Linux/" style="font-size: 11.25px;">Linux</a> <a href="/tags/Mathematical-Logic/" style="font-size: 10px;">Mathematical Logic</a> <a href="/tags/Metaspace/" style="font-size: 10px;">Metaspace</a> <a href="/tags/Network/" style="font-size: 16.25px;">Network</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Object-Model/" style="font-size: 13.75px;">Object Model</a> <a href="/tags/RabbitMQ/" style="font-size: 10px;">RabbitMQ</a> <a href="/tags/Reflection/" style="font-size: 11.25px;">Reflection</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/STL/" style="font-size: 11.25px;">STL</a> <a href="/tags/Scala/" style="font-size: 11.25px;">Scala</a> <a href="/tags/Sort/" style="font-size: 10px;">Sort</a> <a href="/tags/Struct/" style="font-size: 10px;">Struct</a> <a href="/tags/Summary/" style="font-size: 13.75px;">Summary</a> <a href="/tags/TCP/" style="font-size: 15px;">TCP</a> <a href="/tags/UE4/" style="font-size: 10px;">UE4</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/Web/" style="font-size: 12.5px;">Web</a> <a href="/tags/event/" style="font-size: 10px;">event</a> <a href="/tags/functional/" style="font-size: 10px;">functional</a> <a href="/tags/中间件/" style="font-size: 10px;">中间件</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/内存区域/" style="font-size: 10px;">内存区域</a> <a href="/tags/前端/" style="font-size: 12.5px;">前端</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/并发/" style="font-size: 11.25px;">并发</a> <a href="/tags/开发/" style="font-size: 17.5px;">开发</a> <a href="/tags/异步/" style="font-size: 11.25px;">异步</a> <a href="/tags/性能/" style="font-size: 10px;">性能</a> <a href="/tags/性能优化/" style="font-size: 10px;">性能优化</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 11.25px;">数据库</a> <a href="/tags/架构/" style="font-size: 11.25px;">架构</a> <a href="/tags/线程安全/" style="font-size: 10px;">线程安全</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Fighting</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-web-frontend-01" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Web/web-frontend-01/" class="article-date">
+      <time datetime="2015-08-16T11:47:36.000Z" itemprop="datePublished">2015-08-16</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Web开发笔记 - 前端总结(开发篇)
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Web/">Web</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Web/">Web</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/前端/">前端</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发/">开发</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>终于从老家回来咯~有时间总结总结啦~这是Web前端开发篇~<br><strong>此笔记会不断补充。</strong>部分不重要的就不放上来了。</p>
+<hr>
+<h2 id="CSS相关">CSS相关</h2><h4 id="CSS_Position">CSS Position</h4><p>四种定位：static,relative,absolute,fixed</p>
+<ul>
+<li><strong>static</strong> position是HTML元素的默认值，即没有定位，元素出现在正常的流中。静态定位的元素不会受到top, bottom, left, right影响。</li>
+<li><strong>fixed</strong> position是固定位置，常用于实现固定层效果。</li>
+<li><strong>relative</strong> position相对于其正常位置，而<strong>absolute</strong>  position的元素的位置相对于最近的已定位父元素。</li>
+</ul>
+<h4 id="CSS_Float_&amp;&amp;_The_inline-block_Value">CSS Float &amp;&amp; The inline-block Value</h4><p>CSS 的 Float（浮动），会使元素向左或向右移动，其周围的元素也会重新排列。常用于各区域的水平方向并排化。<br>横向导航栏也可用<strong>inline-block</strong>，可以更好地解决图片的排列问题，或者元素需要多个display属性时。两者各有利弊，需要根据业务需求考虑。</p>
+<h4 id="元素显示与隐藏">元素显示与隐藏</h4><p>使用<code>visibility</code>或<code>display</code>属性<br>顺便提一下<code>display</code>属性，其可以控制显示方式为<strong>块级元素和内联元素</strong>。区别显而易见，块级元素（如div）占用了全部宽度，在前后都是换行符，而内联元素（如span）相当于内嵌，不强制换行。<br>而<strong>inline-block</strong>兼具inline和block的特性，可占有全部宽度而不换行。比起float，inline-block不需要再为after指定clear。当需要控制元素的垂直对齐跟水平排列时，可以使用inline-block。（可代替float）</p>
+<h4 id="改变元素的明暗度">改变元素的明暗度</h4><p>改变元素的明暗度可以通过设置一个遮罩层，并改变其透明度来实现。CSS3的<code>opacity</code>属性用来设置元素的不透明级别。<br>至于IE9 below。。。看着办吧。。<br>应用：毛玻璃效果（Login界面）、购物导航（hover辅助）、配合HTML5和JS的各种cool效果。</p>
+<h4 id="CSS_Box_Model">CSS Box Model</h4><ul>
+<li>Margin - 清除边框区域。Margin没有背景颜色，它是完全透明的</li>
+<li>Border - 边框周围的填充和内容。边框是受到盒子的背景颜色影响</li>
+<li>Padding - 清除内容周围的区域。会受到框中填充的背景颜色影响</li>
+<li>Content - 盒子的内容，显示文本和图像</li>
+</ul>
+<p><img src="http://www.runoob.com/images/box-model.gif" alt="CSS Box Model"></p>
+<h4 id="超出元素的部分隐藏">超出元素的部分隐藏</h4><p>使用<code>overflow : hidden</code></p>
+<h4 id="CSS3_transition/transform">CSS3 transition/transform</h4><p>CSS 3可以直接写过渡(transition)而不需要JQuery等库的帮助。<br>而transform则是做2D、3D转换。<br>用示例总结：<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">div</span> <span class="rules">&#123;</span><br><span class="line"><span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">233px</span></span></span>;</span><br><span class="line"><span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">233px</span></span></span>;</span><br><span class="line"><span class="rule"><span class="attribute">background</span>:<span class="value"> green</span></span>;</span><br><span class="line"><span class="rule"><span class="attribute">transition</span>:<span class="value">width <span class="number">2s</span> linear, height <span class="number">2s</span></span></span>;</span><br><span class="line"><span class="rule"><span class="attribute">-moz-transition</span>:<span class="value">width <span class="number">2s</span>, height <span class="number">2s</span>, -moz-transform <span class="number">2s</span></span></span>; <span class="comment">/* Firefox 4 */</span></span><br><span class="line"><span class="rule"><span class="attribute">-webkit-transition</span>:<span class="value">width <span class="number">2s</span>, height <span class="number">2s</span> linear, -webkit-transform <span class="number">2s</span></span></span>; <span class="comment">/* Safari and Chrome */</span></span><br><span class="line"><span class="rule"><span class="attribute">-o-transition</span>:<span class="value">width <span class="number">2s</span>, height <span class="number">2s</span>, -o-transform <span class="number">2s</span></span></span>; <span class="comment">/* Opera */</span></span><br><span class="line">&#125;</span></span><br><span class="line"><span class="rule"><span class="attribute">div</span>:<span class="value">hover &#123;</span><br><span class="line">width:<span class="number">233px</span></span></span>;</span><br><span class="line"><span class="rule"><span class="attribute">height</span>:<span class="value"><span class="number">233px</span></span></span>;</span><br><span class="line"><span class="rule"><span class="attribute">transform</span>:<span class="value"><span class="function">rotate</span>(<span class="number">180deg</span>)</span></span>;  <span class="comment">/*旋转180度*/</span></span><br><span class="line"><span class="rule"><span class="attribute">-moz-transform</span>:<span class="value"><span class="function">rotate</span>(<span class="number">180deg</span>)</span></span>; <span class="comment">/* Firefox 4 */</span></span><br><span class="line"><span class="rule"><span class="attribute">-webkit-transform</span>:<span class="value"><span class="function">rotate</span>(<span class="number">180deg</span>)</span></span>; <span class="comment">/* Safari and Chrome */</span></span><br><span class="line"><span class="rule"><span class="attribute">-o-transform</span>:<span class="value"><span class="function">rotate</span>(<span class="number">180deg</span>)</span></span>; <span class="comment">/* Opera */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>PS:有些东西用JS比CSS3方便很多，不过还是了解一下的好~况且CSS3动画性能应该比JS要高一些</p>
+<hr>
+<h2 id="CSS_Enhancer">CSS Enhancer</h2><p>只用过Sass，Less.js木有用过不了解。<br>Sass是一个基于Ruby的CSS预处理器，相当于CSS的一个增强版吧。Compass则相当于一个Sass框架，提供了许多mixin的功能。<br>在Terminal里开<strong>compass watch</strong>可以实时编译sass/scss文件<br>总结一下Sass的特性</p>
+<h4 id="可定义变量">可定义变量</h4><p>Sass中可以定义变量，方便统一修改和维护重复、相同的值。</p>
+<h4 id="模块化思想">模块化思想</h4><p>Sass中可以导入其它sass/scss文件，但与CSS 3中的<strong>@import</strong>意义不同，Sass改写了<strong>@import</strong>的意义，Sass中的import在预编译时会将所有模块合并，因此性能优于CSS3的import。<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$headline-font</span><span class="value">: 微软雅黑,Arial,sans-serif;</span></span><br><span class="line"></span><br><span class="line"><span class="at_rule">@<span class="keyword">import</span> <span class="string">"compass/reset"</span> //这一句用来覆盖掉浏览器的默认样式</span><br><span class="line"><span class="preprocessor"></span><br><span class="line">.mian-sec</span> &#123;</span></span><br><span class="line">    <span class="attribute">font-family</span><span class="value">: <span class="variable">$headline-font</span>;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="嵌套">嵌套</h4><p>Sass中可以进行选择器的嵌套表示层级关系，更加简便、直观。<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">nav</span> &#123;</span><br><span class="line">  <span class="tag">ul</span> &#123;</span><br><span class="line">    <span class="attribute">margin</span><span class="value">: <span class="number">0</span>;</span></span><br><span class="line">    <span class="attribute">padding</span><span class="value">: <span class="number">0</span>;</span></span><br><span class="line">    <span class="attribute">list-style</span><span class="value">: none;</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="tag">li</span> &#123; <span class="attribute">display</span><span class="value">: inline-block;</span> &#125;</span><br><span class="line"></span><br><span class="line">  <span class="tag">a</span> &#123;</span><br><span class="line">    <span class="attribute">display</span><span class="value">: block;</span></span><br><span class="line">    <span class="attribute">padding</span><span class="value">: <span class="number">6px</span> <span class="number">12px</span>;</span></span><br><span class="line">    <span class="attribute">text-decoration</span><span class="value">: none;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>顺便再总结一下CSS3中的f4cking 组合选择符：</p>
+<ul>
+<li>后代选取器(以空格分隔)</li>
+<li>子元素选择器(以大于号分隔）</li>
+<li>相邻兄弟选择器（以加号分隔）</li>
+<li>普通兄弟选择器（以破折号分隔）</li>
+</ul>
+<p>写的时候都能晕了有木有。。所以有Sass真是方便的多。</p>
+<h4 id="mixin">mixin</h4><p>Sass中可用mixin定义一些代码片段（相当于function），且可传参数，方便日后根据需求调用，这使得写CSS3浏览器兼容时更加便捷。<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="at_rule">@<span class="keyword">mixin</span><span class="preprocessor"> box-sizing</span> (<span class="variable">$sizing</span>) &#123;</span></span><br><span class="line">    -webkit-<span class="attribute">box-sizing</span><span class="value">:<span class="variable">$sizing</span>;</span>     </span><br><span class="line">       -moz-<span class="attribute">box-sizing</span><span class="value">:<span class="variable">$sizing</span>;</span></span><br><span class="line">            <span class="attribute">box-sizing</span><span class="value">:<span class="variable">$sizing</span>;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="class">.box-border</span>&#123;</span><br><span class="line">    <span class="attribute">border</span><span class="value">:<span class="number">1px</span> solid <span class="hexcolor">#ccc</span>;</span></span><br><span class="line">    <span class="at_rule">@<span class="keyword">include</span><span class="preprocessor"> box-sizing</span>(<span class="number">2px</span>);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="扩展/继承">扩展/继承</h4><p>Sass可通过<strong>@extend</strong>来实现代码组合声明，使代码更加简洁优美。<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class">.message</span> &#123;</span><br><span class="line">  <span class="attribute">border</span><span class="value">: <span class="number">1px</span> solid <span class="hexcolor">#ccc</span>;</span></span><br><span class="line">  <span class="attribute">padding</span><span class="value">: <span class="number">10px</span>;</span></span><br><span class="line">  <span class="attribute">color</span><span class="value">: <span class="hexcolor">#333</span>;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class">.success</span> &#123;</span><br><span class="line">  <span class="at_rule">@<span class="keyword">extend</span><span class="preprocessor"> .message</span>;</span></span><br><span class="line">  <span class="attribute">border-color</span><span class="value">: green;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class">.error</span> &#123;</span><br><span class="line">  <span class="at_rule">@<span class="keyword">extend</span><span class="preprocessor"> .message</span>;</span></span><br><span class="line">  <span class="attribute">border-color</span><span class="value">: red;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="其它">其它</h4><p>Sass中可以进行简单的加减乘除运算。并且Sass提供了许多操作颜色的内建函数，让调色更方便。</p>
+<p>Sass可以用命令行编译，也可以用GUI工具编译~用Sublime的话推荐配合使用神器Koala，鹅厂出品，非常方便。<br>用WebStorm的话都支持自动编译sass/scss文件的，还是InteliJ大法好！</p>
+<hr>
+<h2 id="Bootstrap相关">Bootstrap相关</h2><p>写UI个人比较喜欢用Bootstrap及其各种变种（比如Flat-UI），其实主要还是因为懒（总感觉Bootstrap特别适合给不熟悉前端设计的后端开发者使用。。）</p>
+<h4 id="重中之重-Bootstrap_Grid_System">重中之重-Bootstrap Grid System</h4><p>Bootstrap采用<strong>移动设备优先</strong>的原则。<br>Bootstrap网格系统具有响应式的特点，可随着设备大小进行分栏，响应式网格系统随着屏幕或视口（viewport）尺寸的增加，系统会自动分为最多12列。12个总格位主要有1<em>12、2</em>6、8+4、3<em>4、12</em>1这几种分栏方式。<br>网格系统有四种尺寸:</p>
+<ul>
+<li><strong>xs</strong> (for phones &lt;768px)</li>
+<li><strong>sm</strong> (for tablets &gt;=768px)</li>
+<li><strong>md</strong> (for desktops &gt;=992px)</li>
+<li><strong>lg</strong>(for larger desktops &gt;=1200px)<br>可以一次使用多种尺寸来构建自适应的页面。<br>网格系统的结构：<br>First,create a row . Then, add the desired number of columns (tags with appropriate .col-<em>-</em> classes). Note that numbers in .col-<em>-</em> should always add up to 12 for each row.<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"row"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"col-*-*"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>比如分三栏：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"row"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"col-sm-4"</span>&gt;</span>Fucking Scala<span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"col-sm-4"</span>&gt;</span>Fucking Scala<span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"col-sm-4"</span>&gt;</span>Fucking Scala<span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>另外需要注意响应式的列重置、偏移列及嵌套列问题。<br>别的暂时没什么好总结的了，查查手册应该就可以解决。重要的是响应式页面的设计。</p>
+<hr>
+<h2 id="JQuery相关">JQuery相关</h2><p>项目中用的比较多，内容太多，慢慢填坑。</p>
+<hr>
+<h2 id="MVC、MVVM框架">MVC、MVVM框架</h2><p>目前常用的MVC/MVP/MVVM/MVW框架主要有BackboneJS（第一代前端MVC框架，仅作了解），EmberJS（MVC框架，和AngularJS思想相似，仅作了解）以及目前特别常用的MVVM框架AngularJS。这里仅总结AngularJS（目前版本为1.4.4，为什么要写版本？因为这货不一定哪一次更新就会deprecate很多旧特性。。）<br>有的人不明白AngularJS的用途，认为“万事皆可用AngularJS”，这样就没有领悟AngularJS的精髓。AngularJS最适合开发RESTful风格的SPA（国内各种云服务的Dashboard以及Gmail、Twitter都应用了AngularJS)，而如果开发非应用型网站则要看业务需求，用AngularJS不一定是最佳选择。<br>这里内容也太多，先总结思想吧。<br>AngularJS的一大特点是bi-directional data binding，即<strong>数据双向绑定</strong>。它和JQuery的思维有着天壤之别。JQuery的思想是先构建好一个页面，再通过各种DOM操作编写动作；而用AngularJS写页面时，对DOM的直接操作是完全没有必要，也是不被提倡的。在AngularJS中用声明式的数据绑定就可以很好地实现JQuery中命令式的功能。并且，我们心中要对整个页面的结构有个把握，页面分成几个组件，每个组件由不同的控制器负责，数据模型应合理设计。有重复的逻辑是否可以抽象出来，提供一个统一的函数，配合回调达到功能的可扩展化。<br>总之，AngularJS提供了一种类似于后端的思考方式，可以更好地对网页组件进行解耦，方便日后的开发和维护。后面会详细总结AngularJS的开发。</p>
+<hr>
+<h2 id="模板引擎">模板引擎</h2><p>主要是EJS和Jade。Jade的语法，只能说，诡异！！！所以用Node.js构建博客时页面模板引擎果断用了EJS（其实我也不知道哪个性能好些，反正EJS没有那么诡异。。）<br>待填坑 &gt;_&lt;</p>
+<hr>
+<h2 id="ReactJS">ReactJS</h2><p>ReactJS是一个View层组件，专门负责View层的开发。很喜欢它的<strong>Virtual DOM</strong>的设计，优化了性能（比原生DOM性能快，当然也不支持所有的DOM操作）<br>这个也没有太多实践（毕竟是View层），以后可以试试React Native构建Hybrid App，写个个人博客的管理器还是可以的~</p>
+<hr>
+<h2 id="构建工具">构建工具</h2><p>前端构建工具主要有流式构建工具Gulp.js及Grunt，用于压缩、合并依赖文件。前端构建工具貌似一直在改进，变化很快（后端也是，比如Java项目构建，从Maven到Gradle），不过万变不离其宗，核心流程是没有变的。<br>两者用起来比较接近，主要就是package.json + Gruntfile.js(gulp.js)的配置。<br>以Grunt为例，先<code>npm init</code>生成package.json文件，该文件主要配置项目基本信息及工具插件依赖，以让 Node.js 知道下载哪些插件，重点是<strong>devDependencies</strong>字段。<br>至于其使用，麻烦诶。。就简单用了用，不是专业写前端的话一般懒得用。。<br>Grunt的任务配置都是在Gruntfile中的grunt.initConfig方法中指定的。总结一下常用插件吧</p>
+<h4 id="grunt-contrib-unglify">grunt-contrib-unglify</h4><p>grunt-contrib-unglify 用来压缩代码（混淆）<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> (<span class="params">grunt</span>) </span>&#123;</span><br><span class="line">  grunt.initConfig(&#123;</span><br><span class="line">    uglify: &#123;</span><br><span class="line">      my_target: &#123;</span><br><span class="line">        files: &#123;</span><br><span class="line">          <span class="string">'dest/libs.min.js'</span>: [<span class="string">'src/jquery.js'</span>, <span class="string">'src/underscoce.js'</span>,<span class="string">'src/bootstrap.js'</span>]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">  grunt.loadNpmTasks(<span class="string">'grunt-contrib-uglify'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="grunt-contrib-concat">grunt-contrib-concat</h4><p>grunt-contrib-concat 用来将多个文件合并为一个，并且可添加分隔符、头尾注释等等的。</p>
+<h4 id="grunt-contrib-jshint">grunt-contrib-jshint</h4><p>grunt-contrib-jshint 用来检测js语法问题<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> (<span class="params">grunt</span>) </span>&#123;</span><br><span class="line">  grunt.initConfig(&#123;</span><br><span class="line">    jshint: &#123;</span><br><span class="line">      all: [<span class="string">'test.js'</span>]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">  grunt.loadNpmTasks(<span class="string">'grunt-contrib-jshint'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其他的暂时还没用，后面业务中用到再总结。</p>
+<hr>
+<h2 id="依赖包管理">依赖包管理</h2><p>我主要用过<strong>bower</strong>和<strong>npm</strong>，很方便。<br>Bower节省了时间，相当于建立了一个本地仓库（类似于Maven的.m2仓库），并且bower.json可以很容易地展现各种依赖关系。给依赖库升级也更加方便了，一句<code>bower update <package-name></package-name></code>完事。Bower的优点是约束比较松散，使用很简单，缺点就是不提供构建工具，需要配合Glup.js或Grunt<br>配合Grunt的一些<a href="http://bower.io/docs/tools/" target="_blank" rel="external">插件</a></p>
+<ul>
+<li>grunt-bower-concat</li>
+<li>grunt-wiredep</li>
+<li>grunt-bower-requirejs</li>
+<li>grunt-bower-task</li>
+<li>grunt-preen<br>配合Glup.js的一些插件</li>
+<li>gulp-google-cdn（国内呵呵）</li>
+<li>main-bower-files</li>
+<li>preen</li>
+<li>gulp-bower-normalize<br><strong>npm</strong> 和<strong>Browserify</strong>配合相当于间接给浏览器提供了npm的功能（Browserify本身不是模块管理器，只是让服务器端的CommonJS格式的模块可以运行在浏览器端）<br>另外还有前端大神玩的Component,DuoJS之类的，木有用过。</li>
+</ul>
+<hr>
+<h1 id="未完待续~得花好长时间才能总结成一篇。。">未完待续~得花好长时间才能总结成一篇。。</h1>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 sczyh30 的个人博客">sczyh30</a></p>
+        <p><span>发布时间:</span>2015年08月16日</p>
+        <!--<p><span>最后更新:</span>2015年12月18日 - 15时09分</p>-->
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Web/web-frontend-01/" title="Web开发笔记 - 前端总结(开发篇)">http://www.sczyh30.com/posts/Web/web-frontend-01/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Web/web-frontend-01/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0" target = "_blank">知识共享-保持署名-非商用-相同方式共享 4.0 (CC BY-NC-SA 4.0)</a><br/>转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Web/web-frontend-02/">
+                    Web开发笔记 - 前端总结(性能篇)
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">
+                    链表相关算法总结
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CSS相关"><span class="toc-number">1.</span> <span class="toc-text">CSS相关</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CSS_Position"><span class="toc-number">1.0.1.</span> <span class="toc-text">CSS Position</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CSS_Float_&&_The_inline-block_Value"><span class="toc-number">1.0.2.</span> <span class="toc-text">CSS Float && The inline-block Value</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#元素显示与隐藏"><span class="toc-number">1.0.3.</span> <span class="toc-text">元素显示与隐藏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#改变元素的明暗度"><span class="toc-number">1.0.4.</span> <span class="toc-text">改变元素的明暗度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CSS_Box_Model"><span class="toc-number">1.0.5.</span> <span class="toc-text">CSS Box Model</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#超出元素的部分隐藏"><span class="toc-number">1.0.6.</span> <span class="toc-text">超出元素的部分隐藏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CSS3_transition/transform"><span class="toc-number">1.0.7.</span> <span class="toc-text">CSS3 transition/transform</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSS_Enhancer"><span class="toc-number">2.</span> <span class="toc-text">CSS Enhancer</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#可定义变量"><span class="toc-number">2.0.1.</span> <span class="toc-text">可定义变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#模块化思想"><span class="toc-number">2.0.2.</span> <span class="toc-text">模块化思想</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#嵌套"><span class="toc-number">2.0.3.</span> <span class="toc-text">嵌套</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#mixin"><span class="toc-number">2.0.4.</span> <span class="toc-text">mixin</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#扩展/继承"><span class="toc-number">2.0.5.</span> <span class="toc-text">扩展/继承</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#其它"><span class="toc-number">2.0.6.</span> <span class="toc-text">其它</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bootstrap相关"><span class="toc-number">3.</span> <span class="toc-text">Bootstrap相关</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#重中之重-Bootstrap_Grid_System"><span class="toc-number">3.0.1.</span> <span class="toc-text">重中之重-Bootstrap Grid System</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JQuery相关"><span class="toc-number">4.</span> <span class="toc-text">JQuery相关</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MVC、MVVM框架"><span class="toc-number">5.</span> <span class="toc-text">MVC、MVVM框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#模板引擎"><span class="toc-number">6.</span> <span class="toc-text">模板引擎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ReactJS"><span class="toc-number">7.</span> <span class="toc-text">ReactJS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#构建工具"><span class="toc-number">8.</span> <span class="toc-text">构建工具</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#grunt-contrib-unglify"><span class="toc-number">8.0.1.</span> <span class="toc-text">grunt-contrib-unglify</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#grunt-contrib-concat"><span class="toc-number">8.0.2.</span> <span class="toc-text">grunt-contrib-concat</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#grunt-contrib-jshint"><span class="toc-number">8.0.3.</span> <span class="toc-text">grunt-contrib-jshint</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#依赖包管理"><span class="toc-number">9.</span> <span class="toc-text">依赖包管理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#未完待续~得花好长时间才能总结成一篇。。"><span class="toc-number"></span> <span class="toc-text">未完待续~得花好长时间才能总结成一篇。。</span></a>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- duoshuo comment start -->
+    <div class="ds-thread" data-thread-key="posts/Web/web-frontend-01/" data-title="Web开发笔记 - 前端总结(开发篇)" data-url="http://www.sczyh30.com/posts/Web/web-frontend-01/"></div>
+    <!-- duoshuo comment end -->
+    <!-- duoshuo public js start -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name: 'sczyh30'};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        /*ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';*/
+        ds.src = 'http://www.sczyh30.com/assets/embed.js'
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- duoshuo public js end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Web/web-frontend-02/" title="上一篇: Web开发笔记 - 前端总结(性能篇)">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Algorithm/algorithm-linkedlist-cycle-join/" title="下一篇: 链表相关算法总结">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-for-expression-detail/">Scala | for表达式的底层转换</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">IO模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model Summary III</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">C++ 11 Move Sementics/Perfect Forwarding</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-2/">Inside The C++ Object Model Summary II</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model Summary I</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/amqp-rabbitmq/">消息队列中间件-RabbitMQ总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-event-dispatcher/">Android事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-01/">Android View视图绘制总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表|unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-performance-1/">对Android应用性能优化的一些总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android_summary_2/">安卓开发中的一些总结（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-copyArray/">arrayCopy方法底层探究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/os-learning-1/">操作系统相关知识杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结(性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-plan/">Web开发笔记 - 前端总结计划</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-transaction-lock/">数据库事务中的隔离级别和锁</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-advanced-a1/">高级算法总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/compiler-a01/">编译原理相关 | C++编译器总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-sql-01/">数据库知识总结（一） - 基本SQL</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2016 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30.
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

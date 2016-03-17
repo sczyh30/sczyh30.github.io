@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>arrayCopy方法底层探究 —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!--<meta name="keywords" content="sczyh30, blog"/>-->
+  <meta name="description" content="最近在读Java集合类的源码时发现很多数组的复制操作最后都归结到arraycopy方法上，这是一个native方法。本人对JVM底层实现具有极大的兴趣，因此就探寻了一下它的底层实现。arraycopy方法的声明（Native Method）:123public static native void arraycopy(Object src,  int  srcPos,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="arrayCopy方法底层探究">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Java/jvm-copyArray/index.html">
+<meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:description" content="最近在读Java集合类的源码时发现很多数组的复制操作最后都归结到arraycopy方法上，这是一个native方法。本人对JVM底层实现具有极大的兴趣，因此就探寻了一下它的底层实现。arraycopy方法的声明（Native Method）:123public static native void arraycopy(Object src,  int  srcPos,">
+<meta property="og:updated_time" content="2016-02-26T08:25:12.582Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="arrayCopy方法底层探究">
+<meta name="twitter:description" content="最近在读Java集合类的源码时发现很多数组的复制操作最后都归结到arraycopy方法上，这是一个native方法。本人对JVM底层实现具有极大的兴趣，因此就探寻了一下它的底层实现。arraycopy方法的声明（Native Method）:123public static native void arraycopy(Object src,  int  srcPos,">
+  
+    <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: true
+      }
+  </script>
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/AIO/" style="font-size: 10px;">AIO</a> <a href="/tags/AMQP/" style="font-size: 10px;">AMQP</a> <a href="/tags/Algorithm/" style="font-size: 13.75px;">Algorithm</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/C/" style="font-size: 17.5px;">C++</a> <a href="/tags/C-11/" style="font-size: 10px;">C++ 11</a> <a href="/tags/CE3/" style="font-size: 10px;">CE3</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Chemistry/" style="font-size: 11.25px;">Chemistry</a> <a href="/tags/Compiler/" style="font-size: 10px;">Compiler</a> <a href="/tags/Database/" style="font-size: 11.25px;">Database</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Engine/" style="font-size: 10px;">Engine</a> <a href="/tags/FRP/" style="font-size: 10px;">FRP</a> <a href="/tags/Functional-Programming/" style="font-size: 11.25px;">Functional Programming</a> <a href="/tags/G1/" style="font-size: 10px;">G1</a> <a href="/tags/GC/" style="font-size: 13.75px;">GC</a> <a href="/tags/GDB/" style="font-size: 10px;">GDB</a> <a href="/tags/Game/" style="font-size: 11.25px;">Game</a> <a href="/tags/HashMap/" style="font-size: 11.25px;">HashMap</a> <a href="/tags/Haskell/" style="font-size: 10px;">Haskell</a> <a href="/tags/HotSpot/" style="font-size: 11.25px;">HotSpot</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 18.75px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Klass-oop/" style="font-size: 10px;">Klass-oop</a> <a href="/tags/LinkedList/" style="font-size: 10px;">LinkedList</a> <a href="/tags/Linux/" style="font-size: 11.25px;">Linux</a> <a href="/tags/Mathematical-Logic/" style="font-size: 10px;">Mathematical Logic</a> <a href="/tags/Metaspace/" style="font-size: 10px;">Metaspace</a> <a href="/tags/Network/" style="font-size: 16.25px;">Network</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Object-Model/" style="font-size: 13.75px;">Object Model</a> <a href="/tags/RabbitMQ/" style="font-size: 10px;">RabbitMQ</a> <a href="/tags/Reflection/" style="font-size: 11.25px;">Reflection</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/STL/" style="font-size: 11.25px;">STL</a> <a href="/tags/Scala/" style="font-size: 11.25px;">Scala</a> <a href="/tags/Sort/" style="font-size: 10px;">Sort</a> <a href="/tags/Struct/" style="font-size: 10px;">Struct</a> <a href="/tags/Summary/" style="font-size: 13.75px;">Summary</a> <a href="/tags/TCP/" style="font-size: 15px;">TCP</a> <a href="/tags/UE4/" style="font-size: 10px;">UE4</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/Web/" style="font-size: 12.5px;">Web</a> <a href="/tags/event/" style="font-size: 10px;">event</a> <a href="/tags/functional/" style="font-size: 10px;">functional</a> <a href="/tags/中间件/" style="font-size: 10px;">中间件</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/内存区域/" style="font-size: 10px;">内存区域</a> <a href="/tags/前端/" style="font-size: 12.5px;">前端</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/多线程/" style="font-size: 10px;">多线程</a> <a href="/tags/并发/" style="font-size: 11.25px;">并发</a> <a href="/tags/开发/" style="font-size: 17.5px;">开发</a> <a href="/tags/异步/" style="font-size: 11.25px;">异步</a> <a href="/tags/性能/" style="font-size: 10px;">性能</a> <a href="/tags/性能优化/" style="font-size: 10px;">性能优化</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 11.25px;">数据库</a> <a href="/tags/架构/" style="font-size: 11.25px;">架构</a> <a href="/tags/线程安全/" style="font-size: 10px;">线程安全</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Fighting</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="/#" title="新浪微博"></a></li>
+                            
+                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                            
+                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                            
+                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
+                            
+                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-jvm-copyArray" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Java/jvm-copyArray/" class="article-date">
+      <time datetime="2015-09-07T16:00:00.000Z" itemprop="datePublished">2015-09-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      arrayCopy方法底层探究
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>最近在读Java集合类的源码时发现很多数组的复制操作最后都归结到arraycopy方法上，这是一个native方法。本人对JVM底层实现具有极大的兴趣，因此就探寻了一下它的底层实现。<br><code>arraycopy</code>方法的声明（Native Method）:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">arraycopy</span><span class="params">(Object src,  <span class="keyword">int</span>  srcPos,</span><br><span class="line">                                        Object dest, <span class="keyword">int</span> destPos,</span><br><span class="line">                                        <span class="keyword">int</span> length)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>它的native方法入口位于openjdk-8/openjdk/hotspot/src/share/vm/prims/jvm.cpp中:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">JVM_ENTRY(<span class="keyword">void</span>, JVM_ArrayCopy(JNIEnv *env, jclass ignored, jobject src, jint src_pos,</span><br><span class="line">                               jobject dst, jint dst_pos, jint length))</span><br><span class="line">  JVMWrapper(<span class="string">"JVM_ArrayCopy"</span>);</span><br><span class="line">  <span class="comment">// Check if we have null pointers</span></span><br><span class="line">  <span class="keyword">if</span> (src == NULL || dst == NULL) &#123;</span><br><span class="line">    THROW(vmSymbols::java_lang_NullPointerException());</span><br><span class="line">  &#125;</span><br><span class="line">  arrayOop s = arrayOop(JNIHandles::resolve_non_null(src));</span><br><span class="line">  arrayOop d = arrayOop(JNIHandles::resolve_non_null(dst));</span><br><span class="line">  assert(s-&gt;is_oop(), <span class="string">"JVM_ArrayCopy: src not an oop"</span>);</span><br><span class="line">  assert(d-&gt;is_oop(), <span class="string">"JVM_ArrayCopy: dst not an oop"</span>);</span><br><span class="line">  <span class="comment">// Do copy</span></span><br><span class="line">  s-&gt;klass()-&gt;copy_array(s, src_pos, d, dst_pos, length, thread);</span><br><span class="line">JVM_END</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，此方法首先先解析原数组和目标数组为底层的对象模型（这里为arrayOop)<br>真正执行数组拷贝的是最后一行代码中的<code>copy_array</code>方法，它有两种实现。</p>
+<h4 id="正经的copy_array方法">正经的copy_array方法</h4><p>先看简单的一种吧，它的源码位于openjdk-8/openjdk/hotspot/src/share/vm/oops/typeArrayKlass.cpp<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> TypeArrayKlass::copy_array(arrayOop s, <span class="keyword">int</span> src_pos, arrayOop d, <span class="keyword">int</span> dst_pos, <span class="keyword">int</span> length, TRAPS) &#123;</span><br><span class="line">  assert(s-&gt;<span class="keyword">is_t</span>ypeArray(), <span class="string">"must be type array"</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check destination</span></span><br><span class="line">  <span class="keyword">if</span> (!d-&gt;<span class="keyword">is_t</span>ypeArray() || <span class="keyword">element_t</span>ype() != TypeArrayKlass::cast(d-&gt;klass())-&gt;<span class="keyword">element_t</span>ype()) &#123;</span><br><span class="line">    THROW(vmSymbols::java_lang_ArrayStoreException());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check is all offsets and lengths are non negative</span></span><br><span class="line">  <span class="keyword">if</span> (src_pos &lt; <span class="number">0</span> || dst_pos &lt; <span class="number">0</span> || length &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    THROW(vmSymbols::java_lang_ArrayIndexOutOfBoundsException());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Check if the ranges are valid</span></span><br><span class="line">  <span class="keyword">if</span>  ( (((<span class="keyword">unsigned</span> <span class="keyword">int</span>) length + (<span class="keyword">unsigned</span> <span class="keyword">int</span>) src_pos) &gt; (<span class="keyword">unsigned</span> <span class="keyword">int</span>) s-&gt;length())</span><br><span class="line">     || (((<span class="keyword">unsigned</span> <span class="keyword">int</span>) length + (<span class="keyword">unsigned</span> <span class="keyword">int</span>) dst_pos) &gt; (<span class="keyword">unsigned</span> <span class="keyword">int</span>) d-&gt;length()) ) &#123;</span><br><span class="line">    THROW(vmSymbols::java_lang_ArrayIndexOutOfBoundsException());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Check zero copy</span></span><br><span class="line">  <span class="keyword">if</span> (length == <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// This is an attempt to make the copy_array fast.</span></span><br><span class="line">  <span class="keyword">int</span> l2es = log2_element_size();</span><br><span class="line">  <span class="keyword">int</span> ihs = array_header_in_bytes() / wordSize;</span><br><span class="line">  <span class="keyword">char</span>* src = (<span class="keyword">char</span>*) ((oop*)s + ihs) + ((<span class="keyword">size_t</span>)src_pos &lt;&lt; l2es);</span><br><span class="line">  <span class="keyword">char</span>* dst = (<span class="keyword">char</span>*) ((oop*)d + ihs) + ((<span class="keyword">size_t</span>)dst_pos &lt;&lt; l2es);</span><br><span class="line">  Copy::conjoint_memory_atomic(src, dst, (<span class="keyword">size_t</span>)length &lt;&lt; l2es);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>前面仍然先是验证操作：首先验证目标对象是否为数组，再验证源数组与目标数组的类型是否相同（若不相同就会抛出ArrayStoreException异常），再验证数组的容量是否为负（若为负则抛出ArrayIndexOutOfBoundsException异常），最后再检验数组边界范围是否正常。<br>验证完操作后就开始执行复制操作（空数组则直接结束）。<br>这里首先对source和destination进行了某些优化，来让数组拷贝更快，但是木有看懂：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> l2es = log2_element_size();</span><br><span class="line"><span class="keyword">int</span> ihs = array_header_in_bytes() / wordSize;</span><br><span class="line"><span class="keyword">char</span>* src = (<span class="keyword">char</span>*) ((oop*)s + ihs) + ((<span class="keyword">size_t</span>)src_pos &lt;&lt; l2es);</span><br><span class="line"><span class="keyword">char</span>* dst = (<span class="keyword">char</span>*) ((oop*)d + ihs) + ((<span class="keyword">size_t</span>)dst_pos &lt;&lt; l2es);</span><br></pre></td></tr></table></figure></p>
+<p>此处先不讨论这个优化。数组真正的复制操作又落在<code>Copy::conjoint_memory_atomic</code>这个方法上：<br>（位于openjdk-8/openjdk/hotspot/src/share/vm/utilities/copy.cpp）<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Copy bytes; larger units are filled atomically if everything is aligned.</span></span><br><span class="line"><span class="keyword">void</span> Copy::conjoint_memory_atomic(<span class="keyword">void</span>* from, <span class="keyword">void</span>* to, <span class="keyword">size_t</span> size) &#123;</span><br><span class="line">  address src = (address) from;</span><br><span class="line">  address dst = (address) to;</span><br><span class="line">  <span class="keyword">uintptr_t</span> bits = (<span class="keyword">uintptr_t</span>) src | (<span class="keyword">uintptr_t</span>) dst | (<span class="keyword">uintptr_t</span>) size;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// (Note:  We could improve performance by ignoring the low bits of size,</span></span><br><span class="line">  <span class="comment">// and putting a short cleanup loop after each bulk copy loop.</span></span><br><span class="line">  <span class="comment">// There are plenty of other ways to make this faster also,</span></span><br><span class="line">  <span class="comment">// and it's a slippery slope.  For now, let's keep this code simple</span></span><br><span class="line">  <span class="comment">// since the simplicity helps clarify the atomicity semantics of</span></span><br><span class="line">  <span class="comment">// this operation.  There are also CPU-specific assembly versions</span></span><br><span class="line">  <span class="comment">// which may or may not want to include such optimizations.)</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (bits % <span class="keyword">sizeof</span>(jlong) == <span class="number">0</span>) &#123;</span><br><span class="line">    Copy::conjoint_jlongs_atomic((jlong*) src, (jlong*) dst, size / <span class="keyword">sizeof</span>(jlong));</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (bits % <span class="keyword">sizeof</span>(jint) == <span class="number">0</span>) &#123;</span><br><span class="line">    Copy::conjoint_jints_atomic((jint*) src, (jint*) dst, size / <span class="keyword">sizeof</span>(jint));</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (bits % <span class="keyword">sizeof</span>(jshort) == <span class="number">0</span>) &#123;</span><br><span class="line">    Copy::conjoint_jshorts_atomic((jshort*) src, (jshort*) dst, size / <span class="keyword">sizeof</span>(jshort));</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Not aligned, so no need to be atomic.</span></span><br><span class="line">    Copy::conjoint_jbytes((<span class="keyword">void</span>*) src, (<span class="keyword">void</span>*) dst, size);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>方法中首先会判断数据类型，进而调用对应的方法（原子操作）。如果没有字节对齐（特定的类型），也就不需要进行原子操作，接着会调用 Copy::conjoint_jbytes方法，此方法的本质就是调用C语言库函数string.h中的memmove函数。特定的三个方法大同小异，继续查看源码：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// jshorts,               conjoint, atomic on each jshort</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">conjoint_jshorts_atomic</span><span class="params">(jshort* from, jshort* to, size_t count)</span> </span>&#123;</span><br><span class="line">    assert_params_ok(from, to, LogBytesPerShort);</span><br><span class="line">    pd_conjoint_jshorts_atomic(from, to, count);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// jints,                 conjoint, atomic on each jint</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">conjoint_jints_atomic</span><span class="params">(jint* from, jint* to, size_t count)</span> </span>&#123;</span><br><span class="line">    assert_params_ok(from, to, LogBytesPerInt);</span><br><span class="line">    pd_conjoint_jints_atomic(from, to, count);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// jlongs,                conjoint, atomic on each jlong</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">conjoint_jlongs_atomic</span><span class="params">(jlong* from, jlong* to, size_t count)</span> </span>&#123;</span><br><span class="line">    assert_params_ok(from, to, LogBytesPerLong);</span><br><span class="line">    pd_conjoint_jlongs_atomic(from, to, count);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看出，它们又调用了pd为前缀的方法，继续跟进：<br>openjdk-8/openjdk/hotspot/src/cpu/zero/vm/copy_zero.hpp<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">pd_conjoint_jshorts_atomic</span><span class="params">(jshort* from, jshort* to, size_t count)</span> </span>&#123;</span><br><span class="line">  _Copy_conjoint_jshorts_atomic(from, to, count);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">pd_conjoint_jints_atomic</span><span class="params">(jint* from, jint* to, size_t count)</span> </span>&#123;</span><br><span class="line">  _Copy_conjoint_jints_atomic(from, to, count);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">pd_conjoint_jlongs_atomic</span><span class="params">(jlong* from, jlong* to, size_t count)</span> </span>&#123;</span><br><span class="line">  _Copy_conjoint_jlongs_atomic(from, to, count);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>再往下就是平台相关的了，找到openjdk-8/openjdk/hotspot/src/os_cpu/linux_zero/vm/os_linux_zero.cpp文件：<br><code>_Copy_conjoint_jints_atomic</code>方法：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> _Copy_conjoint_jints_atomic(jint* from, jint* to, <span class="keyword">size_t</span> count) &#123;</span><br><span class="line">    <span class="keyword">if</span> (from &gt; to) &#123;</span><br><span class="line">      jint *end = from + count;</span><br><span class="line">      <span class="keyword">while</span> (from &lt; end)</span><br><span class="line">        *(to++) = *(from++);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (from &lt; to) &#123;</span><br><span class="line">      jint *end = from;</span><br><span class="line">      from += count - <span class="number">1</span>;</span><br><span class="line">      to   += count - <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">while</span> (from &gt;= end)</span><br><span class="line">        *(to--) = *(from--);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>终于找到具体实现了！有一种似曾相识的感觉呢，很经典的复制代码。</p>
+<p><code>_Copy_conjoint_jshorts_atomic</code>方法与其实现相同，而<code>_Copy_conjoint_jlongs_atomic</code>方法在最后一句用了细化的原子操作，以处理64位的数据：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (from &gt;= end)</span><br><span class="line">        os::atomic_copy64(from--, to--);</span><br></pre></td></tr></table></figure></p>
+<p>下面就是原子操作对应的代码。在特定平台会通过汇编进行优化，其他平台都是简单的一句<code><em>(jlong </em>) dst = <em>(jlong </em>) src</code><br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// Atomically copy 64 bits of data</span><br><span class="line">  static void atomic_copy64(volatile void *src, volatile void *dst) &#123;</span><br><span class="line">#if defined(PPC) &amp;&amp; !defined(_LP64)</span><br><span class="line">    double tmp;</span><br><span class="line">    asm volatile ("lfd  %0, 0(%1)\n"</span><br><span class="line">                  "stfd %0, 0(%2)\n"</span><br><span class="line">                  : "=f"(tmp)</span><br><span class="line">                  : "b"(src), "b"(dst));</span><br><span class="line">#elif defined(S390) &amp;&amp; !defined(_LP64)</span><br><span class="line">    double tmp;</span><br><span class="line">    asm volatile ("ld  %0, 0(%1)\n"</span><br><span class="line">                  "std %0, 0(%2)\n"</span><br><span class="line">                  : "=r"(tmp)</span><br><span class="line">                  : "a"(src), "a"(dst));</span><br><span class="line">#else</span><br><span class="line">    *(jlong *) dst = *(jlong *) src;</span><br><span class="line">#endif</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>至此，数组复制的过程结束。下面解析另一个方法。</p>
+<h4 id="对象模型里的copy_array方法">对象模型里的copy_array方法</h4><p>要想读oops文件夹里的代码，需要对JVM的对象模型（oop和klass）有一定的了解。<br>此方法，甚妙。代码在objArrayKlass.cpp文件中:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> ObjArrayKlass::copy_array(arrayOop s, <span class="keyword">int</span> src_pos, arrayOop d,</span><br><span class="line">                               <span class="keyword">int</span> dst_pos, <span class="keyword">int</span> length, TRAPS) &#123;</span><br><span class="line">  assert(s-&gt;is_objArray(), <span class="string">"must be obj array"</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!d-&gt;is_objArray()) &#123;</span><br><span class="line">    THROW(vmSymbols::java_lang_ArrayStoreException());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check is all offsets and lengths are non negative</span></span><br><span class="line">  <span class="keyword">if</span> (src_pos &lt; <span class="number">0</span> || dst_pos &lt; <span class="number">0</span> || length &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    THROW(vmSymbols::java_lang_ArrayIndexOutOfBoundsException());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Check if the ranges are valid</span></span><br><span class="line">  <span class="keyword">if</span>  ( (((<span class="keyword">unsigned</span> <span class="keyword">int</span>) length + (<span class="keyword">unsigned</span> <span class="keyword">int</span>) src_pos) &gt; (<span class="keyword">unsigned</span> <span class="keyword">int</span>) s-&gt;length())</span><br><span class="line">     || (((<span class="keyword">unsigned</span> <span class="keyword">int</span>) length + (<span class="keyword">unsigned</span> <span class="keyword">int</span>) dst_pos) &gt; (<span class="keyword">unsigned</span> <span class="keyword">int</span>) d-&gt;length()) ) &#123;</span><br><span class="line">    THROW(vmSymbols::java_lang_ArrayIndexOutOfBoundsException());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Special case. Boundary cases must be checked first</span></span><br><span class="line">  <span class="comment">// This allows the following call: copy_array(s, s.length(), d.length(), 0).</span></span><br><span class="line">  <span class="comment">// This is correct, since the position is supposed to be an 'in between point', i.e., s.length(),</span></span><br><span class="line">  <span class="comment">// points to the right of the last element.</span></span><br><span class="line">  <span class="keyword">if</span> (length==<span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (UseCompressedOops) &#123;</span><br><span class="line">    narrowOop* <span class="keyword">const</span> src = objArrayOop(s)-&gt;obj_at_addr&lt;narrowOop&gt;(src_pos);</span><br><span class="line">    narrowOop* <span class="keyword">const</span> dst = objArrayOop(d)-&gt;obj_at_addr&lt;narrowOop&gt;(dst_pos);</span><br><span class="line">    do_copy&lt;narrowOop&gt;(s, src, d, dst, length, CHECK);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    oop* <span class="keyword">const</span> src = objArrayOop(s)-&gt;obj_at_addr&lt;oop&gt;(src_pos);</span><br><span class="line">    oop* <span class="keyword">const</span> dst = objArrayOop(d)-&gt;obj_at_addr&lt;oop&gt;(dst_pos);</span><br><span class="line">    do_copy&lt;oop&gt; (s, src, d, dst, length, CHECK);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，主题思想还是一样的。先做检查，然后执行复制。但是，这里的实现与上一个方法实现有很大的不同，更偏向于对象模型了。<br>UseCompressedOops是JDK 1.6新增的，在64位系统中，提供可压缩的普通对象指针。JDK 1.7开始默认启用对象压缩 。<br>貌似对象模型还分oop和narrowOop（压缩的），先检验是否压缩过，再调用do_copy方法（模板方法）:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Either oop or narrowOop depending on UseCompressedOops.</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt; <span class="keyword">void</span> ObjArrayKlass::do_copy(arrayOop s, T* src,</span><br><span class="line">                               arrayOop d, T* dst, <span class="keyword">int</span> length, TRAPS) &#123;</span><br><span class="line"></span><br><span class="line">  BarrierSet* bs = Universe::heap()-&gt;barrier_set();</span><br><span class="line">  <span class="comment">// For performance reasons, we assume we are that the write barrier we</span></span><br><span class="line">  <span class="comment">// are using has optimized modes for arrays of references.  At least one</span></span><br><span class="line">  <span class="comment">// of the asserts below will fail if this is not the case.</span></span><br><span class="line">  assert(bs-&gt;has_write_ref_array_opt(), <span class="string">"Barrier set must have ref array opt"</span>);</span><br><span class="line">  assert(bs-&gt;has_write_ref_array_pre_opt(), <span class="string">"For pre-barrier as well."</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (s == d) &#123;</span><br><span class="line">    <span class="comment">// since source and destination are equal we do not need conversion checks.</span></span><br><span class="line">    assert(length &gt; <span class="number">0</span>, <span class="string">"sanity check"</span>);</span><br><span class="line">    bs-&gt;write_ref_array_pre(dst, length);</span><br><span class="line">    Copy::conjoint_oops_atomic(src, dst, length);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// We have to make sure all elements conform to the destination array</span></span><br><span class="line">    Klass* bound = ObjArrayKlass::cast(d-&gt;klass())-&gt;element_klass();</span><br><span class="line">    Klass* stype = ObjArrayKlass::cast(s-&gt;klass())-&gt;element_klass();</span><br><span class="line">    <span class="keyword">if</span> (stype == bound || stype-&gt;is_subtype_of(bound)) &#123;</span><br><span class="line">      <span class="comment">// elements are guaranteed to be subtypes, so no check necessary</span></span><br><span class="line">      bs-&gt;write_ref_array_pre(dst, length);</span><br><span class="line">      Copy::conjoint_oops_atomic(src, dst, length);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// slow case: need individual subtype checks</span></span><br><span class="line">      <span class="comment">// note: don't use obj_at_put below because it includes a redundant store check</span></span><br><span class="line">      T* from = src;</span><br><span class="line">      T* end = from + length;</span><br><span class="line">      <span class="keyword">for</span> (T* p = dst; from &lt; end; from++, p++) &#123;</span><br><span class="line">        <span class="comment">// <span class="doctag"><span class="keyword">XXX</span></span> this is going to be slow.</span></span><br><span class="line">        T element = *from;</span><br><span class="line">        <span class="comment">// even slower now</span></span><br><span class="line">        <span class="keyword">bool</span> element_is_null = oopDesc::is_null(element);</span><br><span class="line">        oop new_val = element_is_null ? oop(NULL)</span><br><span class="line">                                      : oopDesc::decode_heap_oop_not_null(element);</span><br><span class="line">        <span class="keyword">if</span> (element_is_null ||</span><br><span class="line">            (new_val-&gt;klass())-&gt;is_subtype_of(bound)) &#123;</span><br><span class="line">          bs-&gt;write_ref_field_pre(p, new_val);</span><br><span class="line">          *p = *from;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="comment">// We must do a barrier to cover the partial copy.</span></span><br><span class="line">          <span class="keyword">const</span> <span class="keyword">size_t</span> pd = pointer_delta(p, dst, (<span class="keyword">size_t</span>)heapOopSize);</span><br><span class="line">          <span class="comment">// pointer delta is scaled to number of elements (length field in</span></span><br><span class="line">          <span class="comment">// objArrayOop) which we assume is 32 bit.</span></span><br><span class="line">          assert(pd == (<span class="keyword">size_t</span>)(<span class="keyword">int</span>)pd, <span class="string">"length field overflow"</span>);</span><br><span class="line">          bs-&gt;write_ref_array((HeapWord*)dst, pd);</span><br><span class="line">          THROW(vmSymbols::java_lang_ArrayStoreException());</span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  bs-&gt;write_ref_array((HeapWord*)dst, length);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，操作都是围绕着BarrierSet进行的。BarrierSet应该是内存屏障的集合，位于vm/memory/barrierSet.hpp文件内，待研究透JVM底层内存管理机制再过来填坑。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Java/jvm-copyArray/">arrayCopy方法底层探究</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 sczyh30 的个人博客">sczyh30</a></p>
+        <p><span>发布时间:</span>2015年09月08日</p>
+        <!--<p><span>最后更新:</span>2016年02月26日 - 16时25分</p>-->
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Java/jvm-copyArray/" title="arrayCopy方法底层探究">http://www.sczyh30.com/posts/Java/jvm-copyArray/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Java/jvm-copyArray/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0" target = "_blank">知识共享-保持署名-非商用-相同方式共享 4.0 (CC BY-NC-SA 4.0)</a><br/>转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Algorithm/algorithm-cache/">
+                    缓存算法（页面置换算法）总结
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Develop/os-learning-1/">
+                    操作系统相关知识杂谈
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#正经的copy_array方法"><span class="toc-number">1.</span> <span class="toc-text">正经的copy_array方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#对象模型里的copy_array方法"><span class="toc-number">2.</span> <span class="toc-text">对象模型里的copy_array方法</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+    <div class="share">
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more"></a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
+    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+    </div>
+    <script>
+        window._bd_share_config={
+            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+</div>
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <!-- duoshuo comment start -->
+    <div class="ds-thread" data-thread-key="posts/Java/jvm-copyArray/" data-title="arrayCopy方法底层探究" data-url="http://www.sczyh30.com/posts/Java/jvm-copyArray/"></div>
+    <!-- duoshuo comment end -->
+    <!-- duoshuo public js start -->
+    <script type="text/javascript">
+    var duoshuoQuery = {short_name: 'sczyh30'};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        /*ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';*/
+        ds.src = 'http://www.sczyh30.com/assets/embed.js'
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+    </script>
+    <!-- duoshuo public js end -->
+</div>
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Algorithm/algorithm-cache/" title="上一篇: 缓存算法（页面置换算法）总结">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Develop/os-learning-1/" title="下一篇: 操作系统相关知识杂谈">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/fp-scala-for-expression-detail/">Scala | for表达式的底层转换</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">IO模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model Summary III</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">C++ 11 Move Sementics/Perfect Forwarding</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-2/">Inside The C++ Object Model Summary II</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model Summary I</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/amqp-rabbitmq/">消息队列中间件-RabbitMQ总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-event-dispatcher/">Android事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-01/">Android View视图绘制总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表|unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-performance-1/">对Android应用性能优化的一些总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android_summary_2/">安卓开发中的一些总结（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-copyArray/">arrayCopy方法底层探究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/os-learning-1/">操作系统相关知识杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结(性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-plan/">Web开发笔记 - 前端总结计划</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-transaction-lock/">数据库事务中的隔离级别和锁</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-advanced-a1/">高级算法总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/compiler-a01/">编译原理相关 | C++编译器总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-sql-01/">数据库知识总结（一） - 基本SQL</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2016 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30.
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
