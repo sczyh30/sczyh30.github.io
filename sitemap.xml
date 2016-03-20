@@ -2,37 +2,44 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.sczyh30.com/posts/FP/haskell-04-catalogy/</loc>
+    
+    <lastmod>2016-03-18T11:54:10.745Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.sczyh30.com/posts/Java/jvm-metaspace/</loc>
     
-    <lastmod>2016-03-17T14:40:19.622Z</lastmod>
+    <lastmod>2016-03-17T14:40:26.834Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
     
-    <lastmod>2016-03-17T14:32:24.922Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Summary/database-sql-01/</loc>
-    
-    <lastmod>2016-03-17T12:06:50.013Z</lastmod>
+    <lastmod>2016-03-17T14:32:36.314Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Java/java-8-completable-future/</loc>
     
-    <lastmod>2016-03-17T12:01:59.199Z</lastmod>
+    <lastmod>2016-03-17T12:08:49.541Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Summary/database-sql-01/</loc>
+    
+    <lastmod>2016-03-17T12:06:50.438Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Network/network-io-model/</loc>
     
-    <lastmod>2016-03-17T12:00:15.798Z</lastmod>
+    <lastmod>2016-03-17T12:01:09.758Z</lastmod>
     
   </url>
   

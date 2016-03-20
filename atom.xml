@@ -97,7 +97,7 @@
     <link href="http://www.sczyh30.com/posts/Java/java-8-completable-future/"/>
     <id>http://www.sczyh30.com/posts/Java/java-8-completable-future/</id>
     <published>2016-02-29T16:00:00.000Z</published>
-    <updated>2016-03-17T12:01:59.199Z</updated>
+    <updated>2016-03-17T12:08:49.541Z</updated>
     
     <content type="html">&lt;p&gt;Future对象代表一个尚未完成异步操作的结果。从JDK 1.5以来，JUC包一直提供着最基本的Future，不过它太鸡肋了，除了&lt;code&gt;get&lt;/code&gt;、&lt;code&gt;cancel&lt;/code&gt;、&lt;code&gt;isDone&lt;/code&gt;和&lt;code&gt;isCancelled&lt;/code&gt;方法之外就没有其他的操作了，这样很不方便。好在JDK 1.8中引入了具有FRP风格的&lt;code&gt;CompletableFuture&lt;/code&gt;，它类似于Scala中的&lt;code&gt;Future&lt;/code&gt;。&lt;code&gt;CompletableFuture&lt;/code&gt;属于Monad， 因此支持一系列的函数式的组合、运算操作，非常方便，可以写出很FRP风格的代码而摆脱callback hell。&lt;/p&gt;
 &lt;p&gt;下面我们来结合FRP的思想，总结一下这些操作（&lt;em&gt;有的时候为了方便表示，我会用Haskell或Scala的语法来表示类型，毕竟Java的类型系统太渣&lt;/em&gt;）：&lt;/p&gt;
@@ -459,7 +459,7 @@
     <link href="http://www.sczyh30.com/posts/Network/network-io-model/"/>
     <id>http://www.sczyh30.com/posts/Network/network-io-model/</id>
     <published>2016-02-15T16:00:00.000Z</published>
-    <updated>2016-03-17T12:00:15.798Z</updated>
+    <updated>2016-03-17T12:01:09.758Z</updated>
     
     <content type="html">&lt;p&gt;//这里先简单总结一下，过几天有时间再详细写:)&lt;/p&gt;
 &lt;p&gt;服务器端编程常需要接触IO。最近学习Netty的时候对IO模型有了进一步的认识，这里总结一下。常见的IO模型有四种：&lt;/p&gt;
@@ -672,6 +672,32 @@
   </entry>
   
   <entry>
+    <title>TCP 流量控制</title>
+    <link href="http://www.sczyh30.com/posts/Network/tcp-flow-control/"/>
+    <id>http://www.sczyh30.com/posts/Network/tcp-flow-control/</id>
+    <published>2016-01-26T16:00:00.000Z</published>
+    <updated>2016-02-26T13:18:38.330Z</updated>
+    
+    <content type="html">&lt;p&gt;TCP 流量控制通过滑动窗口实现。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;TCP 流量控制通过滑动窗口实现。&lt;/p&gt;
+
+    
+    </summary>
+    
+      <category term="Network" scheme="http://www.sczyh30.com/categories/Network/"/>
+    
+    
+      <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
+    
+      <category term="TCP" scheme="http://www.sczyh30.com/tags/TCP/"/>
+    
+  </entry>
+  
+  <entry>
     <title>TCP Retransmission</title>
     <link href="http://www.sczyh30.com/posts/Network/tcp-retransmission/"/>
     <id>http://www.sczyh30.com/posts/Network/tcp-retransmission/</id>
@@ -716,19 +742,39 @@
   </entry>
   
   <entry>
-    <title>TCP 流量控制</title>
-    <link href="http://www.sczyh30.com/posts/Network/tcp-flow-control/"/>
-    <id>http://www.sczyh30.com/posts/Network/tcp-flow-control/</id>
-    <published>2016-01-26T16:00:00.000Z</published>
-    <updated>2016-02-26T13:18:38.330Z</updated>
+    <title>计算机网络相关知识总结</title>
+    <link href="http://www.sczyh30.com/posts/Network/network-basis/"/>
+    <id>http://www.sczyh30.com/posts/Network/network-basis/</id>
+    <published>2016-01-25T16:00:00.000Z</published>
+    <updated>2016-02-15T13:41:16.261Z</updated>
     
-    <content type="html">&lt;p&gt;TCP 流量控制通过滑动窗口实现。&lt;/p&gt;
+    <content type="html">&lt;p&gt;本文将不断更新~&lt;/p&gt;
+&lt;h1 id=&quot;网络模型&quot;&gt;网络模型&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;OSI七层模型&lt;/strong&gt;：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层&lt;/p&gt;
+&lt;p&gt;数据链路层对应的数据为Frame，网络层对应的数据为Packet，传输层对应的数据为Segment。&lt;/p&gt;
+&lt;p&gt;网络数据首先会打到TCP的Segment中，然后TCP的Segment会打到IP的Packet中，然后再打到以太网Ethernet的Frame中，传到对端后，各个层解析自己的协议，然后把数据交给更高层的协议处理。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/osi-seven-layer.png&quot; alt=&quot;The standard seven-layer OSI model&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;TCP/IP四层模型&lt;/strong&gt;：链路层、网络层(IP/ICMP/IGMP)、传输层(TCP/UDP)、应用层(如Telnet/HTTP/FTP)&lt;/p&gt;
+&lt;h1 id=&quot;IPv4_and_IPv6_Headers&quot;&gt;IPv4 and IPv6 Headers&lt;/h1&gt;&lt;p&gt;IPv4 Datagram分为首部(Header)和数据两部分。IPv4 Header由固定部分(Basic)和选项部分(Options)组成，其中固定部分的大小为20 bytes。IPv4 Header最大为60 bytes。&lt;/p&gt;
+&lt;p&gt;总结几个重要的field:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ToS(Type of Service)：DS Field(Differentiated Services Field) + ECN(Explicit Congestion Notification, 显式拥塞通知)&lt;/li&gt;
+&lt;li&gt;TTL(Time-to-Live)：数据报可以经过的最多路由数，指示了数据报的生存时间&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/ipv4-header.png&quot; alt=&quot;The IPv4 Datagram&quot;&gt;&lt;/p&gt;
+&lt;p&gt;与IPv4 Header不同，IPv6 Header具有固定的大小(40 bytes)，并且没有选项部分。但是IPv6 Header可以有扩展首部(extension headers)，其作用与Options类似。Next Header字段用于指示extension headers。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/ipv6-header.png&quot; alt=&quot;The IPv6 Header&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;大端、小端与网络字节序&quot;&gt;大端、小端与网络字节序&lt;/h1&gt;&lt;p&gt;大小端是面向多字节定义的字节存储顺序。&lt;/p&gt;
+&lt;p&gt;大端（Big-Endian）就是最高有效字节（MSB）在前，内存存储体现上，数据的高位更加靠近低地址。&lt;/p&gt;
+&lt;p&gt;小端(Little-Endian)就是最低有效字节（LSB）在前，内存存储体现上，数据的低位更加靠近低地址。&lt;/p&gt;
+&lt;p&gt;比如对字&lt;code&gt;0x01234567&lt;/code&gt;，最高有效字节为0x01，最低有效字节为0x67，那么其对应的大端存储顺序为&lt;code&gt;01 23 45 67&lt;/code&gt;，小端存储顺序为&lt;code&gt;67 45 23 01&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;对于IP数据报来说，RFC标准要求数据在网络中传输时都要求以大端字节序传输，因此网络字节序就对应Big-Endian字节序。&lt;/p&gt;
 </content>
     
     <summary type="html">
     
-      &lt;p&gt;TCP 流量控制通过滑动窗口实现。&lt;/p&gt;
-
+      &lt;p&gt;本文将不断更新~&lt;/p&gt;
+&lt;h1 id=&quot;网络模型&quot;&gt;网络模型&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;OSI七层模型&lt;/strong&gt;：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层&lt;/p&gt;
+&lt;p&gt;数据链路层对应的数据为Frame，网络层对应的数据为Packet，传输层
     
     </summary>
     
@@ -736,8 +782,6 @@
     
     
       <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
-    
-      <category term="TCP" scheme="http://www.sczyh30.com/tags/TCP/"/>
     
   </entry>
   
@@ -814,55 +858,11 @@
   </entry>
   
   <entry>
-    <title>计算机网络相关知识总结</title>
-    <link href="http://www.sczyh30.com/posts/Network/network-basis/"/>
-    <id>http://www.sczyh30.com/posts/Network/network-basis/</id>
-    <published>2016-01-25T16:00:00.000Z</published>
-    <updated>2016-02-15T13:41:16.261Z</updated>
-    
-    <content type="html">&lt;p&gt;本文将不断更新~&lt;/p&gt;
-&lt;h1 id=&quot;网络模型&quot;&gt;网络模型&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;OSI七层模型&lt;/strong&gt;：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层&lt;/p&gt;
-&lt;p&gt;数据链路层对应的数据为Frame，网络层对应的数据为Packet，传输层对应的数据为Segment。&lt;/p&gt;
-&lt;p&gt;网络数据首先会打到TCP的Segment中，然后TCP的Segment会打到IP的Packet中，然后再打到以太网Ethernet的Frame中，传到对端后，各个层解析自己的协议，然后把数据交给更高层的协议处理。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/osi-seven-layer.png&quot; alt=&quot;The standard seven-layer OSI model&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;TCP/IP四层模型&lt;/strong&gt;：链路层、网络层(IP/ICMP/IGMP)、传输层(TCP/UDP)、应用层(如Telnet/HTTP/FTP)&lt;/p&gt;
-&lt;h1 id=&quot;IPv4_and_IPv6_Headers&quot;&gt;IPv4 and IPv6 Headers&lt;/h1&gt;&lt;p&gt;IPv4 Datagram分为首部(Header)和数据两部分。IPv4 Header由固定部分(Basic)和选项部分(Options)组成，其中固定部分的大小为20 bytes。IPv4 Header最大为60 bytes。&lt;/p&gt;
-&lt;p&gt;总结几个重要的field:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ToS(Type of Service)：DS Field(Differentiated Services Field) + ECN(Explicit Congestion Notification, 显式拥塞通知)&lt;/li&gt;
-&lt;li&gt;TTL(Time-to-Live)：数据报可以经过的最多路由数，指示了数据报的生存时间&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/ipv4-header.png&quot; alt=&quot;The IPv4 Datagram&quot;&gt;&lt;/p&gt;
-&lt;p&gt;与IPv4 Header不同，IPv6 Header具有固定的大小(40 bytes)，并且没有选项部分。但是IPv6 Header可以有扩展首部(extension headers)，其作用与Options类似。Next Header字段用于指示extension headers。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/ipv6-header.png&quot; alt=&quot;The IPv6 Header&quot;&gt;&lt;/p&gt;
-&lt;h1 id=&quot;大端、小端与网络字节序&quot;&gt;大端、小端与网络字节序&lt;/h1&gt;&lt;p&gt;大小端是面向多字节定义的字节存储顺序。&lt;/p&gt;
-&lt;p&gt;大端（Big-Endian）就是最高有效字节（MSB）在前，内存存储体现上，数据的高位更加靠近低地址。&lt;/p&gt;
-&lt;p&gt;小端(Little-Endian)就是最低有效字节（LSB）在前，内存存储体现上，数据的低位更加靠近低地址。&lt;/p&gt;
-&lt;p&gt;比如对字&lt;code&gt;0x01234567&lt;/code&gt;，最高有效字节为0x01，最低有效字节为0x67，那么其对应的大端存储顺序为&lt;code&gt;01 23 45 67&lt;/code&gt;，小端存储顺序为&lt;code&gt;67 45 23 01&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;对于IP数据报来说，RFC标准要求数据在网络中传输时都要求以大端字节序传输，因此网络字节序就对应Big-Endian字节序。&lt;/p&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;本文将不断更新~&lt;/p&gt;
-&lt;h1 id=&quot;网络模型&quot;&gt;网络模型&lt;/h1&gt;&lt;p&gt;&lt;strong&gt;OSI七层模型&lt;/strong&gt;：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层&lt;/p&gt;
-&lt;p&gt;数据链路层对应的数据为Frame，网络层对应的数据为Packet，传输层
-    
-    </summary>
-    
-      <category term="Network" scheme="http://www.sczyh30.com/categories/Network/"/>
-    
-    
-      <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
-    
-  </entry>
-  
-  <entry>
     <title>深入探究JVM | klass-oop对象模型研究</title>
     <link href="http://www.sczyh30.com/posts/Java/jvm-klass-oop/"/>
     <id>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</id>
     <published>2016-01-05T16:00:00.000Z</published>
-    <updated>2016-03-17T14:32:24.922Z</updated>
+    <updated>2016-03-17T14:32:36.314Z</updated>
     
     <content type="html">&lt;p&gt;&lt;em&gt;之前理解有些偏差，因此最近重新写了这篇文章。&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;最近对JVM兴趣大增（其实是想回归C艹的怀抱了）~&lt;br&gt;当我们在写Java代码的时候，我们会面对着无数个接口，类，对象和方法。但我们有木有想过，Java中的这些对象、类和方法，在HotSpot JVM中的结构又是怎么样呢？HotSpot JVM底层都是C++实现的，那么Java的对象模型与C++对象模型之间又有什么关系呢？今天就来分析一下HotSpot JVM中的对象模型：oop-klass model，它们的源码位于openjdk-8/openjdk/hotspot/src/share/vm/oops文件夹内。&lt;/p&gt;
