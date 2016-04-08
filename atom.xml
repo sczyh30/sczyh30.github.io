@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/"/>
-  <updated>2016-04-08T05:55:02.192Z</updated>
+  <updated>2016-04-08T12:35:59.885Z</updated>
   <id>http://www.sczyh30.com/</id>
   
   <author>
@@ -16,11 +16,64 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>在Linux环境下玩转MIDI</title>
+    <link href="http://www.sczyh30.com/posts/Miscellaneous/play-music-on-linux/"/>
+    <id>http://www.sczyh30.com/posts/Miscellaneous/play-music-on-linux/</id>
+    <published>2016-04-07T16:00:00.000Z</published>
+    <updated>2016-04-08T12:35:59.885Z</updated>
+    
+    <content type="html">&lt;p&gt;今天在Ubuntu下搭了各种MIDI环境，为后边玩 &lt;em&gt;Haskell School of Music&lt;/em&gt; 中讲的Euterpea音乐库做准备。&lt;/p&gt;
+&lt;h1 id=&quot;ASLA&quot;&gt;ASLA&lt;/h1&gt;&lt;p&gt;首先介绍一下ASLA(Advanced Linux Sound Architecture)，它为Linux提供了MIDI和音频功能，相当于Linux下音频的基础。Ubuntu应该自带ALSA。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://tedfelix.com/linux/linux-midi.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;查看一下当前系统的内核：&lt;br&gt;&lt;figure class=&quot;highlight elixir&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;sczyh3&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;variable&quot;&gt;@sczyh30&lt;/span&gt;-&lt;span class=&quot;symbol&quot;&gt;workshop:&lt;/span&gt;~&lt;span class=&quot;variable&quot;&gt;$ &lt;/span&gt; uname -a&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;constant&quot;&gt;Linux &lt;/span&gt;sczyh3&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;-workshop &lt;span class=&quot;number&quot;&gt;3.19&lt;/span&gt;.&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;-&lt;span class=&quot;number&quot;&gt;49&lt;/span&gt;-generic &lt;span class=&quot;comment&quot;&gt;#55-Ubuntu SMP Fri Jan 22 02:10:24 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;由于玩MIDI对时间要求严格，不能卡顿，因此推荐用低延时的内核(Low Latency Kernel)，可以通过&lt;code&gt;sudo apt-get install linux-lowlatency&lt;/code&gt;安装然后调整&lt;code&gt;CONFIG_HZ&lt;/code&gt;参数。&lt;/p&gt;
+&lt;p&gt;然后我们来查看一下ALSA设备：&lt;br&gt;&lt;figure class=&quot;highlight tcl&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;sczyh30@sczyh30-workshop:~$  cat /&lt;span class=&quot;keyword&quot;&gt;proc&lt;/span&gt;/asound/cards&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; 0 [HDMI           ]:&lt;span class=&quot;symbol&quot;&gt; HDA-Intel&lt;/span&gt; -&lt;span class=&quot;symbol&quot;&gt; HDA&lt;/span&gt; Intel&lt;span class=&quot;symbol&quot;&gt; HDMI&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;symbol&quot;&gt;                      HDA&lt;/span&gt; Intel&lt;span class=&quot;symbol&quot;&gt; HDMI&lt;/span&gt; at 0xf7b14000&lt;span class=&quot;symbol&quot;&gt; irq&lt;/span&gt; 34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; 1 [PCH            ]:&lt;span class=&quot;symbol&quot;&gt; HDA-Intel&lt;/span&gt; -&lt;span class=&quot;symbol&quot;&gt; HDA&lt;/span&gt; Intel&lt;span class=&quot;symbol&quot;&gt; PCH&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;symbol&quot;&gt;                      HDA&lt;/span&gt; Intel&lt;span class=&quot;symbol&quot;&gt; PCH&lt;/span&gt; at 0xf7b10000&lt;span class=&quot;symbol&quot;&gt; irq&lt;/span&gt; 33&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;从出现的列表看不出哪个是声卡设备，因此再用&lt;code&gt;aplay&lt;/code&gt;命令看一下详细信息：&lt;/p&gt;
+&lt;figure class=&quot;highlight gherkin&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;sczyh30&lt;span class=&quot;comment&quot;&gt;@sczyh30-workshop:~$  aplay -l&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt; PLAYBACK 硬體裝置清單 &lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;keyword&quot;&gt;*&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;card 0: HDMI [HDA Intel HDMI], device 3: HDMI 0 [HDMI 0]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备: 1/1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备 &lt;span class=&quot;comment&quot;&gt;#0: subdevice #0&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;card 0: HDMI [HDA Intel HDMI], device 7: HDMI 1 [HDMI 1]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备: 1/1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备 &lt;span class=&quot;comment&quot;&gt;#0: subdevice #0&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;card 0: HDMI [HDA Intel HDMI], device 8: HDMI 2 [HDMI 2]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备: 1/1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备 &lt;span class=&quot;comment&quot;&gt;#0: subdevice #0&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;card 1: PCH [HDA Intel PCH], device 0: ALC892 Analog [ALC892 Analog]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备: 0/1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备 &lt;span class=&quot;comment&quot;&gt;#0: subdevice #0&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;card 1: PCH [HDA Intel PCH], device 1: ALC892 Digital [ALC892 Digital]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备: 1/1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  子设备 &lt;span class=&quot;comment&quot;&gt;#0: subdevice #0&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;可以看到card 1位置为声卡，在ALSA设备里表示为&lt;code&gt;hw:1&lt;/code&gt;，当然card 1处有两个子设备，可以分别用&lt;code&gt;hw:1,0&lt;/code&gt;和&lt;code&gt;hw:1,1&lt;/code&gt;表示。在下边调用ALSA设备的时候都会用到&lt;code&gt;hw:1&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;下面来测试一下ALSA音频功能。首先通过&lt;code&gt;sox&lt;/code&gt;命令生成一段音频，然后用&lt;code&gt;aplay&lt;/code&gt;播放：&lt;br&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;sox -b &lt;span class=&quot;number&quot;&gt;16&lt;/span&gt; -n test.wav rate &lt;span class=&quot;number&quot;&gt;44100&lt;/span&gt; channels &lt;span class=&quot;number&quot;&gt;2&lt;/span&gt; synth &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; sine &lt;span class=&quot;number&quot;&gt;440&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;aplay -D hw:&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; test.wav&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;正常情况下会听到”滴”的一声，代表设备正常，否则就是设备设置的不对。如果提示设备忙，那么可能是其它程序（比如pulseaudio）占用了。&lt;/p&gt;
+&lt;h1 id=&quot;FluidSynth&quot;&gt;FluidSynth&lt;/h1&gt;&lt;p&gt;下面来玩一下 &lt;strong&gt;FluidSynth&lt;/strong&gt; ，它是一个音频合成器。它可以将MIDI数据通过&lt;code&gt;soundfont&lt;/code&gt;转化为音频。先安装：&lt;code&gt;sudo apt-get install fluidsynth&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;fluidsynth可以用来播放MIDI文件，命令：&lt;br&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;fluidsynth --audio-driver=alsa -o audio.alsa.device=hw:&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; /usr/share/sounds/sf2/FluidR3_GM.sf2 song.mid&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;当然fluidsynth也可以接受其它程序传输的MIDI数据并转化为音频。这时候fluidsynth将作为一个“音频服务器”。它会等待其它程序与它建立连接，并发送MIDI数据。命令：&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;fluidsynth --server --audio-driver=alsa -o audio.alsa.device=hw:&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; /usr/share/sounds/sf2/FluidR3_GM.sf2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;此时fluidsynth已开始运行，用&lt;code&gt;aplaymidi -l&lt;/code&gt;命令可以看到fluidsynth正在监听的端口：&lt;br&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;sczyh30@sczyh30-workshop:~$ aplaymidi &lt;span class=&quot;operator&quot;&gt;-l&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; Port    Client name                      Port name&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; &lt;span class=&quot;number&quot;&gt;14&lt;/span&gt;:&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;    Midi Through                     Midi Through Port-&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;number&quot;&gt;128&lt;/span&gt;:&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;    FLUID Synth (&lt;span class=&quot;number&quot;&gt;26298&lt;/span&gt;)              Synth input port (&lt;span class=&quot;number&quot;&gt;26298&lt;/span&gt;:&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;然后就可以往这个端口传输MIDI数据，比如MIDI文件：&lt;code&gt;aplaymidi -p 128:0 song.mid&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;再来玩一下VMPK(Virtual MIDI Pinao Keyboard)，它是个MIDI Piano，产生MIDI数据。首先先安装：&lt;code&gt;sudo apt-get install vmpk&lt;/code&gt;，然后启动。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/linux-piano-1.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;这时候由于没有与音频设备建立连接，按琴键的时候不会有声音。我们需要通过&lt;code&gt;aconnect&lt;/code&gt;命令与fluidsynth建立连接。首先查看一下当前的Audio IO：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/linux-vmpk-config-bash.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;sczyh30@sczyh30-workshop:~$ aconnect -i&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;client &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&#39;System&#39;&lt;/span&gt; [&lt;span class=&quot;built_in&quot;&gt;type&lt;/span&gt;=内核]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Timer           &#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Announce        &#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;client &lt;span class=&quot;number&quot;&gt;14&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&#39;Midi Through&#39;&lt;/span&gt; [&lt;span class=&quot;built_in&quot;&gt;type&lt;/span&gt;=内核]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Midi Through Port-0&#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;client &lt;span class=&quot;number&quot;&gt;129&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&#39;VMPK Output&#39;&lt;/span&gt; [&lt;span class=&quot;built_in&quot;&gt;type&lt;/span&gt;=用户]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;VMPK Output     &#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;sczyh30@sczyh30-workshop:~$ aconnect -o&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;client &lt;span class=&quot;number&quot;&gt;14&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&#39;Midi Through&#39;&lt;/span&gt; [&lt;span class=&quot;built_in&quot;&gt;type&lt;/span&gt;=内核]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Midi Through Port-0&#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;client &lt;span class=&quot;number&quot;&gt;128&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&#39;FLUID Synth (26298)&#39;&lt;/span&gt; [&lt;span class=&quot;built_in&quot;&gt;type&lt;/span&gt;=用户]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Synth input port (26298:0)&#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;client &lt;span class=&quot;number&quot;&gt;130&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&#39;VMPK Input&#39;&lt;/span&gt; [&lt;span class=&quot;built_in&quot;&gt;type&lt;/span&gt;=用户]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;VMPK Input      &#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;我们需要将MIDI转化为Audio，即从&lt;code&gt;VMPK&lt;/code&gt;到&lt;code&gt;FLUID Synth&lt;/code&gt;。建立连接：&lt;code&gt;aconnect 129:0 128:0&lt;/code&gt;，然后再测试一下VMPK，有声音输出了。&lt;/p&gt;
+&lt;p&gt;FluidSynth也有GUI版本&lt;code&gt;Qsynth&lt;/code&gt;，可以很方便地合成声音。&lt;/p&gt;
+&lt;h1 id=&quot;Euterpea依赖&quot;&gt;Euterpea依赖&lt;/h1&gt;&lt;p&gt;Euterpea需要asound：&lt;br&gt;&lt;figure class=&quot;highlight sh&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;apt-get install libasound2-dev jackd2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;然而现在配置好Euterpea后，无论如何play它都不发声音。。。官网说这玩意只在某些特定的Haskell版本上正常运行，也是醉了。。待调试好后再来补充。。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天在Ubuntu下搭了各种MIDI环境，为后边玩 &lt;em&gt;Haskell School of Music&lt;/em&gt; 中讲的Euterpea音乐库做准备。&lt;/p&gt;
+&lt;h1 id=&quot;ASLA&quot;&gt;ASLA&lt;/h1&gt;&lt;p&gt;首先介绍一下ASLA(Advanced Linux Sou
+    
+    </summary>
+    
+      <category term="Miscellaneous" scheme="http://www.sczyh30.com/categories/Miscellaneous/"/>
+    
+    
+      <category term="Euterpea" scheme="http://www.sczyh30.com/tags/Euterpea/"/>
+    
+      <category term="Linux" scheme="http://www.sczyh30.com/tags/Linux/"/>
+    
+      <category term="MIDI" scheme="http://www.sczyh30.com/tags/MIDI/"/>
+    
+  </entry>
+  
+  <entry>
     <title>探索万恶的Slick 3 类型系统 | Prologue</title>
     <link href="http://www.sczyh30.com/posts/Scala/slick-3-type-system-query-prolouge/"/>
     <id>http://www.sczyh30.com/posts/Scala/slick-3-type-system-query-prolouge/</id>
     <published>2016-04-06T16:00:00.000Z</published>
-    <updated>2016-04-08T05:55:02.192Z</updated>
+    <updated>2016-04-08T08:24:29.426Z</updated>
     
     <content type="html">&lt;p&gt;这两天在给Samsara Aquarius的各个Service写分页的时候，设计了一个抽象层，想把一些公共的分页逻辑放在这个trait中，但是被Slick的类型系统折磨了一点时间。。今天粗略看了一下相关的源码，结合这几天遇到的问题，总结一下。因此就把这篇文章作为Prologue吧。。。（Slick的版本为3.1.1）&lt;/p&gt;
 &lt;h1 id=&quot;蛋疼的类型参数&quot;&gt;蛋疼的类型参数&lt;/h1&gt;&lt;p&gt;在Slick里面，分页可以通过&lt;code&gt;drop&lt;/code&gt;和&lt;code&gt;take&lt;/code&gt;函数实现。&lt;code&gt;query.drop(offset).take(n)&lt;/code&gt;对应的SQL为&lt;code&gt;LIMIT n, offset&lt;/code&gt;。因此在一开始，我设计了一个trait作为分页逻辑的抽象：&lt;/p&gt;
@@ -86,7 +139,7 @@
     <link href="http://www.sczyh30.com/posts/Scala/play-framework-2-5-dependency-injection-di/"/>
     <id>http://www.sczyh30.com/posts/Scala/play-framework-2-5-dependency-injection-di/</id>
     <published>2016-03-28T16:00:00.000Z</published>
-    <updated>2016-04-07T12:30:40.048Z</updated>
+    <updated>2016-04-07T12:31:21.573Z</updated>
     
     <content type="html">&lt;p&gt;最近在将Samsara Aquarius从Play 2.4.6迁移至Play 2.5.0的时候发现，Play 2.5将一些全局对象deprcated了，并强烈建议全面使用依赖注入来代替全局对象，所以就把Aquarius的代码用DI重构了一下。其实从Play 2.4.0开始就引入了依赖注入了(基于&lt;a href=&quot;https://jcp.org/en/jsr/detail?id=330&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;JSR 330&lt;/a&gt;标准)，只不过还没有很好地推广。这里就来总结一下Play Framework中DI的使用。（本来开发的时候想保持FP风格的，无奈DI更多的是偏OO的风格。。FP与OO杂糅不好把握呀。。）&lt;/p&gt;
 &lt;h1 id=&quot;为何需要引入依赖注入&quot;&gt;为何需要引入依赖注入&lt;/h1&gt;&lt;p&gt;依赖注入(Dependency Injection)在OOP中早已是一个耳熟能详的原则了，其中Spring里用DI都用烂了。简单来说，依赖注入使得我们不需要自己创建对象，而是由容器来帮我们创建。每个组件之间不再是直接相互依赖，而是通过容器进行注入，这降低了组件之间的耦合度。这个容器就像是一个全局的大工厂，专门“生产”对象，而我们只需要进行配置（常见的通过XML文件或通过注解）。&lt;/p&gt;
@@ -139,7 +192,7 @@
     <link href="http://www.sczyh30.com/posts/Functional-Programming/functional-programming-type-and-kind/"/>
     <id>http://www.sczyh30.com/posts/Functional-Programming/functional-programming-type-and-kind/</id>
     <published>2016-03-15T16:00:00.000Z</published>
-    <updated>2016-04-07T12:26:21.766Z</updated>
+    <updated>2016-04-08T05:55:39.582Z</updated>
     
     <content type="html">&lt;p&gt;以前忘了总结了。。正好在这里总结一下 &lt;strong&gt;Type&lt;/strong&gt;, &lt;strong&gt;Type Constructor&lt;/strong&gt; 与 &lt;strong&gt;Kind&lt;/strong&gt; 这几个概念，结合Haskell和Scala。&lt;/p&gt;
 &lt;h1 id=&quot;Type,_Type_Constructor_与_Kind_(Haskell)&quot;&gt;Type, Type Constructor 与 Kind (Haskell)&lt;/h1&gt;&lt;p&gt;&lt;em&gt;Types and Programming Languages&lt;/em&gt; 里的一张图非常直观地表现了Kind与Type的意义：&lt;/p&gt;
@@ -850,6 +903,32 @@
   </entry>
   
   <entry>
+    <title>TCP 流量控制</title>
+    <link href="http://www.sczyh30.com/posts/Network/tcp-flow-control/"/>
+    <id>http://www.sczyh30.com/posts/Network/tcp-flow-control/</id>
+    <published>2016-01-26T16:00:00.000Z</published>
+    <updated>2016-02-26T13:18:38.330Z</updated>
+    
+    <content type="html">&lt;p&gt;TCP 流量控制通过滑动窗口实现。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;TCP 流量控制通过滑动窗口实现。&lt;/p&gt;
+
+    
+    </summary>
+    
+      <category term="Network" scheme="http://www.sczyh30.com/categories/Network/"/>
+    
+    
+      <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
+    
+      <category term="TCP" scheme="http://www.sczyh30.com/tags/TCP/"/>
+    
+  </entry>
+  
+  <entry>
     <title>TCP Retransmission</title>
     <link href="http://www.sczyh30.com/posts/Network/tcp-retransmission/"/>
     <id>http://www.sczyh30.com/posts/Network/tcp-retransmission/</id>
@@ -881,32 +960,6 @@
 &lt;p&gt;RTT: Round Trip Time&lt;/p&gt;
 &lt;p&gt;RTO: Retransmission Timeout（重传超时时间）&lt;/p&gt;
 &lt;h1 id=&quot;RTO_Algorithm&quot;&gt;RTO Alg
-    
-    </summary>
-    
-      <category term="Network" scheme="http://www.sczyh30.com/categories/Network/"/>
-    
-    
-      <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
-    
-      <category term="TCP" scheme="http://www.sczyh30.com/tags/TCP/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>TCP 流量控制</title>
-    <link href="http://www.sczyh30.com/posts/Network/tcp-flow-control/"/>
-    <id>http://www.sczyh30.com/posts/Network/tcp-flow-control/</id>
-    <published>2016-01-26T16:00:00.000Z</published>
-    <updated>2016-02-26T13:18:38.330Z</updated>
-    
-    <content type="html">&lt;p&gt;TCP 流量控制通过滑动窗口实现。&lt;/p&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;TCP 流量控制通过滑动窗口实现。&lt;/p&gt;
-
     
     </summary>
     
@@ -1115,7 +1168,7 @@
     <link href="http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-3/"/>
     <id>http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-3/</id>
     <published>2015-12-27T16:00:00.000Z</published>
-    <updated>2016-03-23T07:11:37.824Z</updated>
+    <updated>2016-03-23T07:33:32.142Z</updated>
     
     <content type="html">&lt;p&gt;这篇将总结C++的函数语义学相关的内容( &lt;em&gt;Inside The C++ Object Model, Chapter 4&lt;/em&gt; )。&lt;/p&gt;
 &lt;h1 id=&quot;Nonstatic_Member_Function&quot;&gt;Nonstatic Member Function&lt;/h1&gt;&lt;p&gt;非静态成员函数和普通函数的等价形式：&lt;br&gt;&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;compute&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; Strategy* sp)&lt;/span&gt;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;float&lt;/span&gt; Strategy::compute() &lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -1169,7 +1222,7 @@
     <link href="http://www.sczyh30.com/posts/C-C/cpp-stl-functional/"/>
     <id>http://www.sczyh30.com/posts/C-C/cpp-stl-functional/</id>
     <published>2015-12-19T16:00:00.000Z</published>
-    <updated>2016-03-23T07:25:33.862Z</updated>
+    <updated>2016-03-23T07:25:41.310Z</updated>
     
     <content type="html">&lt;p&gt;最近正好用到了这个，就顺便总结下吧。&lt;br&gt;C++ 11引入了函数对象标准库&lt;code&gt;&amp;lt;functional&amp;gt;&lt;/code&gt;;，里面包含各种内建的函数对象以及相关的操作函数，非常方便。这里总结一下&lt;code&gt;std::function&lt;/code&gt;和&lt;code&gt;std::bind&lt;/code&gt;的相关用法。&lt;/p&gt;
 &lt;h1 id=&quot;Callable_type&quot;&gt;Callable type&lt;/h1&gt;&lt;p&gt;Callable type指可以像调用函数一样被调用的对象或函数，包括：&lt;/p&gt;
@@ -1208,98 +1261,6 @@
       <category term="STL" scheme="http://www.sczyh30.com/tags/STL/"/>
     
       <category term="functional" scheme="http://www.sczyh30.com/tags/functional/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>C++ 11 Move Sementics/Perfect Forwarding</title>
-    <link href="http://www.sczyh30.com/posts/C-C/cpp-move-semantic/"/>
-    <id>http://www.sczyh30.com/posts/C-C/cpp-move-semantic/</id>
-    <published>2015-12-02T16:00:00.000Z</published>
-    <updated>2016-03-23T07:24:51.327Z</updated>
-    
-    <content type="html">&lt;h1 id=&quot;lvalue_&amp;amp;&amp;amp;_rvalue&quot;&gt;lvalue &amp;amp;&amp;amp; rvalue&lt;/h1&gt;&lt;p&gt;表达式可以分为lvalue（左值）和rvalue（右值）两种。&lt;br&gt;左值与右值的区别是左值具名，&lt;strong&gt;可以取址&lt;/strong&gt;并访问；而右值不具名，通常是临时的变量，不可取址，仅在当前作用域有效。&lt;br&gt;对于函数及运算符，如果返回类型是左值引用类型(A&amp;amp;)，那么返回值是左值；若返回类型是原对象类型(A)，那么返回值就是右值&lt;br&gt;举一些例子来说明：&lt;br&gt;&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; i = &lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; a = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, b = &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; *p = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;24&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::&lt;span class=&quot;built_in&quot;&gt;string&lt;/span&gt; str1 = &lt;span class=&quot;string&quot;&gt;&quot;nice&quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::&lt;span class=&quot;built_in&quot;&gt;string&lt;/span&gt; str2 = &lt;span class=&quot;string&quot;&gt;&quot;Scala&quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::&lt;span class=&quot;built_in&quot;&gt;vector&lt;/span&gt;&amp;lt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt;&amp;gt; vec;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;vec.push_back(&lt;span class=&quot;number&quot;&gt;24&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt;&amp;amp; m = &lt;span class=&quot;number&quot;&gt;666&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;Expression&lt;/th&gt;
-&lt;th&gt;Value category&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;4&lt;/td&gt;
-&lt;td&gt;rvalue&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;i&lt;/td&gt;
-&lt;td&gt;lvalue&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;a+b&lt;/td&gt;
-&lt;td&gt;rvalue&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&amp;amp;a&lt;/td&gt;
-&lt;td&gt;rvalue&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;*p&lt;/td&gt;
-&lt;td&gt;lvalue&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;++i&lt;/td&gt;
-&lt;td&gt;lvalue(前缀自增运算符直接在原变量上自增)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;i++&lt;/td&gt;
-&lt;td&gt;rvalue(后缀自增运算符先拷贝一份变量，自增后再重新赋值给原变量)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;std::string(“oye”)&lt;/td&gt;
-&lt;td&gt;rvalue&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;str1+str2&lt;/td&gt;
-&lt;td&gt;rvalue(重载的‘+’运算符返回的是一个临时的std::string对象而不是引用)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;vec[0]&lt;/td&gt;
-&lt;td&gt;lvalue(重载的[]运算符返回类型为&lt;strong&gt;int&amp;amp;&lt;/strong&gt;)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;m&lt;/td&gt;
-&lt;td&gt;lvalue(引用了一个右值，但本身是左值)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;更详细的信息见&lt;a href=&quot;http://en.cppreference.com/w/cpp/language/value_category&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Value categories&lt;/a&gt;.&lt;/p&gt;
-&lt;h1 id=&quot;Move_semantic&quot;&gt;Move semantic&lt;/h1&gt;&lt;p&gt;右值引用(移动语义)的意义：进行数据复制的时候，将动态申请的内存空间的所有权直接转让出去，不用进行大量的数据移动，既节省空间又提高效率。&lt;/p&gt;
-&lt;p&gt;被移动语义的数据交出了所有权，为了不出现析构两次同一数据区，要将交出所有权的数据的指向动态申请内存去的指针赋值为nullptr，即空指针。对空指针执行delete[]是合法的。&lt;/p&gt;
-&lt;p&gt;拷贝构造函数与移动构造函数的区别：&lt;br&gt;&lt;img src=&quot;&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;p&gt;也就是说，移动构造函数可以直接利用右值的内存空间而不用再另开辟空间进行数据的拷贝。&lt;/p&gt;
-&lt;p&gt;将左值转化为右值可以用&lt;code&gt;std::move&lt;/code&gt;，比如：&lt;br&gt;&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;f(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt;&amp;amp;&amp;amp; a);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;f(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt;&amp;amp; a);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; s = &lt;span class=&quot;number&quot;&gt;4&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;f(s); &lt;span class=&quot;comment&quot;&gt;// invoke f(&amp;amp;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;f(&lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::move(s));&lt;span class=&quot;comment&quot;&gt;// invoke f(&amp;amp;&amp;amp;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;h1 id=&quot;Perfect_forwarding&quot;&gt;Perfect forwarding&lt;/h1&gt;&lt;p&gt;有的时候，我们需要将一个函数某一组参数原封不动地传递给另一个函数。这里不仅需要参数的值不变，而且需要参数的类型属性（左值/右值，const/volatile属性)保持不变，这叫做&lt;strong&gt;Perfect Forwarding&lt;/strong&gt;（参数的精确传递）&lt;br&gt;从C++ 11开始，Perfect Forwarding可以通过&lt;code&gt;std::forward&lt;/code&gt;函数实现，其原型为：&lt;br&gt;&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// C++ 14 definition&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;template&lt;/span&gt;&amp;lt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; T &amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;constexpr&lt;/span&gt; T&amp;amp;&amp;amp; forward( &lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::remove_reference&amp;lt;T&amp;gt;::type&amp;amp; t );&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;template&lt;/span&gt;&amp;lt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; T &amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;constexpr&lt;/span&gt; T&amp;amp;&amp;amp; forward( &lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::remove_reference&amp;lt;T&amp;gt;::type&amp;amp;&amp;amp; t );&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;使用示例：&lt;br&gt;&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;preprocessor&quot;&gt;#&lt;span class=&quot;keyword&quot;&gt;include&lt;/span&gt; &amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;preprocessor&quot;&gt;#&lt;span class=&quot;keyword&quot;&gt;include&lt;/span&gt; &amp;lt;utility&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;preprocessor&quot;&gt;#&lt;span class=&quot;keyword&quot;&gt;include&lt;/span&gt; &amp;lt;memory&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; A &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt;:&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	A(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &amp;amp;&amp;amp; n) &amp;#123; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::&lt;span class=&quot;built_in&quot;&gt;cout&lt;/span&gt; &amp;lt;&amp;lt; &lt;span class=&quot;string&quot;&gt;&quot;rvalue constructor -&amp;gt; n=&quot;&lt;/span&gt; &amp;lt;&amp;lt; n &amp;lt;&amp;lt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::endl;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	A(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt;&amp;amp; n) &amp;#123; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::&lt;span class=&quot;built_in&quot;&gt;cout&lt;/span&gt; &amp;lt;&amp;lt; &lt;span class=&quot;string&quot;&gt;&quot;lvalue constructor -&amp;gt; n=&quot;&lt;/span&gt; &amp;lt;&amp;lt; n &amp;lt;&amp;lt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::endl;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;template&lt;/span&gt;&amp;lt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; T, &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; U&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::unique_ptr&amp;lt;T&amp;gt; make_unique1(U&amp;amp;&amp;amp; u) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::unique_ptr&amp;lt;T&amp;gt;(&lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; T(&lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::forward&amp;lt;U&amp;gt;(u)));&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; i = &lt;span class=&quot;number&quot;&gt;24&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;auto&lt;/span&gt; p1 = make_unique1&amp;lt;A&amp;gt;(&lt;span class=&quot;number&quot;&gt;666&lt;/span&gt;); &lt;span class=&quot;comment&quot;&gt;// rvalue forwarding&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;auto&lt;/span&gt; p2 = make_unique1&amp;lt;A&amp;gt;(i); &lt;span class=&quot;comment&quot;&gt;// lvalue forwarding&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;auto&lt;/span&gt; p3 = make_unique1&amp;lt;A&amp;gt;(&lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::move(i)); &lt;span class=&quot;comment&quot;&gt;// rvalue forwarding&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;程序运行结果：&lt;br&gt;&lt;figure class=&quot;highlight delphi&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;rvalue &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;constructor&lt;/span&gt; -&amp;gt; &lt;span class=&quot;title&quot;&gt;n&lt;/span&gt;=666&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;lvalue&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;constructor&lt;/span&gt; -&amp;gt; &lt;span class=&quot;title&quot;&gt;n&lt;/span&gt;=24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;rvalue&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;constructor&lt;/span&gt; -&amp;gt; &lt;span class=&quot;title&quot;&gt;n&lt;/span&gt;=24&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;可以看到，参数在传递时都保留了参数原本的属性。&lt;/p&gt;
-&lt;h1 id=&quot;原理&quot;&gt;原理&lt;/h1&gt;&lt;p&gt;先放上源码，后面再分析。。&lt;/p&gt;
-&lt;p&gt;源码(gcc 4.9.2)：&lt;br&gt;&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *  @brief  Forward an lvalue.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *  @return The parameter cast to the specified type.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *  This function is used to implement &quot;perfect forwarding&quot;.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;template&lt;/span&gt;&amp;lt;&lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; _Tp&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;constexpr&lt;/span&gt; _Tp&amp;amp;&amp;amp;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    forward(&lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::remove_reference&amp;lt;_Tp&amp;gt;::type&amp;amp; &lt;span class=&quot;keyword&quot;&gt;__t&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;noexcept&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123; &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static_cast&lt;/span&gt;&amp;lt;_Tp&amp;amp;&amp;amp;&amp;gt;(&lt;span class=&quot;keyword&quot;&gt;__t&lt;/span&gt;); &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *  @brief  Forward an rvalue.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *  @return The parameter cast to the specified type.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *  This function is used to implement &quot;perfect forwarding&quot;.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;template&lt;/span&gt;&amp;lt;&lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; _Tp&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;constexpr&lt;/span&gt; _Tp&amp;amp;&amp;amp;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    forward(&lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::remove_reference&amp;lt;_Tp&amp;gt;::type&amp;amp;&amp;amp; &lt;span class=&quot;keyword&quot;&gt;__t&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;noexcept&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;static_assert&lt;/span&gt;(!&lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::is_lvalue_reference&amp;lt;_Tp&amp;gt;::value, &lt;span class=&quot;string&quot;&gt;&quot;template argument&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		    &lt;span class=&quot;string&quot;&gt;&quot; substituting _Tp is an lvalue reference type&quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static_cast&lt;/span&gt;&amp;lt;_Tp&amp;amp;&amp;amp;&amp;gt;(&lt;span class=&quot;keyword&quot;&gt;__t&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *  @brief  Convert a value to an rvalue.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *  @param  __t  A thing of arbitrary type.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *  @return The parameter cast to an rvalue-reference to allow moving it.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;template&lt;/span&gt;&amp;lt;&lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; _Tp&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;constexpr&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::remove_reference&amp;lt;_Tp&amp;gt;::type&amp;amp;&amp;amp;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    move(_Tp&amp;amp;&amp;amp; &lt;span class=&quot;keyword&quot;&gt;__t&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;noexcept&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123; &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static_cast&lt;/span&gt;&amp;lt;&lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;std&lt;/span&gt;::remove_reference&amp;lt;_Tp&amp;gt;::type&amp;amp;&amp;amp;&amp;gt;(&lt;span class=&quot;keyword&quot;&gt;__t&lt;/span&gt;); &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/// remove_reference&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;template&lt;/span&gt;&amp;lt;&lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; _Tp&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; remove_reference&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123; &lt;span class=&quot;keyword&quot;&gt;typedef&lt;/span&gt; _Tp   type; &amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;template&lt;/span&gt;&amp;lt;&lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; _Tp&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; remove_reference&amp;lt;_Tp&amp;amp;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123; &lt;span class=&quot;keyword&quot;&gt;typedef&lt;/span&gt; _Tp   type; &amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;template&lt;/span&gt;&amp;lt;&lt;span class=&quot;keyword&quot;&gt;typename&lt;/span&gt; _Tp&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; remove_reference&amp;lt;_Tp&amp;amp;&amp;amp;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#123; &lt;span class=&quot;keyword&quot;&gt;typedef&lt;/span&gt; _Tp   type; &amp;#125;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;lvalue_&amp;amp;&amp;amp;_rvalue&quot;&gt;lvalue &amp;amp;&amp;amp; rvalue&lt;/h1&gt;&lt;p&gt;表达式可以分为lvalue（左值）和rvalue（右值）两种。&lt;br&gt;左值与右值的区别是左值具名，&lt;strong&gt;可以取址&lt;/strong&gt;并访问；
-    
-    </summary>
-    
-      <category term="C/C++" scheme="http://www.sczyh30.com/categories/C-C/"/>
-    
-    
-      <category term="C++" scheme="http://www.sczyh30.com/tags/C/"/>
-    
-      <category term="C++ 11" scheme="http://www.sczyh30.com/tags/C-11/"/>
     
   </entry>
   
