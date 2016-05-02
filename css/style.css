@@ -132,7 +132,7 @@ button::-moz-focus-inner {
   src: url("font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=#4.5.0") format("embedded-opentype"), url("font-awesome/fonts/fontawesome-webfont.woff?v=#4.5.0") format("woff"), url("font-awesome/fonts/fontawesome-webfont.ttf?v=#4.5.0") format("truetype"), url("font-awesome/fonts/fontawesome-webfont.svg#fontawesomeregular?v=#4.5.0") format("svg");
 }
 body {
-  font-family: "Lucida Grande", Verdana, "Helvetica Neue", Arial, sans-serif, 'PingFang SC', '文泉驿微米黑', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
+  font-family: "Lucida Grande", Verdana, "Helvetica Neue", Arial, sans-serif, '文泉驿微米黑', 'PingFang SC Medium', 'PingFang SC', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
   font-size: 16px;
   background: #fff;
   color: rgba(0,0,0,0.6);
@@ -147,7 +147,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Times, Georgia, serif, 'PingFang SC', '文泉驿微米黑', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
+  font-family: Times, Georgia, serif, '文泉驿微米黑', 'PingFang SC Medium', 'PingFang SC', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
 }
 h1,
 h2,
@@ -156,7 +156,7 @@ h3 {
 }
 h1 {
   font-size: 1.5em;
-  font-family: "Segoe UI", "Lucida Grande", Verdana, "Helvetica Neue", Arial, sans-serif, 'PingFang SC', '文泉驿微米黑', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
+  font-family: "Segoe UI", "Lucida Grande", Verdana, "Helvetica Neue", Arial, sans-serif, '文泉驿微米黑', 'PingFang SC Medium', 'PingFang SC', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
 }
 h2 {
   font-size: 1.3em;
@@ -2029,7 +2029,7 @@ li:hover {
 }
 .article-entry pre,
 .article-entry code {
-  font-family: Monaco, Consolas, "Source Code Pro", Inconsolata, Menlo, monospace, 'PingFang SC', '文泉驿微米黑', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
+  font-family: Monaco, Consolas, "Source Code Pro", Inconsolata, Menlo, monospace, '文泉驿微米黑', 'PingFang SC Medium', 'PingFang SC', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
   font-size: 1em;
 }
 .article-entry pre code {
@@ -2193,7 +2193,7 @@ pre .javascript .function {
 }
 #footer {
   font-size: 0.8em;
-  font-family: 'PingFang SC', '文泉驿微米黑', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
+  font-family: '文泉驿微米黑', 'PingFang SC Medium', 'PingFang SC', '微软雅黑', 'LiHei Pro', "Hiragino Sans GB", sans-serif;
   text-shadow: 0 1px #fff;
   position: absolute;
   bottom: 20px;

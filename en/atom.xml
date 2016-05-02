@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>sczyh30&#39;s Metaspace</title>
+  <subtitle>Follow my heart</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://www.sczyh30.com/en/"/>
+  <updated>2016-05-02T17:29:53.837Z</updated>
+  <id>http://www.sczyh30.com/en/</id>
+  
+  <author>
+    <name>Eric Zhao</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>My new blog in English</title>
+    <link href="http://www.sczyh30.com/en/2016/04/26/new-english-blog/"/>
+    <id>http://www.sczyh30.com/en/2016/04/26/new-english-blog/</id>
+    <published>2016-04-25T16:00:00.000Z</published>
+    <updated>2016-05-02T17:29:53.837Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;strong&gt;A blog in English independently is very necessary!&lt;/strong&gt;&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;This time I chose a concise and beautiful theme, &lt;a href=&quot;https://github.com/pinggod/hexo-theme-apollo&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Apollo&lt;/a&gt;. I love this theme~~&lt;/p&gt;
+&lt;h1 id=&quot;Tip-Test&quot;&gt;&lt;a href=&quot;#Tip-Test&quot; class=&quot;headerlink&quot; title=&quot;Tip Test&quot;&gt;&lt;/a&gt;Tip Test&lt;/h1&gt;&lt;div class=&quot;tip&quot;&gt;&lt;br&gt;    Note: This tip is only for font test!&lt;br&gt;    仅供测试字体使用。&lt;br&gt;&lt;/div&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;A blog in English independently is very necessary!&lt;/strong&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>

@@ -2,16 +2,142 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://www.sczyh30.com/posts/Miscellaneous/play-music-on-linux/</loc>
+    <loc>http://www.sczyh30.com/posts/Scala/play-framework-2-5-summary-1/</loc>
     
-    <lastmod>2016-04-08T12:35:59.885Z</lastmod>
+    <lastmod>2016-05-02T17:12:05.087Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/java-8-completable-future/</loc>
+    
+    <lastmod>2016-05-02T17:11:12.215Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/FP/haskell-category-basic/</loc>
+    
+    <lastmod>2016-05-02T17:07:17.313Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/C-C/cpp-stl-functional/</loc>
+    
+    <lastmod>2016-05-02T17:03:28.712Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/C-C/cpp-stl-hashmap/</loc>
+    
+    <lastmod>2016-05-02T17:03:24.281Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-1/</loc>
+    
+    <lastmod>2016-05-02T16:58:13.786Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/</loc>
+    
+    <lastmod>2016-05-02T16:30:57.569Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/type-system-refinement-types/</loc>
+    
+    <lastmod>2016-04-27T13:32:09.946Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/about/index.html</loc>
+    
+    <lastmod>2016-04-27T12:01:25.032Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/C-C/cpp-move-semantic/</loc>
+    
+    <lastmod>2016-04-27T12:00:09.733Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/type-system-existential-types-scala-java/</loc>
+    
+    <lastmod>2016-04-27T11:46:41.343Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/akka-actor-sender-enclosing/</loc>
+    
+    <lastmod>2016-04-27T11:44:05.414Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/scala-type-lambda/</loc>
+    
+    <lastmod>2016-04-21T13:09:36.354Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/scala-fp-union-curry-howard-isomorphism/</loc>
+    
+    <lastmod>2016-04-21T13:08:18.201Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
+    
+    <lastmod>2016-04-15T05:03:48.177Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/slick-3-summary-functional-relational-mapping/</loc>
+    
+    <lastmod>2016-04-12T14:05:01.739Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Scala/slick-3-type-system-query-prolouge/</loc>
     
-    <lastmod>2016-04-08T08:24:29.426Z</lastmod>
+    <lastmod>2016-04-12T12:24:24.989Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Develop/os-learning-1/</loc>
+    
+    <lastmod>2016-04-12T11:50:29.698Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-hotspot-implements/</loc>
+    
+    <lastmod>2016-04-12T11:45:23.082Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Miscellaneous/play-music-on-linux/</loc>
+    
+    <lastmod>2016-04-11T15:26:51.291Z</lastmod>
     
   </url>
   
@@ -26,13 +152,6 @@
     <loc>http://www.sczyh30.com/posts/Scala/play-framework-2-5-dependency-injection-di/</loc>
     
     <lastmod>2016-04-07T12:31:21.573Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/about/index.html</loc>
-    
-    <lastmod>2016-03-24T11:08:14.804Z</lastmod>
     
   </url>
   
@@ -107,20 +226,6 @@
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/posts/C-C/cpp-stl-functional/</loc>
-    
-    <lastmod>2016-03-23T07:25:41.310Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/C-C/cpp-move-semantic/</loc>
-    
-    <lastmod>2016-03-23T07:24:51.327Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.sczyh30.com/posts/Summary/compiler-a01/</loc>
     
     <lastmod>2016-03-23T07:24:16.189Z</lastmod>
@@ -191,44 +296,9 @@
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-1/</loc>
-    
-    <lastmod>2016-03-23T07:12:40.907Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/FP/haskell-04-catalogy/</loc>
-    
-    <lastmod>2016-03-18T11:54:42.674Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.sczyh30.com/posts/Java/jvm-metaspace/</loc>
     
     <lastmod>2016-03-17T14:40:26.834Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
-    
-    <lastmod>2016-03-17T14:32:36.314Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/java-8-completable-future/</loc>
-    
-    <lastmod>2016-03-17T12:08:49.541Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Summary/database-sql-01/</loc>
-    
-    <lastmod>2016-03-17T12:06:50.438Z</lastmod>
     
   </url>
   
@@ -243,13 +313,6 @@
     <loc>http://www.sczyh30.com/posts/Java/java-concurrent-threadlocal/</loc>
     
     <lastmod>2016-03-17T11:36:45.730Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-hotspot-implements/</loc>
-    
-    <lastmod>2016-03-13T14:51:37.544Z</lastmod>
     
   </url>
   
@@ -317,16 +380,9 @@
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/fp-scala-for-expression-detail/</loc>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/scala-fp-for-expression-detail/</loc>
     
     <lastmod>2016-03-06T12:17:48.732Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/fp-scala-union-curry-howard-isomorphism/</loc>
-    
-    <lastmod>2016-03-06T09:15:51.052Z</lastmod>
     
   </url>
   
@@ -352,13 +408,6 @@
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/posts/C-C/cpp-stl-hashmap/</loc>
-    
-    <lastmod>2016-02-26T08:15:50.151Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.sczyh30.com/posts/Java/java-reflection-2/</loc>
     
     <lastmod>2016-02-26T07:35:34.629Z</lastmod>
@@ -376,13 +425,6 @@
     <loc>http://www.sczyh30.com/posts/Develop/game-dev-unity/</loc>
     
     <lastmod>2016-02-26T05:39:48.672Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Develop/os-learning-1/</loc>
-    
-    <lastmod>2016-02-20T09:51:28.421Z</lastmod>
     
   </url>
   
@@ -418,13 +460,6 @@
     <loc>http://www.sczyh30.com/posts/Network/network-basis/</loc>
     
     <lastmod>2016-02-15T13:41:16.261Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-2/</loc>
-    
-    <lastmod>2015-12-29T16:39:41.632Z</lastmod>
     
   </url>
   

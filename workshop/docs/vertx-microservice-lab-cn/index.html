@@ -1,0 +1,2870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.4">
+<meta name="author" content="作者：Clement Escoffier, Julien Viet；译者：赵奕豪(Eric Zhao)">
+<title>Vert.x - 从零基础迈向微服务之巅</title>
+<style>
+@import "asciidoctor.css";
+
+h1 {
+    font-size: 46px;
+}
+
+.h2, h2 {
+    font-size: 38px;
+}
+
+.h3, h3 {
+    font-size: 33px;
+}
+
+.h4, h4 {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+
+#toctitle, .h1, .h2, .h3, h1, h2, h3 {
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+#toctitle, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    font-family: inherit;
+    line-height: 1.1;
+    color: inherit;
+}
+h1 {
+    margin: .67em 0;
+}
+
+a {
+    background-color: transparent;
+    color: #782b90;
+    text-decoration: none;
+}
+
+p {
+    margin: 0 0 12px;
+    font-size: 1.5em;
+}
+
+.toc li {
+    font-size: inherit;
+}
+
+.sect1 li, .sect2 li, .sect3 li {
+    font-size: 1.5em;
+}
+
+li p {
+    font-size: 1em;
+}
+
+
+code {
+    color: #c7254e;
+    background-color: #f9f2f4;
+}
+
+ul, ol {
+    margin-left: 3.5em;
+}
+
+*:not(pre) > code {
+    font-size: .8em;
+}
+
+pre code {
+    background-color: #f7f7f8;
+}
+
+code, kbd, pre, samp {
+    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+}
+
+.quoteblock blockquote:before {
+    color: #782b90;
+}
+
+sup.footnote {
+    vertical-align: baseline;
+}
+
+.assignment::before {
+    content: "提示：你可以自己选择是先自己实现一下功能还是直接参考解答。";
+    font-weight: bold;
+    font-size: larger;
+    height: 35px;
+    display: block;
+    color: #782b90;
+}
+
+</style>
+<style>
+/* Stylesheet for CodeRay to match GitHub theme | MIT License | http://foundation.zurb.com */
+/*pre.CodeRay {background-color:#f7f7f8;}*/
+.CodeRay .line-numbers{border-right:1px solid #d8d8d8;padding:0 0.5em 0 .25em}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.5em;color:rgba(0,0,0,.3)}
+.CodeRay .line-numbers strong{color:rgba(0,0,0,.4)}
+table.CodeRay{border-collapse:separate;border-spacing:0;margin-bottom:0;border:0;background:none}
+table.CodeRay td{vertical-align: top;line-height:1.45}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.line-numbers>pre{padding:0;color:rgba(0,0,0,.3)}
+table.CodeRay td.code{padding:0 0 0 .5em}
+table.CodeRay td.code>pre{padding:0}
+.CodeRay .debug{color:#fff !important;background:#000080 !important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:#000080}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:#008080}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:#008080}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:#008080}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword {color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:#008080}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
+</head>
+<body class="article">
+<div id="header">
+<h1>Vert.x - 从零基础迈向微服务之巅</h1>
+<div class="details">
+<span id="author" class="author">作者：Clement Escoffier, Julien Viet；译者：赵奕豪(Eric Zhao)</span><br>
+<span id="revnumber">version 0.2,</span>
+<span id="revdate">2016年5月3日</span>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div id="toc" class="toc">
+<div id="toctitle" class="title">目录</div>
+<ul class="sectlevel1">
+<li><a href="#_序言">1. 序言</a></li>
+<li><a href="#_vert_x">2. Vert.x</a></li>
+<li><a href="#_解道微服务">3. 解道微服务</a></li>
+<li><a href="#_微服务应用_微型交易系统">4. 微服务应用 —— 微型交易系统</a></li>
+<li><a href="#_环境准备">5. 环境准备</a>
+<ul class="sectlevel2">
+<li><a href="#_硬件要求">5.1. 硬件要求</a></li>
+<li><a href="#_docker">5.2. Docker</a>
+<ul class="sectlevel3">
+<li><a href="#_docker工具箱_安装包">5.2.1. Docker工具箱/安装包</a></li>
+<li><a href="#_镜像">5.2.2. 镜像</a></li>
+<li><a href="#_创建docker主机映射">5.2.3. 创建Docker主机映射</a></li>
+</ul>
+</li>
+<li><a href="#_jdk">5.3. JDK</a></li>
+<li><a href="#_maven">5.4. Maven</a></li>
+<li><a href="#_ide">5.5. IDE</a>
+<ul class="sectlevel3">
+<li><a href="#_没有安装ide">5.5.1. 没有安装IDE ?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_开始">6. 开始！</a>
+<ul class="sectlevel2">
+<li><a href="#_获取源码">6.1. 获取源码</a></li>
+<li><a href="#_构建">6.2. 构建</a></li>
+<li><a href="#_集群与服务发现架构">6.3. 集群与服务发现架构</a></li>
+</ul>
+</li>
+<li><a href="#_第一个vert_x微服务_报价生成器">7. 第一个Vert.x微服务 - 报价生成器</a>
+<ul class="sectlevel2">
+<li><a href="#_项目结构">7.1. 项目结构</a></li>
+<li><a href="#_verticle">7.2. Verticle</a></li>
+<li><a href="#_合并端点_the_consolidation_endpoint">7.3. 合并端点(The consolidation endpoint)</a>
+<ul class="sectlevel3">
+<li><a href="#_实现接收事件的handler">7.3.1. 实现接收事件的Handler</a></li>
+<li><a href="#_实现处理http请求的handler">7.3.2. 实现处理HTTP请求的Handler</a></li>
+</ul>
+</li>
+<li><a href="#_是时候启动报价生成器了">7.4. 是时候启动报价生成器了</a></li>
+<li><a href="#_并非一个金融学专家">7.5. 并非一个金融学专家？</a></li>
+</ul>
+</li>
+<li><a href="#_event_bus_服务_投资组合服务">8. Event Bus 服务 - 投资组合服务</a>
+<ul class="sectlevel2">
+<li><a href="#_rpc与异步rpc">8.1. RPC与异步RPC</a></li>
+<li><a href="#_异步服务接口">8.2. 异步服务接口</a></li>
+<li><a href="#_数据实体对象">8.3. 数据实体对象</a></li>
+<li><a href="#_实现服务">8.4. 实现服务</a>
+<ul class="sectlevel3">
+<li><a href="#_创建asyncresult">8.4.1. 创建AsyncResult</a></li>
+<li><a href="#_将事件发送至event_bus">8.4.2. 将事件发送至Event Bus</a></li>
+<li><a href="#_整合异步方法_访问http端点_投资组合价值评估">8.4.3. 整合异步方法，访问HTTP端点 - 投资组合价值评估</a></li>
+</ul>
+</li>
+<li><a href="#_发布服务">8.5. 发布服务</a></li>
+<li><a href="#_启动服务">8.6. 启动服务！</a></li>
+</ul>
+</li>
+<li><a href="#_交易者服务">9. 交易者服务</a>
+<ul class="sectlevel2">
+<li><a href="#_交易者">9.1. 交易者</a></li>
+<li><a href="#_部署多个实例以及多种语言编写的verticle">9.2. 部署多个实例以及多种语言编写的Verticle</a></li>
+<li><a href="#_java版本的交易者">9.3. Java版本的交易者</a>
+<ul class="sectlevel3">
+<li><a href="#_1_对交易者进行初始化">9.3.1. 1. 对交易者进行初始化</a></li>
+<li><a href="#_2_获取我们需要的两个服务">9.3.2. 2. 获取我们需要的两个服务</a></li>
+<li><a href="#_3_执行交易逻辑">9.3.3. 3. 执行交易逻辑</a></li>
+<li><a href="#_完整代码">9.3.4. 完整代码</a></li>
+<li><a href="#_运行这个交易者服务">9.3.5. 运行这个交易者服务</a></li>
+</ul>
+</li>
+<li><a href="#_groovy版本的交易者">9.4. Groovy版本的交易者</a></li>
+</ul>
+</li>
+<li><a href="#_审计服务">10. 审计服务</a>
+<ul class="sectlevel2">
+<li><a href="#_以异步方式获取数据">10.1. 以异步方式获取数据</a></li>
+<li><a href="#_审计服务_2">10.2. 审计服务</a></li>
+<li><a href="#_通过组合future来对审计服务进行初始化">10.3. 通过组合Future来对审计服务进行初始化</a></li>
+<li><a href="#_配置http服务端_异步方法模式">10.4. 配置HTTP服务端 - 异步方法模式</a></li>
+<li><a href="#_通过链式操作组合来对数据库进行初始化">10.5. 通过链式操作组合来对数据库进行初始化</a></li>
+<li><a href="#_通过基于回调的操作从数据库中查询结果">10.6. 通过基于回调的操作从数据库中查询结果</a></li>
+<li><a href="#_展示时间">10.7. 展示时间！</a></li>
+</ul>
+</li>
+<li><a href="#_仪表板_dashboard_详解">11. 仪表板(Dashboard)详解</a>
+<ul class="sectlevel2">
+<li><a href="#_vert_x_web与静态文件">11.1. Vert.x Web与静态文件</a></li>
+<li><a href="#_sockjs_event_bus_通信通道">11.2. SockJS - Event Bus 通信通道</a></li>
+<li><a href="#_委托rest调用">11.3. 委托REST调用</a></li>
+<li><a href="#_在浏览器端使用event_bus服务">11.4. 在浏览器端使用Event Bus服务</a></li>
+</ul>
+</li>
+<li><a href="#_终">12. 终</a></li>
+<li><a href="#_引用">13. 引用</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_序言">1. 序言</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>我们从头开始～ <strong>Vert.x</strong> 是啥？这是一个非常好的问题，也是一个好的开端。如果你去访问 <a href="http://vertx.io">Vert.x 官网</a> 的话，你会发现
+Vert.x的定义是 <em>“一个在JVM上构建响应式应用的工具集(toolkit)”</em> 。是不是感觉这个定义有些模糊呢？
+工具集是什么？响应式应用又是什么？在这个实验中，我们将会详细解释这些词，并且通过使用Vert.x构建应用来描述Vert.x
+究竟是什么。这个应用将由 <em>微服务</em> 构成。这是另一个时髦的词汇吗？不不不，Vert.x在大家顺应潮流之前
+就已经开始推广 <em>微服务</em> 了。</p>
+</div>
+<div class="paragraph">
+<p>我们开发的应用将会是：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>基于Vert.x（这也是你来到这里的原因，不是吗？）</p>
+</li>
+<li>
+<p>分布式的</p>
+</li>
+<li>
+<p>响应式的</p>
+</li>
+<li>
+<p>非常有趣的！</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>这个实验提供给参与者一个入门级的、能够亲自实践的一个环境，借助Vert.x，从构建服务，到使用服务，最后把所有的东西组合成一个完整的响应式系统。它可以描述何为响应式系统，何为响应式编程，以及如何去构建基于响应式微服务 <strong>集群</strong> 的应用。</p>
+</div>
+<div class="paragraph">
+<p>这是一个BYOL（bring your own laptop，使用您自己的笔记本电脑）环境，所以带上您的装有Windows，OS X，或Linux的
+笔记本电脑。你也需要安装Docker，这并不是因为Vert.x需要依赖Docker（它不需要），而是模拟分布式系统所需要。</p>
+</div>
+<div class="paragraph">
+<p>在下面的部分中，我们将会学习：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Vert.x是什么，以及如何利用它的异步、非阻塞开发模型</p>
+</li>
+<li>
+<p>如何利用Vert.x开发包含几种服务类型的微服务，以及实现服务发现功能</p>
+</li>
+<li>
+<p><code>Verticle</code> 是什么，以及如何去使用</p>
+</li>
+<li>
+<p>如何利用Vert.x的Event Bus发送和接收消息</p>
+</li>
+<li>
+<p>如何利用Vert.x向其它服务提供HTTP端点，以及如何去调用REST API</p>
+</li>
+<li>
+<p>如何对异步操作进行组合</p>
+</li>
+<li>
+<p>如何使用多种编程语言开发一个应用</p>
+</li>
+<li>
+<p>如何使用数据库</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>当然还有其它许许多多的东西等你探究。。。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x">2. Vert.x</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>让我们首先在几行之内解释一下Vert.x是什么。正如之前的章节所说的，Vert.x是 <em>“一个在JVM上构建
+响应式应用的工具集(toolkit)”</em> 。</p>
+</div>
+<div class="paragraph">
+<p>这里面第一个重要的词是 <strong>工具集</strong> 。所以，Vert.x不是一个应用服务器，也不是一个容器或一个框架。
+Vert.x就是一个 <code>jar</code> 包，所以一个Vert.x应用就是一个使用 <code>jar</code> 包的应用。
+Vert.x没有自己定义一个打包模型，每个Vert.x <strong>组件</strong> 都是普通的 <code>jar</code> 文件。
+我们假设你正在使用某种构建工具以给你的应用添加 <code>vertx-core</code> 依赖，比如 Maven 或 Gradle。
+如果希望使用某一个Vert.x组件，只要把它作为一个依赖添加到构建文件里即可，这非常简单。</p>
+</div>
+<div class="paragraph">
+<p>要想利用Vert.x提供的各种优美功能，你只需要编写对应的代码，就像使用工具一样。耐心一点，我们将在下面介绍它的使用。</p>
+</div>
+<div class="paragraph">
+<p>另一个重要的词是 <strong>响应式(reactive)</strong> 。Vert.x就是为构建响应式应用（系统）而设计的。响应式系统这个概念在
+<a href="http://reactivemanifesto.org">Reactive Manifesto</a> 中有详细的定义。尽管那篇文章读起来用时不长，
+我们在这里总结4个重点：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>响应式的(Responsive)：一个响应式系统需要在 <em>合理</em> 的时间内处理请求（何谓合理？我把它交给您来定义）。</p>
+</li>
+<li>
+<p>弹性的(Resilient)：一个响应式系统必须在遇到 <em>异常</em> （崩溃，超时， <code>500</code> 错误等等）的时候保持响应的能力，
+所以它必须要为 <em>异常处理</em> 而设计。</p>
+</li>
+<li>
+<p>可伸缩的(Elastic)：一个响应式系统必须在不同的负载情况下都要保持响应能力，所以它必须能伸能缩，
+并且可以利用最少的资源来处理负载。</p>
+</li>
+<li>
+<p>消息驱动：一个响应式系统的各个组件之间通过 <strong>异步消息传递</strong> 来进行交互。</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>其中最后一条展示了Vert.x的本质 - 它是事件驱动的，也是非阻塞的。事件在 <em>Event Loop</em> 线程里进行传递， <strong>你在任何时候都不能去阻塞它</strong> 。
+我们来解释一下为什么。与传统的“企业级”系统不同，Vert.x使用非常少的线程。其中的一些线程叫做 <em>Event Loop</em> 线程，它们用来快速处理
+<code>Handler</code> 中的事件。如果你把这个线程给阻塞了，那么事件传递的过程就将会被阻塞，事件就不能被传递。
+这种执行模型对你的代码风格有着深远的影响。我们要抛弃 <em>传统</em> 的阻塞风格的代码，写出异步的 <sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnote_1" title="View footnote.">1</a>]</sup>、非阻塞的 <sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnote_2" title="View footnote.">2</a>]</sup>代码。</p>
+</div>
+<div class="paragraph">
+<p>之前，你可能在写如下的代码：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">URL</span> site = <span class="keyword">new</span> <span class="predefined-type">URL</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">http://vertx.io/</span><span class="delimiter">&quot;</span></span>);
+<span class="predefined-type">BufferedReader</span> in = <span class="keyword">new</span> <span class="predefined-type">BufferedReader</span>(<span class="keyword">new</span> <span class="predefined-type">InputStreamReader</span>(site.openStream()));
+
+<span class="predefined-type">String</span> inputLine;
+<span class="keyword">while</span> ((inputLine = in.readLine()) != <span class="predefined-constant">null</span>) {
+  <span class="predefined-type">System</span>.out.println(inputLine);
+}
+in.close();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>那只是往事了。有了Vert.x后，你可以这么写：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">vertx.createHttpClient().getNow(<span class="integer">80</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">vertx.io</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>, response -&gt; {
+  response.bodyHandler(<span class="predefined-type">System</span>.out::println);
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>这两段代码的主要不同之处：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>第一段代码是同步、阻塞的：每条指令 <em>按顺序</em> 执行，但有的指令可能会
+会长时间阻塞执行线程（因为网站访问可能会很慢，或者是其它原因）。</p>
+</li>
+<li>
+<p>用Vert.x写的代码是异步、非阻塞的：Event Loop线程在与HTTP服务端建立连接后就会保持空闲以便处理其它事件。
+当收到响应时，<strong>同一个</strong>Event Loop线程会调用回调函数。许多Vert.x组件都是单线程的（仅通过一个线程访问），
+所以不存在并发的各种问题。</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>另一个Vert.x描述里重要的一点就是“ <em>在JVM上</em> ”。Vert.x应用都运行于JVM（Java 8+）上，但这并不意味着
+开发者必须要用Java语言去编写Vert.x应用。Vert.x应用当然可以用Java编写，但也可以用Groovy、Ceylon、Ruby、JavaScript等等
+的语言编写，甚至混合起来写也可以！这种多语言的特性可以让您使用最恰当的编程语言来完成您的任务。</p>
+</div>
+<div class="paragraph">
+<p>Vert.x支持实现分布式应用，既可以通过内建的TCP和HTTP服务端/客户端实现，也可以通过Vert.x的Event Bus（事件总线）来实现。
+Event Bus是一个轻量级的发送和接受消息的结构，有了Event Bus，你可以向某些 <code>地址</code> 发送消息。它支持三种分布式机制：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><em>点对点</em> ：消息被发送到监听某个地址的某一个 <em>消费者</em> 处</p>
+</li>
+<li>
+<p><em>发布/订阅</em> ：消息可以被监听某个地址的所有 <em>消费者</em> 接收</p>
+</li>
+<li>
+<p><em>请求/回复</em> ：消息被发送至某个消费者处，并且可以向发送源发送另一条消息来<strong>回应</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>好啦，我们最后用一分钟的时间来总结一下你为什么要使用Vert.x。Vert.x非常灵活 —— 无论是简单的网络功能，
+复杂的现代Web应用，HTTP/REST 微服务，高并发事件处理，还是一个后端事件处理应用，Vert.x都可以胜任。它速度快，并且不限制你的开发结构。
+最后一点，它可以将你的应用变为响应式风格的。用几个词概括一下Vert.x的风格：<strong>响应式、伸缩性、弹性、异步</strong>！</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_解道微服务">3. 解道微服务</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>除非（实际上我并不清楚）去年一年你都在山洞里呆着，否则你应该听说过 <em>微服务</em> 这个东西。
+<strong>微服务</strong> 是什么呢？我们来看以下的定义（这里就不翻译了，原文能更好的表达其含义）：</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+The microservice architectural style is an approach to developing a single application as a suite of small services,
+each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API. These
+services are built around business capabilities and independently deployable by fully automated deployment machinery.
+There is a bare minimum of centralized management of these services, which may be written in different programming
+languages and use different data storage technologies.
+</blockquote>
+<div class="attribution">
+&#8212; Martin Fowler<br>
+<cite>http://martinfowler.com/articles/microservices.html</cite>
+</div>
+</div>
+<div class="paragraph">
+<p><em>微服务</em> 是一种 <em>架构风格</em> 。现在，你心中仍会有疑团：“啥玩意儿”？</p>
+</div>
+<div class="paragraph">
+<p>让我们用另外一种方式解释。为什么我们最后都要使用<strong>微服务</strong>呢？用一个词总结：<strong>敏捷性</strong>(agility)
+<sup class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnote_3" title="View footnote.">3</a>]</sup>。让我们来想象一下，现在有一个非常
+大型的应用（超级大！）。维护这种应用将会是一场梦魇，给它添加新特性会消耗太多的时间，并且使用的技术都过时了
+（什么？Corba不再吸引人了？），任何改动都需要经过一个复杂的处理过程和审核过程。
+哈，你这是在维护着一个 <em>怪兽</em> 呢！那么我们如何使得应用的开发和维护更高效呢？微服务就是这个问题的答案之一。
+它的目标是缩短 <em>生产的时间(time to production)</em> 。</p>
+</div>
+<div class="paragraph">
+<p>要达到以上目标，<strong>微服务</strong>架构风格建议：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>将应用拆分成一组分离的组件，提供一组API <code>服务</code></p>
+</li>
+<li>
+<p>组件之间可以利用任何的协议进行通信，通常使用REST风格，但不是必须使用</p>
+</li>
+<li>
+<p>组件可以使用任何编程语言，利用任何的技术编写</p>
+</li>
+<li>
+<p>每个组件都是独立开发、发布和部署的</p>
+</li>
+<li>
+<p>在它们各自的<strong>流水线</strong>(pipeline)上<strong>自动</strong>进行部署</p>
+</li>
+<li>
+<p>整个应用的流程(orchestration)要尽可能地精简</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>在这个实验中，我们不要求第五点，但你需要清楚Vert.x不会对你部署应用的方式（如SSH，ansible，puppet，
+Docker，云服务，软盘）进行限制。</p>
+</div>
+<div class="paragraph">
+<p>最后一点非常有趣，也经常被误解。您可能会觉得开发一个程序的各个独立部分，在运行时这些独立的组件之间可以相互通信
+是非常神奇的。。。事实上，这并不神奇。这其实是 <em>服务发现</em> 。</p>
+</div>
+<div class="paragraph">
+<p>在使用另一个组件提供的 <code>服务</code> 之前，你需要发现它。它的位置既可以在代码中写死（这种方法不好），也可以通过DNS查询查到它的服务名，
+也可以用更高级的方法。服务发现机制同时也提供了一种统一的视角来了解对应的服务是什么。拥有发现不同可用服务和资源的能力
+可以让你实现一定程度上的 <em>透明化</em> ，这也是分布式系统的一个内在特性。举个例子，它可以使你的组件顺利应对服务位置变化。
+它也使得实现负载均衡（比如轮询算法）、容错（比如寻找另一个服务生产者）等等的功能成为可能。</p>
+</div>
+<div class="paragraph">
+<p>尽管定义中没有要求微服务必须做成分布式的，但是一般来说微服务应用都是分布式的。因此，分布式应用的利与弊也随之而来：
+一致性计算(consensus computation)、CAP理论、持久性、系统监视，以及其他很多可能导致 <strong>程序失败</strong> 的原因。
+所以在一开始，我们设计微服务应用的时候，就要为处理失败而设计。</p>
+</div>
+<div class="paragraph">
+<p>尽管在之前的对微服务的伪定义中谈到了我们可以将现有的应用拆分成一堆独立的组件，对于那些正在开发或还未在开发阶段的应用，
+我们也可以采取相同的思路：拆分成独立的组件，在运行时可以相互通信。</p>
+</div>
+<div class="paragraph">
+<p>我还想提一提我们的几个看法。微服务不是一个新事物，也不是火箭科学(rocket science)。。。上世纪70、80年代的论文里
+已经定义了与微服务十分相近的架构风格（只不过名字不同）。另一点也非常重要，微服务不是万能的，
+它会增加整个系统的复杂度（因为系统变得更加分布式了）。</p>
+</div>
+<div class="paragraph">
+<p>微服务与快速交付息息相关。并且它也与独立性与可替代性息息相关。每一个微服务都可以被其它提供相同服务/API/接口的组件所替代
+（这是 <a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">里氏替换原则</a> 的一种应用）。</p>
+</div>
+<div class="paragraph">
+<p>如果你是一个有几年开发经验的开发者，你可能会想知道微服务与SOA（面向服务的架构）有什么区别。首先，这与服务大小无关，
+实际上“微”这个字不太恰当，因为大小并不重要。微服务与SOA有着不同的目的：SOA是为了整合不同开发角色所处理的系统，而微服务是为了
+缩短生产时间。这就是说，他们之间的这些概念是相近的：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>服务：一个可以通过API、客户端或代理进行访问的特性</p>
+</li>
+<li>
+<p>服务生产者：实现某个服务的组件</p>
+</li>
+<li>
+<p>服务消费者：消费（调用）某个服务的组件</p>
+</li>
+<li>
+<p>服务发现：服务消费者用于发现服务生产者的一种机制</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>微服务与SOA都源于 <em>面向服务的计算(service oriented computing)</em> ，目的是进行解耦并且管理一个程序的各个独立部分。
+即使你使用过下面的技术你也可能没听说过这个名词：COM、Corba、Jini、OSGi以及Web Services，它们都是
+<em>面向服务的计算</em> 的不同实现。</p>
+</div>
+<div class="paragraph">
+<p>微服务仅限于REST风格吗？当然不是。这是一个常见的误区。微服务可以使用任何风格的通信方式进行通信：
+RPC、事件、消息、数据流等等。在这个实验中，我们将会了解到REST、异步RPC以及消息源(message source)的使用。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_微服务应用_微型交易系统">4. 微服务应用 —— 微型交易系统</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>前面我们已经了解了不少关于Vert.x和微服务的知识，现在是时候来讨论一下我们这个实验里要开发的应用了。</p>
+</div>
+<div class="paragraph">
+<p>我们将会开发一个模拟的金融系统，你可以在这里面疯狂赚钱（虚拟货币）。。。这个应用由以下的微服务组合而成：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>报价生成器(The quote generator) —— 这个非真实性的、模拟性质的生成器生成三个公司的股票报价： <em>MacroHard</em>,
+<em>Divinator</em> 和 <em>Black Coat</em> 。市场数据会发送至Vert.x的Event Bus上。</p>
+</li>
+<li>
+<p>交易商(The traders) —— 交易商是接收报价并且决定他们要不要买入或卖出股票的一系列组件。这个功能依赖于 <em>投资组合</em> 服务。</p>
+</li>
+<li>
+<p>投资组合服务(The portfolio) —— 它管理着你的钱和你所拥有的股票。它被暴露作为 <em>服务代理</em> (service proxy)，
+比如一个基于Vert.x的Event Bus的异步RPC服务。对每一个成功的操作，它都会往Event Bus上发送一条描述此操作的消息。
+它使用报价生成器来评估当前投资组合的价值。</p>
+</li>
+<li>
+<p>审计服务(The audit) —— 这是法律方面的服务。。。你需要记录下你所有的操作（是的，这是法律所要求的）。审计服务接收来自Event
+Bus的操作并且将其存储至数据库中。同时审计服务也会提供一组REST API来查询最近的操作。</p>
+</li>
+<li>
+<p>仪表板(The dashboard) —— 一个可以让你了解实时交易信息的Web UI接口。</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>我们来看一下这个系统的架构：</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/workshop-application.png" alt="Micro-Trader Architecture" width="800">
+</div>
+</div>
+<div class="paragraph">
+<p>我们的金融系统使用了几种类型的服务：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>HTTP端点 (例如 REST API) —— 这种服务通过URL进行定位。</p>
+</li>
+<li>
+<p>服务代理 —— 这是一种通过RPC通信暴露于Event Bus上的异步服务。这种服务通过地址进行定位。</p>
+</li>
+<li>
+<p>消息源(message sources) —— 这是一种往Event Bus上发布消息的组件。这种服务通过地址进行定位。</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>在运行时，每一个组件都运行于独立的Docker容器中。当需要进行名称解析的时候，这些容器会通过链接(<code>link</code>)进行互联。</p>
+</div>
+<div class="paragraph">
+<p>仪表板展现了当前可用的服务、每个公司的股票指数，最近的交易操作以及你当前投资组合的状态：</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/dashboard.png" alt="Dashboard" width="800">
+</div>
+</div>
+<div class="paragraph">
+<p>下面你将要动手实现这个金融系统的关键部分。为了描述Vert.x其它的一些特性，我们提供了剩余部分的一些代码。
+我们对你需要编写的代码部分用 <strong>TODO</strong> 做了标记：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">//TODO</span>
+<span class="comment">// ----</span>
+<span class="comment">// your code here</span>
+<span class="comment">// ----</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_环境准备">5. 环境准备</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>现在是你开始实践的时候了！在我们开始之前，我们要先配好环境。</p>
+</div>
+<div class="sect2">
+<h3 id="_硬件要求">5.1. 硬件要求</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>操作系统：Mac OS X (10.8+), Windows 7+, Ubuntu 12+, CentOS 7+, Fedora 22+</p>
+</li>
+<li>
+<p>内存：最少4 GB，推荐8 GB以上</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_docker">5.2. Docker</h3>
+<div class="sect3">
+<h4 id="_docker工具箱_安装包">5.2.1. Docker工具箱/安装包</h4>
+<div class="paragraph">
+<p>Docker可以原生运行于Linux下。因为Docker底层使用了Linux内核的某些特性，因此目前你还不能在Windows或OS X下直接运行Docker
+（Docker团队正致力于其原生运行）。所以，你需要使用 <code>docker-machine</code> 来创建一个虚拟机(VM)。这个虚拟机里运行着Linux系统，可以通过它
+来运行Docker。利用 <a href="https://www.docker.com/docker-toolbox">Docker Toolbox</a>，你可以很方便地安装Docker环境。</p>
+</div>
+<div class="paragraph">
+<p>你可以按照以下指示来安装Docker：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/docker/toolbox/releases/download/v1.10.3/DockerToolbox-1.10.3.pkg">Docker Tool Box 1.10.3 for Mac</a></p>
+</li>
+<li>
+<p><a href="https://github.com/docker/toolbox/releases/download/v1.10.3/DockerToolbox-1.10.3.exe">Docker Toolbox 1.10.3 for
+Windows</a></p>
+</li>
+<li>
+<p><a href="http://docs.docker.com/engine/installation/ubuntulinux/">Docker on Ubuntu</a></p>
+</li>
+<li>
+<p><a href="http://docs.docker.com/engine/installation/centos/">Docker on Centos</a></p>
+</li>
+<li>
+<p><a href="http://docs.docker.com/engine/installation/fedora/">Docker on Fedora</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>完整的操作系统列表可以在 <a href="http://docs.docker.com/engine/installation/">Install Docker Engine</a> 找到。</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_镜像">5.2.2. 镜像</h4>
+<div class="paragraph">
+<p>为了避免在实现应用的时候等待下载Docker镜像，你需要提前下载好镜像：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>docker pull library/java</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_创建docker主机映射">5.2.3. 创建Docker主机映射</h4>
+<div class="paragraph">
+<p>如果你在使用Docker Machine，为了可以更容易地启动/结束容器，你需要在hosts文件里加一条记录。</p>
+</div>
+<div class="paragraph">
+<p>首先查询你的电脑目前的IP地址：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>docker-machine ip default</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+将 <code>default</code> 替换为你的Docker Machine名。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>然后编辑 <code>/etc/hosts</code> (Mac OS X) 或 <code>C:\Windows\System32\drivers\etc\hosts</code> (Windows)文件，添加一行：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="text">&lt;IP ADDRESS&gt;  dockerhost</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>对Linux用户来说， <code>dockerhost</code> 与 <code>localhost</code> 相同（因为Docker可以原生运行）。你需要将上面对应的 <code>dockerhost</code> 替换成 <code>localhost</code>。</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jdk">5.3. JDK</h3>
+<div class="paragraph">
+<p>你需要在电脑上安装JDK 8。可以从官网下载并安装：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Oracle JDK 8</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_maven">5.4. Maven</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>从 <a href="https://maven.apache.org/download.cgi" class="bare">https://maven.apache.org/download.cgi</a> 下载 Apache Maven。</p>
+</li>
+<li>
+<p>解压压缩包，并且设置环境变量 <code>PATH</code> 。</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ide">5.5. IDE</h3>
+<div class="paragraph">
+<p>我们推荐你用IDE进行编程，比如Eclipse、IntelliJ IDEA或者Netbeans。</p>
+</div>
+<div class="sect3">
+<h4 id="_没有安装ide">5.5.1. 没有安装IDE ?</h4>
+<div class="paragraph">
+<p>如果你电脑里没有安装IDE，你可以根据下面的指示安装Eclipse：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>首先进入 <a href="https://www.eclipse.org/downloads/">下载页</a> 。</p>
+</li>
+<li>
+<p>在 <em>Eclipse Package</em> 列表里选择 <em>Eclipse IDE for Java Developers</em> 这一项。它会指引你下载。</p>
+</li>
+<li>
+<p>下载完以后，解压压缩包。</p>
+</li>
+<li>
+<p>在解压好的文件夹中，你可以找到 <code>Eclipse</code> 对应的可执行文件。</p>
+</li>
+<li>
+<p>Eclipse指引你创建一个工作空间(workspace)。</p>
+</li>
+<li>
+<p>启动Eclipse以后，点击 <em>Workbench</em> 箭头 (右上角)。</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_开始">6. 开始！</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_获取源码">6.1. 获取源码</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>git clone https://github.com/cescoffier/vertx-microservices-workshop</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>你可以将项目作为一个Maven项目导入到IDE中。参考对应的IDE文档来了解如何导入Maven项目。</p>
+</div>
+<div class="paragraph">
+<p>你可能会遇到一堆编译错误，这是因为您的IDE默认没有将 <code>src/main/generated</code> 目录标记为<strong>源码目录</strong>。
+将 <code>portfolio-service/src/main/generated</code> 文件夹标记为源码目录即可。</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+在 <code>solution</code> 文件夹中有完整的解决方案。
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_构建">6.2. 构建</h3>
+<div class="paragraph">
+<p>我们的项目采用Apache Maven构建。可以通过以下命令编译所有代码：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>cd vertx-microservices-workshop
+mvn clean install</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_集群与服务发现架构">6.3. 集群与服务发现架构</h3>
+<div class="paragraph">
+<p>是时候开始咯～如果你还记得微服务章节的内容的话，应该知道我们需要服务发现机制。还好，Vert.x提供了一种服务发现机制。
+为了让每一个组件都能发现服务，Vert.x需要在一个所有组件都能访问的地方存储 <em>服务记录(record)</em>。</p>
+</div>
+<div class="paragraph">
+<p>默认情况下，Vert.x的服务发现机制会使用一个分布式的映射(distributed map)来进行存储，所有集群内的成员都可以访问它。
+所以，当你启动一个Vert.x应用，并且开启集群模式的时候，它会加入（或创建）一个集群。这个集群允许节点：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>来去自由（加入或注销），也就是说可以管理成员发现(member discovery)</p>
+</li>
+<li>
+<p>共享数据，比如分布式映射、锁、计数器等等</p>
+</li>
+<li>
+<p>访问Event Bus</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>在我们的上下文中，我们不需要去手动配置集群。Docker镜像会自动以集群模式启动Vert.x应用。</p>
+</div>
+<div class="paragraph">
+<p>在这个实验中，我们的集群是基于Hazelcast搭建的，并且使用<strong>多点传送</strong>(multicast)作为成员发现机制。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_第一个vert_x微服务_报价生成器">7. 第一个Vert.x微服务 - 报价生成器</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>免责声明：这个报价生成器是虚构的，非真实的，请勿用于现实。况且这就是一堆随机数。。。</p>
+</div>
+<div class="sect2">
+<h3 id="_项目结构">7.1. 项目结构</h3>
+<div class="paragraph">
+<p>我们来看一看这个项目的结构，其它的项目与此结构相同。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>.
+├── README.md &lt;--- 组件描述
+├── pom.xml &lt;--- Maven配置文件
+└── src
+    ├── docker
+    │   └── config.json &lt;--- 配置文件，启动Docker容器时需要
+    └── main
+        └── java
+            └── io.vertx.workshop.quote
+                            ├── GeneratorConfigVerticle.java &lt;--- 各种Verticle
+                            ├── QuoteVerticle.java
+                            └── RestQuoteAPIVerticle.java</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>我们从 <code>pom.xml</code> 文件开始，这个文件决定了Maven的构建方式：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>定义各种依赖</p>
+</li>
+<li>
+<p>构建 <em>fat-jar</em> 文件</p>
+</li>
+<li>
+<p>构建对应的Docker容器</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>构建 <em>Fat-jar</em> 是一个给Vert.x应用打包的一个简便方法。一个 <em>fat-jar</em> 里包括了你的应用以及所有的依赖（包括Vert.x本身）。
+想要运行应用也很简单，你只需要在终端中使用 <code>java -jar &#8230;&#8203;.</code> 命令而不需要指定 <code>CLASSPATH</code> 。等一下，我之前提到过Vert.x没有自己的一个打包方式。
+是的， <em>fat-jar</em> 非常简便，但这也是唯一的方法咯。</p>
+</div>
+<div class="paragraph">
+<p>生成的 <em>fat-jar</em> 对应的Main Class是 <code>io.vertx.core.Launcher</code>，但你也可以用你自己的类来替代它。 <code>Launcher</code> 类创建Vert.x实例，
+对Vert.x进行配置并且对 <em>main-verticle</em> 进行部署。</p>
+</div>
+<div class="paragraph">
+<p>我们也要对 <code>pom.xml</code> 文件进行配置以便创建Docker容器以及启动应用。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_verticle">7.2. Verticle</h3>
+<div class="paragraph">
+<p>你可能已经注意到了，核心代码被分为3个 <code>Verticle</code> ，但Verticle又是啥呢？Verticle是构成Vert.x应用的一种方法。我们不强制你使用Verticle，
+但它的确非常方便。Verticle是一串基于Vert.x实例部署的代码。Verticle可以访问 <code>vertx</code> 实例，并且还可以对其它Verticles进行部署。</p>
+</div>
+<div class="paragraph">
+<p>我们打开 <code>GeneratorConfigVerticle</code> 类的代码，看看 <code>start</code> 方法：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="annotation">@Override</span>
+<span class="directive">public</span> <span class="type">void</span> start() {
+    <span class="local-variable">super</span>.start();
+
+    JsonArray quotes = config().getJsonArray(<span class="string"><span class="delimiter">&quot;</span><span class="content">companies</span><span class="delimiter">&quot;</span></span>);
+    <span class="keyword">for</span> (<span class="predefined-type">Object</span> q : quotes) {
+      JsonObject company = (JsonObject) q;
+      <span class="comment">// 对Verticle进行部署的时候可以提供配置选项</span>
+      vertx.deployVerticle(MarketDataVerticle.class.getName(),
+         <span class="keyword">new</span> DeploymentOptions().setConfig(company));
+    }
+
+    vertx.deployVerticle(RestQuoteAPIVerticle.class.getName());
+
+    publishMessageSource(<span class="string"><span class="delimiter">&quot;</span><span class="content">market-data</span><span class="delimiter">&quot;</span></span>, ADDRESS, rec -&gt; {
+      <span class="keyword">if</span> (!rec.succeeded()) {
+        rec.cause().printStackTrace();
+      }
+      <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Market-Data service published : </span><span class="delimiter">&quot;</span></span> + rec.succeeded());
+    });
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verticle可以通过 <code>config()</code> 方法来获取配置信息。我们的服务就是从此处获取要模拟的公司的信息。配置信息是一个 <code>JsonObject</code> 实例。
+在Vert.x中，JSON的使用非常普遍，所以你将会在这个实验中见到大量的JSON数据。</p>
+</div>
+<div class="paragraph">
+<p><code>start</code> 方法的另一部分与我们之前提到的服务发现有关。我们的报价生成器组件报价并发送到Event Bus上，但为了让其他的组件知道消息的来源（即地址），
+生成器会进行服务注册。 服务的名字是 <code>market-data</code> ，消息发送的地址是 <code>ADDRESS</code> 。最后一个参数是一个 <code>Handler</code> ，当注册完成时会调用这个函数
+来进行通知。 <code>handler</code> 会接受一种 <code>AsyncResult</code> 类型的数据。</p>
+</div>
+<div class="paragraph">
+<p>记住，Vert.x推崇异步、非阻塞的开发模型。发布服务很可能会占用不少时间（实际上确实是这样，因为它需要创建一条记录，将其写到后端然后通知所有组件），
+所以我们不能阻塞Event Loop线程，此方法是异步的。异步方法的最后一个参数都是 <code>Handler</code> ，它会在异步操作完成后被调用。
+<code>Handler</code> 会被同一个Event Loop线程（即调用异步方法的线程）调用。因为异步操作可能会失败， <code>Handler</code> 会接受 <code>AsyncResult</code> 类型的类型参数
+来表示异步操作是否成功进行。你将会在许多Vert.x应用中见到下面的模式：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"> <span class="comment">// 异步方法，返回类型为X的结果</span>
+ operation(param1, param2, <span class="predefined-type">Handler</span>&lt;AsyncResult&lt;X&gt;&gt;);
+
+ <span class="comment">// Handler接受X类型的对象</span>
+
+ ar -&gt; {
+   <span class="keyword">if</span> (ar.succeeded()) {
+      X x = ar.result();
+      <span class="comment">// Do something with X</span>
+   } <span class="keyword">else</span> {
+      <span class="comment">// it failed</span>
+      <span class="predefined-type">Throwable</span> cause = ar.cause();
+   }
+ }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>如果你还记得我们应用的架构的话，报价生成器也会提供一个HTTP端点，返回最近的报价值（这需要你去实现咯）。我们会用Docker去“发布”这个服务
+（不需要写代码，Docker会对其进行发布）。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_合并端点_the_consolidation_endpoint">7.3. 合并端点(The consolidation endpoint)</h3>
+<div class="paragraph">
+<p>现在到了你动手实现应用的部分功能的时间了（我知道你的手指已经如坐针毡了）。打开 <code>RestQuoteAPIVerticle</code> 类的代码。它是一个继承了 <code>AbstractVerticle</code> 的类。
+在 <code>start</code> 方法中，你需要实现以下功能：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>注册一个Event Bus消费者来收集最新的报价数据（收集到 <code>quotes</code> map中）</p>
+</li>
+<li>
+<p>处理HTTP请求并且返回报价列表；如果提供了 <code>name</code>（查询）参数的话，返回对应的报价</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>让我们来动手实践吧！</p>
+</div>
+<div class="sect3">
+<h4 id="_实现接收事件的handler">7.3.1. 实现接收事件的Handler</h4>
+<div class="paragraph">
+<p>第一个操作就是要创建一个 <code>Handler</code>，也就是在事件发生时被调用的方法。在这里，此 <code>Handler</code> 将会在每个消息被发送到Event Bus上特定的 <code>地址</code>
+（接收生成器生成的每一个报价）时被调用。我们在Handler的方法部分进行如下的编码：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">JsonObject quote = message.body(); <span class="comment">// 1</span>
+quotes.put(quote.getString(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>), quote); <span class="comment">// 2</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>首先，它会获取消息的正文(body) (1)，它是一个JSON对象。然后我们将它储存到 <code>quotes</code> map中 (2)。</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_实现处理http请求的handler">7.3.2. 实现处理HTTP请求的Handler</h4>
+<div class="paragraph">
+<p>现在我们来实现第二个功能。我们需要HTTP服务端以便处理HTTP请求。还好，Vert.x可以让你方便地创建HTTP服务端：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">vertx.createHttpServer()
+    .requestHandler(request -&gt; {...})
+    .listen(port, resultHandler);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>将 <code>requestHandler</code> （当收到每个HTTP请求时调用）的方法部分替换为：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">HttpServerResponse response = request.response()    <b class="conum">(1)</b>
+    .putHeader(<span class="string"><span class="delimiter">&quot;</span><span class="content">content-type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>);
+<span class="predefined-type">String</span> company = request.getParam(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>);          <b class="conum">(2)</b>
+<span class="keyword">if</span> (company == <span class="predefined-constant">null</span>) {
+    <span class="predefined-type">String</span> content = Json.encodePrettily(quotes);   <b class="conum">(3)</b>
+    response
+        .end(content);                              <b class="conum">(4)</b>
+ } <span class="keyword">else</span> {
+    JsonObject quote = quotes.get(company);
+    <span class="keyword">if</span> (quote == <span class="predefined-constant">null</span>) {
+      response.setStatusCode(<span class="integer">404</span>).end();            <b class="conum">(5)</b>
+    } <span class="keyword">else</span> {
+      response.end(quote.encodePrettily());
+    }
+ }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>从 <code>request</code> 对象中获取 <code>response</code> 对象</p>
+</li>
+<li>
+<p>获取 <code>name</code> 参数（查询参数）</p>
+</li>
+<li>
+<p>将map转化为JSON格式的数据</p>
+</li>
+<li>
+<p>编写HTTP响应并且通过 <code>end(&#8230;&#8203;)</code> 方法刷新数据流。</p>
+</li>
+<li>
+<p>如果给定的查询参数没有对应的公司，返回 <code>404</code> 状态码</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>你可能想知道为什么这里用不到同步(synchronization)。的确，我们往map中读写数据的时候不需要加任何的锁。这也是Vert.x
+的主要特性之一：这些代码都会在<strong>同一个</strong>Event Loop线程中执行，因此它们总是被<strong>相同的线程</strong>读取，而不是并发读取。</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<code>Map&lt;String, JsonObject&gt;</code> 对象可以简化为一个 <code>JsonObject</code> 对象，因为它们两个的本质相似。
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_是时候启动报价生成器了">7.4. 是时候启动报价生成器了</h3>
+<div class="paragraph">
+<p>首先，我们来构建Docker镜像。在终端中执行以下命令：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cd quote-generator
+mvn package docker:build</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>然后，打开一个新终端，然后启动容器：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>docker run -p 8081:8080 --rm --name quote-generator vertx-microservice-workshop/quote-generator</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>我们来分析一下这个Docker命令。它用于运行一个容器，这个容器产生于我们刚刚构建好的镜像(<code>vertx-microservice-workshop/quote-generator</code>)。
+其中 <code>-p</code> 选项用于配置端口。报价生成器应用的 <code>8080</code> 端口会映射到你本机的 <code>8081</code> 端口。在我们微服务的世界里，这也意味着HTTP端点能够被发现。</p>
+</div>
+<div class="paragraph">
+<p>我们打开浏览器，访问一下 <a href="http://dockerhost:8081" class="bare">http://dockerhost:8081</a> 。</p>
+</div>
+<div class="paragraph">
+<p>此地址将会返回类似于以下的JSON数据：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{
+  "MacroHard" : {
+    "volume" : 100000,
+    "shares" : 51351,
+    "symbol" : "MCH",
+    "name" : "MacroHard",
+    "ask" : 655.0,
+    "bid" : 666.0,
+    "open" : 600.0
+  },
+  "Black Coat" : {
+    "volume" : 90000,
+    "shares" : 45889,
+    "symbol" : "BCT",
+    "name" : "Black Coat",
+    "ask" : 654.0,
+    "bid" : 641.0,
+    "open" : 300.0
+  },
+  "Divinator" : {
+    "volume" : 500000,
+    "shares" : 251415,
+    "symbol" : "DVN",
+    "name" : "Divinator",
+    "ask" : 877.0,
+    "bid" : 868.0,
+    "open" : 800.0
+  }
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>返回的数据给出了当前每个报价的详细信息。数据每3秒更新一次，所以你需要刷新来获取最新的数据。</p>
+</div>
+<div class="paragraph">
+<p>下面我们来启动仪表盘(Dashboard)。在另一个终端中，定位到 <code>$project-home/trader-dashboard</code> 目录中并且执行以下命令：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>mvn clean package docker:build
+docker run -p 8083:8080 --rm --name dashboard vertx-microservice-workshop/trader-dashboard</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+如果Docker报出类似于 <code>Error response from daemon: Conflict. The name "/xyz" is
+already in use by container&#8230;&#8203;</code> 这样的错误，没关系。执行 <code>docker rm -f xyz</code> 命令删除容器然后重新执行上述启动命令即可。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>然后，访问 <a href="http://dockerhost:8083" class="bare">http://dockerhost:8083</a> 地址。你应该会看到如下界面：</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/dashboard-initial-state.png" alt="Dashboard" width="800">
+</div>
+</div>
+<div class="paragraph">
+<p>有些部分可能暂时没有内容，这是因为我们才刚刚开始。。。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_并非一个金融学专家">7.5. 并非一个金融学专家？</h3>
+<div class="paragraph">
+<p>你可能不习惯很多金融学的名词。。。我也不习惯，但这个系统已经做了很大的简化了。我们来了解一些重要的金融学名词：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>name</code> : 公司名称</p>
+</li>
+<li>
+<p><code>symbol</code> : 公司缩写名称</p>
+</li>
+<li>
+<p><code>shares</code> : 可以购买的股票数量</p>
+</li>
+<li>
+<p><code>open</code> : 开盘时股票的价格</p>
+</li>
+<li>
+<p><code>ask</code> : 买方购买股票时的价格(卖出价)</p>
+</li>
+<li>
+<p><code>bid</code> : 由买方报出表示愿意按此水平买入的一个价格(买入价)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>更多信息请见 <a href="https://en.wikipedia.org/wiki/Financial_quote">维基百科</a>。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_event_bus_服务_投资组合服务">8. Event Bus 服务 - 投资组合服务</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>在报价生成器部分，我们已经了解了一些Vert.x开发的基础：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>异步API与 <code>AsyncResult</code></p>
+</li>
+<li>
+<p>实现 <code>Handler</code></p>
+</li>
+<li>
+<p>从Event Bus接收消息</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>在投资组合组件中，我们将要实现一个 <em>Event Bus 服务</em> 。一个 <code>Portfolio</code> 实体储存着用户买入的股票以及可用的现金数量。</p>
+</div>
+<div class="sect2">
+<h3 id="_rpc与异步rpc">8.1. RPC与异步RPC</h3>
+<div class="paragraph">
+<p>微服务不仅仅是REST风格的，它们可以通过任何类型的协议进行通信，其中<strong>远端过程调用(RPC)</strong>就是其中之一。有了RPC，一个组件就可以有效地通过本地过程调用(LPC)
+将请求发送至另一个组件。在这个过程中，请求被包装到一条消息中，并随之发送至被调用端。同样，被调用端也可以通过这种方式将结果传回调用端。</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/rpc-sequence.png" alt="rpc sequence" width="744" height="419">
+</div>
+</div>
+<div class="paragraph">
+<p>RPC也使得调用端(caller)和被调用端(callee)之间的关系更紧密了。调用端知道如何去调用被调用端：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>服务如何被调用</p>
+</li>
+<li>
+<p>服务的位置在哪里</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>传统的RPC有一个缺陷：调用者会一直等待结果，直到接收到结果。这显然是一个阻塞型的调用过程。并且，这种传统的RPC并没有很好的针对失败处理而设计，
+而分布式通信中可能会有形形色色的原因导致服务失败(<code>RemoteException</code>)。</p>
+</div>
+<div class="paragraph">
+<p>幸运的是，Vert.x采用了一种不同形式的RPC：异步RPC(Async RPC)。异步RPC与传统RPC遵循同样的规则，但异步RPC会传递一个 <code>Handler&lt;AsyncResult&lt;X&gt;</code>
+类型的参数（回调函数），在得到结果时会被调用，而不是一直阻塞等待结果返回。</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/async-rpc-sequence.png" alt="async rpc sequence" width="962" height="419">
+</div>
+</div>
+<div class="paragraph">
+<p><code>AsyncResult</code> 用于向 <code>Handler</code> 通知调用过程是否成功。如果成功的话， <code>Handler</code> 就可以获取结果了。</p>
+</div>
+<div class="paragraph">
+<p>这种异步RPC有着以下的优点：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>调用者不会被阻塞</p>
+</li>
+<li>
+<p>为失败处理而设计</p>
+</li>
+<li>
+<p>自动帮你处理对象的编码和解码</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_异步服务接口">8.2. 异步服务接口</h3>
+<div class="paragraph">
+<p>要创建一个异步RPC服务、Event Bus服务或服务代理，你首先需要一个声明异步方法的Java接口。打开 <code>io.vertx.workshop.portfolio.PortfolioService</code> 。</p>
+</div>
+<div class="paragraph">
+<p>这个接口有两个注解：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ProxyGen</code> - 可以让Vert.x自动生成Event Bus服务代理</p>
+</li>
+<li>
+<p><code>VertxGen</code> - 可以让Vert.x生成其它Vert.x支持的语言中的服务代理</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>让我们来看一看第一个方法：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>void getPortfolio(Handler&lt;AsyncResult&lt;Portfolio&gt;&gt; resultHandler);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>getPortfolio</code> 方法可以让你以异步的方式获取 <code>Portfolio</code> 对象。这个函数是异步的，所以接受一个 <code>Handler</code> 参数，并且这个Handler的类型参数为
+<code>AsyncResult&lt;Portfolio&gt;</code> 。其他函数也是同样的模式。</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+你可能会注意到 <code>package-info.java</code> 这个包描述类文件。在项目中我们需要这个类来为生成服务代理类提供支持。
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_数据实体对象">8.3. 数据实体对象</h3>
+<div class="paragraph">
+<p><code>Portfolio</code> 对象是一个数据对象(data object)。Event Bus代理仅支持少数类型的数据，对于那些不支持的数据类型，必须使用 <code>@DataObject</code>
+注解作为约束（请移步 <a href="http://vertx.io/docs/vertx-service-proxy/">此处</a> 来查看所有支持的类型）。数据对象是遵循下面一系列约束的实体类：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>必须加上 <code>@DataObject</code> 注解</p>
+</li>
+<li>
+<p>必须有一个空的构造函数、一个拷贝构造函数以及一个接受 <code>JsonObject</code> 类型参数（必须代表当前对象）的构造函数</p>
+</li>
+<li>
+<p>类成员必须都有 <code>getter</code> 和 <code>setter</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>让我们看一下 <code>io.vertx.workshop.portfolio.Portfolio</code> 这个类。正如你所看到的，所有的JSON数据处理都由 <code>converters</code> 进行管理，而 <code>converters</code>
+是Vert.x自动生成的，所以其实一个数据对象和一个Java Bean差不多。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_实现服务">8.4. 实现服务</h3>
+<div class="paragraph">
+<p>既然我们的服务有了一个异步的接口了，现在是时候来实现具体的逻辑了。在这个服务重，我们要实现三个方法：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>getPortfolio</code>：通过这个方法，我们可以了解到如何去创建 <code>AsyncResult</code> 对象</p>
+</li>
+<li>
+<p><code>sendActionOnTheEventBus</code>：通过这个方法，我们可以了解到如何向Event Bus发送消息</p>
+</li>
+<li>
+<p><code>evaluate</code>：用于计算当前投资组合的价值</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_创建asyncresult">8.4.1. 创建AsyncResult</h4>
+<div class="paragraph">
+<p>正如我们之前所提到的，我们的异步服务方法接受 <code>Handler&lt;AsyncResult&lt;Portfolio&gt;&gt;</code> 类型的参数。所以在实现此方法的时候，我们需要调用 <code>Handler</code>
+并传递一个 <code>AsyncResult</code> 实例。我们来看看如何实现 <code>getPortfolio</code> 方法：</p>
+</div>
+<div class="paragraph">
+<p>将 <code>io.vertx.workshop.portfolio.impl.PortfolioServiceImpl</code> 类中 <code>getPortfolio</code> 方法的实现替换为：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">resultHandler.handle(<span class="predefined-type">Future</span>.succeededFuture(portfolio));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>我勒个去。。。只有一行代码么？？？我们来解析一下：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>resultHandler.handle</code>：此方法用于调用 <code>Handler</code>。 <code>Handler&lt;X&gt;</code> 接口只有一个方法 (<code>handle(X)</code>)。</p>
+</li>
+<li>
+<p><code>Future.succeededFuture</code>：此方法就是用于创建 <code>AsyncResult</code> 实例的。我们将结果(<code>portfolio</code>)作为参数传递给它。</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>诶？等一下，有猫腻。。。<code>AsyncResult</code> 与 <code>Future</code> 有什么关系呢？一个 <code>Future</code> 对象代表一个操作的结果，这个异步操作可能还没有进行，
+可能正在进行，也可能已经完成。如果这个 <code>Future</code> 仅用于检查操作是否完成的话，结果可能是 <code>null</code>。<code>Future</code> 对象对应的操作可能会成功，也可能会失败。
+而 <code>AsyncResult</code> 是一种描述一个操作是成功还是失败的数据结构，所以 <code>Future</code> 也是一种 <code>AsyncResult</code>（译者注： <code>Future</code> 是 <code>AsyncResult</code> 的一个子类）。
+在Vert.x中， <code>AsyncResult</code> 实例都从 <code>Future</code> 类进行创建。</p>
+</div>
+<div class="paragraph">
+<p><code>AsyncResult</code> 描述以下信息：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>操作成功，此时它会封装操作的结果</p>
+</li>
+<li>
+<p>操作失败，此时它会封装 <code>Throwable</code> 对象</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<code>Future</code> 这个词发明于1977年，<code>Promise</code> 发明于1976年。它们都不是新玩意了。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>所以，<code>getPortfolio</code> 方法如何对接我们的异步RPC服务呢？我们来看一下时序图：</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/portfolio-sequence.png" alt="portfolio sequence" width="1464" height="428">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_将事件发送至event_bus">8.4.2. 将事件发送至Event Bus</h4>
+<div class="paragraph">
+<p>在前面章节中，我们已经注册了一个接受Event Bus服务的消费者。现在是时候看一下它是如何向Event Bus发送消息的了。
+你可以通过 <code>vertx.eventBus()</code> 方法获取对应的 <code>EventBus</code> 实例，然后做如下操作：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>send</code>：发送消息（点对点模式）</p>
+</li>
+<li>
+<p><code>publish</code>：将消息发送给所有注册到此地址的消费者（发布广播）</p>
+</li>
+<li>
+<p><code>send</code> with a <code>Handler&lt;AsyncResult&lt;Message&gt;&gt;&gt;</code>：发送消息并且需要对方回复（点对点模式）</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>我们注意一下最后一种操作中的 <code>AsyncResult&lt;Message&gt;</code>， 这是一种异步结果，因为可能永远也收不到回复（视为失败）。</p>
+</div>
+<div class="paragraph">
+<p>好嘞，回到我们的代码世界。我们已经在代码中给出了 <code>buy</code> 方法和 <code>sell</code> 方法的源码，这两个方法只是在买入或卖出股票之前做一些检查。
+一旦触发某种操作，我们就会向Event Bus发送一条消息， <code>Audit Service</code>（审计服务）以及 <code>Dashboard</code>（仪表板）会利用这条消息进行相应的处理。
+所以，我们可以使用 <code>publish</code> 方法。</p>
+</div>
+<div class="paragraph">
+<p><code>sendActionOnTheEventBus</code> 方法的实现：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">vertx.eventBus().publish(EVENT_ADDRESS, <span class="keyword">new</span> JsonObject()
+    .put(<span class="string"><span class="delimiter">&quot;</span><span class="content">action</span><span class="delimiter">&quot;</span></span>, action)
+    .put(<span class="string"><span class="delimiter">&quot;</span><span class="content">quote</span><span class="delimiter">&quot;</span></span>, quote)
+    .put(<span class="string"><span class="delimiter">&quot;</span><span class="content">date</span><span class="delimiter">&quot;</span></span>, <span class="predefined-type">System</span>.currentTimeMillis())
+    .put(<span class="string"><span class="delimiter">&quot;</span><span class="content">amount</span><span class="delimiter">&quot;</span></span>, amount)
+    .put(<span class="string"><span class="delimiter">&quot;</span><span class="content">owned</span><span class="delimiter">&quot;</span></span>, newAmount));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>我们来解析一下：</p>
+</div>
+<div class="paragraph">
+<p>首先该方法获取了 <code>EventBus</code> 实例然后调用了 <code>publish</code> 方法。第一个参数是该消息要发送到的地址(address)，第二个参数是一个 <code>JsonObject</code> 对象，里面包含着该操作的各种信息
+（买入还是卖出，报价，操作时间等等）。</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_整合异步方法_访问http端点_投资组合价值评估">8.4.3. 整合异步方法，访问HTTP端点 - 投资组合价值评估</h4>
+<div class="paragraph">
+<p>我们来实现最后一个方法 - <code>evaluate</code> 方法，它用于计算当前投资组合的价值。然而，要计算价值，我们必须要获取对应公司股票最新的报价。
+也就是说，我们需要去访问我们在报价生成器中实现的HTTP端点。因此，我们要做以下的事情：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>发现服务</p>
+</li>
+<li>
+<p>买了哪些公司的股票，就对哪些公司进行服务调用</p>
+</li>
+<li>
+<p>当所有调用都完成后，计算结果并将其发送回调用者处</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>这过程挺复杂的，我们来一步一步地实现。首先，我们需要获取报价生成器提供的HTTP端点（服务），这个服务名字叫 <code>CONSOLIDATION</code>，由Docker导入。
+一会我们就会阐述其详细实现，这里我们先获取此服务：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">HttpEndpoint.get(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">CONSOLIDATION</span><span class="delimiter">&quot;</span></span>), <b class="conum">(1)</b>
+  client -&gt; {
+       <span class="keyword">if</span> (client.failed()) {                                                     <b class="conum">(2)</b>
+         <span class="comment">// 操作失败</span>
+         resultHandler.handle(<span class="predefined-type">Future</span>.failedFuture(client.cause()));
+       } <span class="keyword">else</span> {
+         <span class="comment">// 获取到HTTP客户端</span>
+         HttpClient httpClient = client.result();                                 <b class="conum">(3)</b>
+         computeEvaluation(httpClient, resultHandler);
+       }
+ });</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>从请求的服务中获取HTTP客户端</p>
+</li>
+<li>
+<p>假如客户端获取失败（比如找不到对应的服务），报告错误信息</p>
+</li>
+<li>
+<p>客户端获取成功，继续操作</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>下面我们来实现 <code>computeEvaluation</code> 方法：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">private</span> <span class="type">void</span> computeEvaluation(HttpClient httpClient, <span class="predefined-type">Handler</span>&lt;AsyncResult&lt;<span class="predefined-type">Double</span>&gt;&gt; resultHandler) {
+    <span class="comment">// 买了哪些公司的股票，就对哪些公司进行服务调用</span>
+    <span class="predefined-type">List</span>&lt;<span class="predefined-type">Future</span>&gt; results = portfolio.getShares().entrySet().stream()
+        .map(entry -&gt; getValueForCompany(httpClient, entry.getKey(), entry.getValue()))    <b class="conum">(1)</b>
+        .collect(Collectors.toList());
+
+    <span class="keyword">if</span> (results.isEmpty()) {
+      <span class="comment">// 一点股票都没买</span>
+      resultHandler.handle(<span class="predefined-type">Future</span>.succeededFuture(<span class="float">0.0</span>));
+    } <span class="keyword">else</span> {
+      <span class="comment">// 我们只需要当所有结果就绪时才返回结果，因此我们创建一个CompositeFuture</span>
+      <span class="comment">// 所有的Future都得到结果后，handler会被调用</span>
+      CompositeFuture.all(results).setHandler(                                              <b class="conum">(2)</b>
+          ar -&gt; {
+            <span class="type">double</span> sum = results.stream().mapToDouble(fut -&gt; (<span class="type">double</span>) fut.result()).sum();  <b class="conum">(3)</b>
+            resultHandler.handle(<span class="predefined-type">Future</span>.succeededFuture(sum));                              <b class="conum">(4)</b>
+          });
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>首先，我们需要得到一组 <code>Future</code>， 每个Future对应不同公司的估价 (1)。估价操作是异步的，因此我们不知道什么时候所有的 <code>Future</code> 都能得到结果。
+出于这种目的，Vert.x提供了 <code>CompositeFuture</code> (2)。<code>CompositeFuture.all</code> 方法将会在其接受的所有 <code>Future</code> 都得到结果以后调用其 <code>Handler</code>。
+因此，当 <code>Handler</code> 被调用的时候，我们就可以得知所有的操作都返回了结果，因此我们进行求和计算 (3)。最后，我们调用 <code>resultHandler</code> 的 <code>handle</code>
+方法将此结果发送至客户端 (4)。</p>
+</div>
+<div class="paragraph">
+<p>我们再来看一下 <code>getValueForCompany</code> 方法的实现。此方法会返回相应公司的报价：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">private</span> <span class="predefined-type">Future</span>&lt;<span class="predefined-type">Double</span>&gt; getValueForCompany(HttpClient client, <span class="predefined-type">String</span> company, <span class="type">int</span> numberOfShares) {
+  <span class="comment">// Create the future object that will get the value once the value have been retrieved</span>
+  <span class="predefined-type">Future</span>&lt;<span class="predefined-type">Double</span>&gt; future = <span class="predefined-type">Future</span>.future();                                           <b class="conum">(1)</b>
+
+  client.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">/?name=</span><span class="delimiter">&quot;</span></span> + encode(company), response -&gt; {                              <b class="conum">(2)</b>
+    response.exceptionHandler(future::fail);                                         <b class="conum">(3)</b>
+    <span class="keyword">if</span> (response.statusCode() == <span class="integer">200</span>) {
+      response.bodyHandler(buffer -&gt; {
+        <span class="type">double</span> v = numberOfShares * buffer.toJsonObject().getDouble(<span class="string"><span class="delimiter">&quot;</span><span class="content">bid</span><span class="delimiter">&quot;</span></span>);
+        future.complete(v);                                                          <b class="conum">(4)</b>
+      });
+    } <span class="keyword">else</span> {
+      future.complete(<span class="float">0.0</span>);                                                          <b class="conum">(5)</b>
+    }
+  })
+    .exceptionHandler(future::fail)                                                  <b class="conum">(6)</b>
+    .end();                                                                          <b class="conum">(7)</b>
+
+  <span class="keyword">return</span> future;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>首先，我们创建了一个 <code>Future</code> 对象用于结果返回 (1)。然后，我们通过HTTP客户端的 <code>get</code> 方法 (2) 来获取公司最近的一次报价。<code>get</code> 方法直到在 <code>end</code> 方法被调用后才会发送HTTP请求。
+注意，我们的HTTP客户端已经事先由服务发现机制配置好对应的IP地址和端口了。当我们收到HTTP响应的时候，我们需要注册一个 <code>exceptionHandler</code> (3) 用于捕获异常。接着，我们读取响应body，并且计算估价。计算完成后，我们将结果赋予 <code>Future</code> (4)。
+如果找不到对应的公司，那么就将股票价格赋值为 <code>0.0</code> (5)。</p>
+</div>
+<div class="paragraph">
+<p>由于连接可能会失败，我们也需要给客户端本身注册一个异常处理器 <code>exceptionHandler</code> (6)。最后，我们通过 <code>end</code> 方法将请求发送出去。</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_发布服务">8.5. 发布服务</h3>
+<div class="paragraph">
+<p>我们终于把服务实现搞定了，下面我们来发布服务！首先我们需要一个 <code>verticle</code>， 它需要创建对应的服务实例，在Event Bus上注册服务并且在服务发现层发布服务。</p>
+</div>
+<div class="paragraph">
+<p>打开 <code>io.vertx.workshop.portfolio.impl.PortfolioVerticle</code> 这个类，我们可以看到 <code>start</code> 方法里实现了一部分上面提到的功能：</p>
+</div>
+<div class="paragraph">
+<p>1) 创建服务实例：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">PortfolioServiceImpl service = <span class="keyword">new</span> PortfolioServiceImpl(vertx, discovery, config().getDouble(<span class="string"><span class="delimiter">&quot;</span><span class="content">money</span><span class="delimiter">&quot;</span></span>, <span class="float">10000.00</span>));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>2) 借助 <code>ProxyHelper</code> 类，在Event Bus上注册服务：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">ProxyHelper.registerService(PortfolioService.class, vertx, service, ADDRESS);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>3) 将服务发布至服务发现层(discovery infrastructure)，使得该服务能够被发现：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">publishEventBusService(<span class="string"><span class="delimiter">&quot;</span><span class="content">portfolio</span><span class="delimiter">&quot;</span></span>, ADDRESS, PortfolioService.class, ar -&gt; {
+  <span class="keyword">if</span> (ar.failed()) {
+    ar.cause().printStackTrace();
+  } <span class="keyword">else</span> {
+    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Portfolio service published : </span><span class="delimiter">&quot;</span></span> + ar.succeeded());
+  }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>publishEventBusService</code> 的实现如下：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// Create the service record:</span>
+Record record = EventBusService.createRecord(name, address, serviceClass);
+<span class="comment">// Publish it using the discovery service</span>
+discovery.publish(record, ar -&gt; {
+  <span class="keyword">if</span> (ar.succeeded()) {
+    registeredRecords.add(record);
+    completionHandler.handle(<span class="predefined-type">Future</span>.succeededFuture());
+  } <span class="keyword">else</span> {
+    completionHandler.handle(<span class="predefined-type">Future</span>.failedFuture(ar.cause()));
+  }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>这就完成了吗？不不不，我们还有一个服务需要发布呢。记住，在我们买入或卖出股票的时候我们也往Event Bus上发送消息了，因此这也是一个服务（准确的来说是一种消息源服务）。</p>
+</div>
+<div class="paragraph">
+<p>在 <code>start</code> 方法的最后添加如下代码：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">publishMessageSource(<span class="string"><span class="delimiter">&quot;</span><span class="content">portfolio-events</span><span class="delimiter">&quot;</span></span>, EVENT_ADDRESS, ar -&gt; {
+  <span class="keyword">if</span> (ar.failed()) {
+    ar.cause().printStackTrace();
+  } <span class="keyword">else</span> {
+    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Portfolio Events service published : </span><span class="delimiter">&quot;</span></span> + ar.succeeded());
+  }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>服务的名称是 <code>portfolio-events</code>，Event Bus的地址是 <code>EVENT_ADDRESS</code>。</p>
+</div>
+<div class="paragraph">
+<p>现在一切大功告成，是时候构建并且运行投资组合服务了。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_启动服务">8.6. 启动服务！</h3>
+<div class="paragraph">
+<p>构建项目：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cd portfolio-service
+mvn clean package docker:build</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>然后在另一个终端内启动容器：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>docker run --name portfolio --rm --link quote-generator:CONSOLIDATION vertx-microservice-workshop/portfolio-service</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>link</code>？这是啥？它指示Docker将此容器与我们之前启动的 <code>quote-generator</code> 容器链接起来，这个链接的名称是 <code>CONSOLIDATION</code>。
+Vert.x的服务发现机制会自动检测这些链接，然后将服务记录(service records)导入到服务发现层，所以你的应用不需要知道服务是如何导入的。</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Could we have used the regular Vert.x publication to publish the <em>consolidation</em> HTTP endpoint ? No, because
+even at runtime it does not know on which (public) IP and (public) port it is accessible. Indeed the code running in the container ignore these details.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>让我们回到Dashboard，我们可以看到一些新的服务运行起来了，并且 <em>cash</em> （现金）应该在左上角显示出来了。</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Dashboard通过异步RPC机制来调用投资组合服务。在编译时会生成一个JS客户端，使用SockJS进行通信。在底层，Event Bus与SockJS之间有一种连接关系。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>哈，是时候买入或卖出一些股票了，不是吗？我们将在下一章节实现它。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_交易者服务">9. 交易者服务</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>在 <code>portfolio</code>（投资组合服务）项目中，我们已经实现了管理我们投资组合的Event Bus服务。在报价生成器中，我们将报价发送至Event Bus。
+而在交易者服务中，我们将会消费（调用）这两个服务，目标只有一个：发达（或者GG。。。）！</p>
+</div>
+<div class="paragraph">
+<p>在本章节中，我们将要实现两个交易者（毫无头脑，你可以把它变得智能化）：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>第一个交易者服务使用 Java 编写</p>
+</li>
+<li>
+<p>第二个交易者服务使用 Groovy 编写</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_交易者">9.1. 交易者</h3>
+<div class="paragraph">
+<p>在我们实现交易者之前，我们先来解释一下这几个交易者使用的不合逻辑的算法：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>一开始，一个被强迫的交易者(A compulsive trader，或许翻译成 交易木偶 比较好？)会随机选择一个公司获得一定数量的股票(<code>x</code>)</p>
+</li>
+<li>
+<p>然后它会随机地尝试买入或卖出公司的部分股票</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>他不会检查他是否有足够的股票和现金，他只是在尝试。。。此逻辑在 <code>io.vertx.workshop.trader.impl.TraderUtils</code> 类中实现：</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_部署多个实例以及多种语言编写的verticle">9.2. 部署多个实例以及多种语言编写的Verticle</h3>
+<div class="paragraph">
+<p><code>compulsive-trader</code> 项目包括一个 <em>主Verticle)</em> (<code>io.vertx.workshop.trader.impl.MainVerticle</code>)，用于对交易者进行配置和部署：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>@Override
+public void start() throws Exception {
+
+    // Java traders
+    vertx.deployVerticle(JavaCompulsiveTraderVerticle.class.getName(),
+        new DeploymentOptions().setInstances(2));                           <b class="conum">(1)</b>
+
+    // Groovy traders...
+    vertx.deployVerticle("GroovyCompulsiveTraderVerticle.groovy");          <b class="conum">(2)</b>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>首先部署 <code>JavaCompulsiveTraderVerticle</code>，并且将实例数目配置为2（通过 <code>DeploymentOptions</code>）。这样，Vert.x就会将此Verticle初始化两次（两个不同的对象）。
+所以，上面的代码一共部署了3个交易者。</p>
+</div>
+<div class="paragraph">
+<p>是时候来实现这几个Verticle了～</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_java版本的交易者">9.3. Java版本的交易者</h3>
+<div class="paragraph">
+<p>打开 <code>io.vertx.workshop.trader.impl.JavaCompulsiveTraderVerticle</code> 类的代码。我们需要在标记了 <code>TODO</code> 的位置实现以下功能：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>对交易者进行初始化</p>
+</li>
+<li>
+<p>获取我们需要的两个服务</p>
+</li>
+<li>
+<p>服务获取成功后，对每组市场数据执行相应的交易逻辑</p>
+</li>
+</ol>
+</div>
+<div class="sect3">
+<h4 id="_1_对交易者进行初始化">9.3.1. 1. 对交易者进行初始化</h4>
+<div class="paragraph">
+<p>首先看一下 <code>start</code> 方法签名：<code>start(Future&lt;Void&gt; future)</code>。<code>future</code> 参数意味着我们需要显式地在 <code>future</code> 上调用 <code>complete</code> 或 <code>fail</code> 方法。</p>
+</div>
+<div class="paragraph">
+<p>我们来实现相应逻辑。我们删掉 <code>future.fail</code> 这句，然后编写如下代码：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">String</span> company = TraderUtils.pickACompany();
+<span class="type">int</span> numberOfShares = TraderUtils.pickANumber();
+<span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Java compulsive trader configured for company </span><span class="delimiter">&quot;</span></span> + company + <span class="string"><span class="delimiter">&quot;</span><span class="content"> and shares: </span><span class="delimiter">&quot;</span></span> + numberOfShares);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_2_获取我们需要的两个服务">9.3.2. 2. 获取我们需要的两个服务</h4>
+<div class="paragraph">
+<p>交易者需要 <code>Portfolio</code>（投资组合）服务以及 <code>market</code> 服务（发送市场数据的消息源）。我们必须先获取这两个服务，然后才能执行相关的交易逻辑。
+我们来利用上一章节中用到的 <code>Future</code> 组合特性。</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 我们需要异步获取这两个服务</span>
+<span class="predefined-type">Future</span>&lt;MessageConsumer&lt;JsonObject&gt;&gt; marketFuture = <span class="predefined-type">Future</span>.future();             <b class="conum">(1)</b>
+<span class="predefined-type">Future</span>&lt;PortfolioService&gt; portfolioFuture = <span class="predefined-type">Future</span>.future();
+
+<span class="comment">// 获取服务，通过一种特殊的handler对future进行赋值</span>
+MessageSource.get(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">market-data</span><span class="delimiter">&quot;</span></span>),
+    marketFuture.completer());                                                  <b class="conum">(2)</b>
+EventBusService.get(vertx, discovery, PortfolioService.class,
+    portfolioFuture.completer());                                               <b class="conum">(3)</b>
+
+<span class="comment">// 两个服务都获取成功后，调用对应的hander</span>
+CompositeFuture.all(marketFuture, portfolioFuture).setHandler(ar -&gt; {           <b class="conum">(4)</b>
+   <span class="comment">// Next....</span>
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>首先我们先创建两个 <code>Future</code> 作为异步获取服务的结果 (1). 在 (2) 中我们异步获取消息源服务，并通过一种特殊的 <code>Handler</code> —— <code>completer</code> 来给 <code>Future</code> 赋值。
+<code>completer</code> 是一种能够在收到异步结果时给 <code>Future</code> 赋值或者在失败时记录异常的 <code>Handler</code>。</p>
+</div>
+<div class="paragraph">
+<p>最后，在 (4) 中我们对两个 <code>Future</code> 进行组合（通过 <code>CompositeFuture.all</code> ），并且在两个服务都被成功获取之时调用后面的 <code>Handler</code>。</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_3_执行交易逻辑">9.3.3. 3. 执行交易逻辑</h4>
+<div class="paragraph">
+<p>马上就要完成啦！在上面我们标记 <code>Next&#8230;&#8203;</code> 的地方添加如下代码：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">if</span> (ar.failed()) {                                                               <b class="conum">(1)</b>
+    future.fail(<span class="string"><span class="delimiter">&quot;</span><span class="content">One of the required service cannot </span><span class="delimiter">&quot;</span></span> +
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">be retrieved: </span><span class="delimiter">&quot;</span></span> + ar.cause());
+} <span class="keyword">else</span> {
+    <span class="comment">// 两个服务                                                             </span><b class="conum">(2)</b>
+    PortfolioService portfolio = portfolioFuture.result();
+    MessageConsumer&lt;JsonObject&gt; marketConsumer = marketFuture.result();
+
+    <span class="comment">// 监听market</span>
+    marketConsumer.handler(message -&gt; {                                          <b class="conum">(3)</b>
+        JsonObject quote = message.body();
+        TraderUtils.dumbTradingLogic(company, numberOfShares, portfolio, quote); <b class="conum">(4)</b>
+    });
+
+    future.complete();                                                           <b class="conum">(5)</b>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>首先我们需要检查服务获取是否成功 (1)。如果获取成功，我们就将服务从 <code>Future</code> 对象中取出 (2)。我们给 <code>marketConsumer</code>（消息源服务）设了一个 <code>Handler</code> 用于执行交易逻辑 (4)。
+最后，在 (5) 中，我们调用 <code>complete</code> 方法来通知我们的初始化过程已经完成，此次调用不需要传递结果（因为只是通知的作用）。当然初始化失败时我们也可以通过 <code>future.fail</code> 进行异常通知。</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_完整代码">9.3.4. 完整代码</h4>
+<div class="paragraph">
+<p>这是完整的代码：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">    <span class="local-variable">super</span>.start();
+
+    <span class="predefined-type">String</span> company = TraderUtils.pickACompany();
+    <span class="type">int</span> numberOfShares = TraderUtils.pickANumber();
+    <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Java compulsive trader configured for company </span><span class="delimiter">&quot;</span></span> + company + <span class="string"><span class="delimiter">&quot;</span><span class="content"> and shares: </span><span class="delimiter">&quot;</span></span> + numberOfShares);
+
+    <span class="comment">// We need to retrieve two services, create two futures object that will get the services</span>
+    <span class="predefined-type">Future</span>&lt;MessageConsumer&lt;JsonObject&gt;&gt; marketFuture = <span class="predefined-type">Future</span>.future();
+    <span class="predefined-type">Future</span>&lt;PortfolioService&gt; portfolioFuture = <span class="predefined-type">Future</span>.future();
+    <span class="comment">// Retrieve the services, use the &quot;special&quot; completed to assign the future</span>
+    MessageSource.get(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">market-data</span><span class="delimiter">&quot;</span></span>), marketFuture.completer());
+    EventBusService.get(vertx, discovery, PortfolioService.class, portfolioFuture.completer());
+
+    <span class="comment">// When done (both services retrieved), execute the handler</span>
+    CompositeFuture.all(marketFuture, portfolioFuture).setHandler(ar -&gt; {
+      <span class="keyword">if</span> (ar.failed()) {
+        future.fail(<span class="string"><span class="delimiter">&quot;</span><span class="content">One of the required service cannot </span><span class="delimiter">&quot;</span></span> +
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">be retrieved: </span><span class="delimiter">&quot;</span></span> + ar.cause());
+      } <span class="keyword">else</span> {
+        <span class="comment">// Our services:</span>
+        PortfolioService portfolio = portfolioFuture.result();
+        MessageConsumer&lt;JsonObject&gt; marketConsumer = marketFuture.result();
+
+        <span class="comment">// Listen the market...</span>
+        marketConsumer.handler(message -&gt; {
+          JsonObject quote = message.body();
+          TraderUtils.dumbTradingLogic(company, numberOfShares, portfolio, quote);
+        });
+
+        future.complete();
+      }
+    });</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_运行这个交易者服务">9.3.5. 运行这个交易者服务</h4>
+<div class="paragraph">
+<p>我们已经可以运行我们的交易者服务了。让我们来看看他是否会在交易市场中表现良好～首先构建我们的项目：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>cd compulsive-traders
+mvn clean package docker:build</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>然后启动Docker容器：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>docker run --rm --name traders vertx-microservice-workshop/compulsive-traders</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>如果你回到Dashboard看看，你会发现你的投资组合数据正在变化。</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_groovy版本的交易者">9.4. Groovy版本的交易者</h3>
+<div class="paragraph">
+<p>Groovy版本的交易者与Java版本的逻辑相同，但是是以Groovy的形式部署Verticle的。Vert.x同时支持Groovy脚本和Groovy类。为了方便理解，我们的Groovy代码写的和Java代码差不多。</p>
+</div>
+<div class="paragraph">
+<p>打开 <code>src/main/resources/GroovyCompulsiveTraderVerticle.groovy</code> 文件，复制以下代码至对应文件：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.vertx.groovy.core.CompositeFuture</span>
+<span class="keyword">import</span> <span class="include">io.vertx.groovy.core.Future</span>
+<span class="keyword">import</span> <span class="include">io.vertx.groovy.core.eventbus.MessageConsumer</span>
+<span class="keyword">import</span> <span class="include">io.vertx.ext.discovery.groovy.DiscoveryService</span>
+<span class="keyword">import</span> <span class="include">io.vertx.ext.discovery.groovy.types.EventBusService</span>
+<span class="keyword">import</span> <span class="include">io.vertx.ext.discovery.groovy.types.MessageSource</span>
+<span class="keyword">import</span> <span class="include">io.vertx.workshop.portfolio.PortfolioService</span>
+<span class="keyword">import</span> <span class="include">io.vertx.workshop.trader.impl.TraderUtils</span>
+
+<span class="keyword">def</span> company = TraderUtils.pickACompany();
+<span class="keyword">def</span> numberOfShares = TraderUtils.pickANumber();
+
+println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Groovy compulsive trader configured for company </span><span class="delimiter">&quot;</span></span> + company + <span class="string"><span class="delimiter">&quot;</span><span class="content"> and shares: </span><span class="delimiter">&quot;</span></span> + numberOfShares);
+
+<span class="comment">// We create the discovery service object.</span>
+<span class="keyword">def</span> discovery = DiscoveryService.create(vertx);
+
+<span class="predefined-type">Future</span>&lt;MessageConsumer&lt;<span class="predefined-type">Map</span>&gt;&gt; marketFuture = <span class="predefined-type">Future</span>.future();
+<span class="predefined-type">Future</span>&lt;PortfolioService&gt; portfolioFuture = <span class="predefined-type">Future</span>.future();
+
+MessageSource.get(vertx, discovery,
+        [<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> : <span class="string"><span class="delimiter">&quot;</span><span class="content">market-data</span><span class="delimiter">&quot;</span></span>], marketFuture.completer());
+EventBusService.get(vertx, discovery,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">io.vertx.workshop.portfolio.PortfolioService</span><span class="delimiter">&quot;</span></span>, portfolioFuture.completer());
+
+<span class="comment">// When done (both services retrieved), execute the handler</span>
+CompositeFuture.all(marketFuture, portfolioFuture).setHandler( { ar -&gt;
+  <span class="keyword">if</span> (ar.failed()) {
+    <span class="predefined-type">System</span>.err.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">One of the required service cannot be retrieved: </span><span class="delimiter">&quot;</span></span> + ar.cause());
+  } <span class="keyword">else</span> {
+    <span class="comment">// Our services:</span>
+    PortfolioService portfolio = portfolioFuture.result();
+    MessageConsumer&lt;<span class="predefined-type">Map</span>&gt; marketConsumer = marketFuture.result();
+
+    <span class="comment">// Listen the market...</span>
+    marketConsumer.handler( { message -&gt;
+      <span class="predefined-type">Map</span> quote = message.body();
+      TraderUtils.dumbTradingLogic(company, numberOfShares, portfolio, quote);
+    });
+  }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>正如你所看到的，Groovy版本的代码非常像Java版本的代码。我们来对比一下它们之间的不同点：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>好，首先它是Groovy。</p>
+</li>
+<li>
+<p><code>import</code> 的是 <code>groovy</code> 版本的包。</p>
+</li>
+<li>
+<p>我们需要创建Discovery Service（Java版本中由父类进行创建）。</p>
+</li>
+<li>
+<p><code>JsonObjects</code> 变成了 <code>Maps</code> 类型的。在Groovy中，使用 <code>Maps</code> 类型会更好。</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>当某个接口被 <code>@VertxGen</code> 注解修饰的时候，Vert.x会自动将其转化为其支持的语言版本。这种转化会针对不同的语言适配不同语言的特性，因此我们才在Groovy中使用 <code>Maps</code> 而不是 <code>JsonObject</code>。</p>
+</div>
+<div class="paragraph">
+<p>这个例子使用 Groovy 写的，当然也可以用诸如 JavaScript、Ruby 或者 Ceylon 之类的语言编写。</p>
+</div>
+<div class="paragraph">
+<p>是时候重新构建并启动我们的交易者服务了～在终端中键入 <code>CTRL+C</code> 来停止交易者服务（或者执行 <code>docker stop traders</code> 命令）。然后重新构建项目：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>mvn clean package docker:build</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>接着启动Docker容器：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>docker run --rm --name traders vertx-microservice-workshop/compulsive-traders</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>如果你回到Dashboard看看，你会发现你的投资组合数据正在变化。现在这三个交易者正努力让你变得富有～～</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_审计服务">10. 审计服务</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>法律就是法律。<em>萨班斯-奥克斯利法案(Sarbanes–Oxley Act)</em> 要求你记录你在金融市场所做的每笔交易。审计服务将你所买入和卖出的股票信息记录在数据库中。
+在这里我们将使用 HSQLDB 作为数据库，当然你也可以使用其它关系型数据库(RDBMS)和非关系型数据库(NoSQL)。</p>
+</div>
+<div class="sect2">
+<h3 id="_以异步方式获取数据">10.1. 以异步方式获取数据</h3>
+<div class="paragraph">
+<p>正如我们之前所说的，Vert.x是异步的，我们万万不可阻塞Event Loop线程。那么，你知道哪些操作是绝对阻塞的吗？答案是数据库操作，再确切一点 —— JDBC！
+还好，Vert.x提供了一个异步操作数据库的组件 - JDBC client。</p>
+</div>
+<div class="paragraph">
+<p>它的原理非常简单（这也同样适用于其它阻塞操作）：</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/database-sequence.png" alt="database sequence" width="1095" height="345">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<em>Worker</em>？是的，<em>Worker</em> 是Vert.x中一种用于执行阻塞操作的线程。我们可以通过指定一个 Verticle 为 Worker 或通过 <code>vertx.executeBlocking</code> 方法来构造一个Worker线程。然而，我们也不能滥用这种特性，因为这会降低我们应用的可伸缩性。
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>然而，对数据库的操作可不是一个操作，而是一组操作。举个例子：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>获取数据库连接</p>
+</li>
+<li>
+<p>建表</p>
+</li>
+<li>
+<p>插入数据</p>
+</li>
+<li>
+<p>关闭数据库连接</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>所以，我们需要一种方法来对这些操作进行组合，并且在需要的时候报错。这就是我们将要在在审计服务中了解的东西。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_审计服务_2">10.2. 审计服务</h3>
+<div class="paragraph">
+<p>审计服务需要实现的功能：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>在Event Bus上监听所有金融相关的操作</p>
+</li>
+<li>
+<p>将接收到的操作信息存储到数据库中</p>
+</li>
+<li>
+<p>对外提供一组REST API，可以通过API查询最近的10条操作</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>我们使用 <code>vertx-jdbc-client</code> 组件（可以看作是异步版本的JDBC）来与数据库进行交互。下面我们会写一些SQL语句（我知道你非常喜欢 &gt;_&lt;）。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_通过组合future来对审计服务进行初始化">10.3. 通过组合Future来对审计服务进行初始化</h3>
+<div class="paragraph">
+<p>打开 <code>io.vertx.workshop.audit.impl.AuditVerticle</code> 类的代码。这个Verticle中第一个重要的细节就是 <code>start</code> 方法。与交易者中的 <code>start</code> 方法相似，此方法是异步的，并且通过给定的 <code>Future</code> 对象来通知操作的完成情况：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">void</span> start(<span class="predefined-type">Future</span>&lt;<span class="predefined-type">Void</span>&gt; future) {
+     <span class="comment">// 创建JDBC客户端</span>
+     jdbc = JDBCClient.createNonShared(vertx, config());
+
+     <span class="comment">// TODO</span>
+     <span class="comment">// ----</span>
+     future.fail(<span class="string"><span class="delimiter">&quot;</span><span class="content">not implemented yet</span><span class="delimiter">&quot;</span></span>);
+     <span class="comment">// ----</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>对审计服务进行初始化包含下面的几点：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>准备数据库（比如对应的表）</p>
+</li>
+<li>
+<p>启动HTTP服务并且对外提供一组RESTful API</p>
+</li>
+<li>
+<p>当有新操作的时候，从消息源获取操作信息</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>所以这是三个独立的操作，而审计服务需要在这三个操作完成后才能启动。</p>
+</div>
+<div class="paragraph">
+<p>将 <code>TODO</code> 块替换为下面的代码：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">Future</span>&lt;HttpServer&gt; httpEndpointReady = configureTheHTTPServer();
+<span class="predefined-type">Future</span>&lt;MessageConsumer&lt;JsonObject&gt;&gt; messageListenerReady = retrieveThePortfolioMessageSource();
+<span class="predefined-type">Future</span>&lt;<span class="predefined-type">Void</span>&gt; databaseReady = initializeDatabase(config().getBoolean(<span class="string"><span class="delimiter">&quot;</span><span class="content">drop</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">false</span>));
+
+CompositeFuture.all(httpEndpointReady, databaseReady, messageListenerReady)
+    .setHandler(ar -&gt; {
+      <span class="keyword">if</span> (ar.succeeded()) {
+        <span class="comment">// Register the handle called on messages</span>
+        messageListenerReady.result().handler(message -&gt; storeInDatabase(message.body()));
+        <span class="comment">// Notify the completion</span>
+        future.complete();
+      } <span class="keyword">else</span> {
+        future.fail(ar.cause());
+      }
+    });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>首先我们创建了三个 <code>Future</code>，分别对应之前讲的三个操作，然后我们通过 <code>CompositeFuture.all</code> 方法对它们进行组合。当所有的操作都完成的时候，它会调用对应的 <code>Handler</code> 注册消息监听器，当有新操作时会自动将操作信息存到数据库中。</p>
+</div>
+<div class="paragraph">
+<p>当然不要忘了最后调用 <code>future.complete()</code> 或者 <code>future.fail(cause)</code> 来通知Vert.x这三个操作是否成功。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_配置http服务端_异步方法模式">10.4. 配置HTTP服务端 - 异步方法模式</h3>
+<div class="paragraph">
+<p>我们之前提到过异步方法会将 <code>Handler</code> 作为最后一个参数（注册回调函数），这是其中的一种做法。另一种等价的做法是直接返回一个 <code>Future</code> 对象，当对应的操作执行完毕时可从 <code>Future</code> 中获取结果：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="type">void</span> asyncMethod(a, b, <span class="predefined-type">Handler</span>&lt;R&gt; handler);
+<span class="comment">// 这两种异步方法等价</span>
+<span class="predefined-type">Future</span>&lt;R&gt; asyncMethod(a, b);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>事实上，调用者可以给返回的 <code>Future</code> 对象绑定一个 <code>Handler</code>，当操作执行完毕的时候就执行绑定的 <code>Handler</code>：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">Future</span>&lt;R&gt; future = asyncMethod(a, b);
+future.setHandler(ar -&gt; {
+  <span class="keyword">if</span> (ar.failed()) { <span class="comment">/* 操作失败 */</span> }
+  <span class="keyword">else</span> {
+    <span class="comment">// 对结果进行处理</span>
+  }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>我们来以这种模式来实现 <code>configureTheHTTPServer</code> 方法：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">private</span> <span class="predefined-type">Future</span>&lt;HttpServer&gt; configureTheHTTPServer() {
+    <span class="predefined-type">Future</span>&lt;HttpServer&gt; future = <span class="predefined-type">Future</span>.future();
+
+    <span class="comment">// 使用Vert.x Web的路由器</span>
+    Router router = Router.router(vertx);
+    router.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>).handler(<span class="local-variable">this</span>::retrieveOperations);
+
+    vertx.createHttpServer()
+        .requestHandler(router::accept)
+        .listen(<span class="integer">8080</span>, future.completer());
+
+    <span class="keyword">return</span> future;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>首先该方法内创建了一个 <code>Router</code>，这是 <a href="http://vertx.io/docs/vertx-web/java/">Vert.x web</a> 中的一个对象，代表HTTP路由器。用它来实现 REST API 非常方便。
+然后我们在 <code>Router</code> 上配置路由：当访问 <code>/</code> 地址时，对应的 <code>Handler</code> 会被调用以处理请求。接着我们创建了HTTP服务端，其中 <code>requestHandler</code> 方法用于配置路由。
+同时我们将 <code>future.completer()</code> 传递给了 <code>listen</code> 方法。在这里我们来解析一下 <code>completer</code> 是啥。它其实是做了如下的操作：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="keyword">if</span> (ar.failed()) { future.fail(ar.cause()); }
+<span class="keyword">else</span> { future.complete(ar.result()); }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>再看看 <code>retrieveThePortfolioMessageSource</code> 方法的源码，是不是相同的风格呢？</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_通过链式操作组合来对数据库进行初始化">10.5. 通过链式操作组合来对数据库进行初始化</h3>
+<div class="paragraph">
+<p>在 <code>start</code> 方法中，我们调用了 <code>initializeDatabase</code> 方法。此方法使用了另一种操作组合的形式，我们来看一下。
+在 <code>initializeDatabase</code> 方法里我们要做：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>获取数据库连接</p>
+</li>
+<li>
+<p>删表</p>
+</li>
+<li>
+<p>创建新表</p>
+</li>
+<li>
+<p>关闭数据库连接（无论之前操作成功与否）</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>所有的这些操作都可能会失败。</p>
+</div>
+<div class="paragraph">
+<p>下面我们来介绍链式组合 <code>Chains</code>。<code>Chains</code> 是一系列形如这样的函数的组合：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>数据输入</p>
+</li>
+<li>
+<p>执行第一个函数(<code>Function</code>)，接受 (1) 中的输入，返回一个 <code>Future</code></p>
+</li>
+<li>
+<p>执行第二个函数(<code>Function</code>)，接受 (2) 中的输入，返回一个 <code>Future</code></p>
+</li>
+<li>
+<p>&#8230;&#8203;.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>这一整个链式组合的结果是一个 <code>Future</code> 对象。只要链式操作中任意一个操作失败了，这个 <code>Future</code> 就被标记为失败。如果操作成功，那么 <code>Future</code> 对应的结果就是最后一个操作对应的结果：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="code">Future&lt;X&gt; chain = Chain.chain(input, function1, function2, function3);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>这个链的输入也可以是一个 <code>Future</code> 对象，也就是说整个链式操作可以由 <code>Future</code> 触发。</p>
+</div>
+<div class="paragraph">
+<p>所以为了利用链式组合模式，我们只需要一组 <code>Function</code> 对象和一个用于触发链式操作的 <code>Future</code> 对象即可。我们先来创建 <code>Future</code> 对象：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 当与数据库成功建立连接时，此future会被赋值</span>
+<span class="comment">// 当我们需要关闭数据库连接的时候我们还会用到它</span>
+<span class="predefined-type">Future</span>&lt;SQLConnection&gt; connectionRetrieved = <span class="predefined-type">Future</span>.future();
+<span class="comment">// 获取数据库连接，如果失败就报告错误，如果成功就给connectionRetrieved赋值</span>
+jdbc.getConnection(connectionRetrieved.completer());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>然后，我们需要 两个 <code>Function</code> 对象（异步函数），接受 <code>SQLConnection</code> 作为参数：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>第一个函数会在需要的时候删表</p>
+</li>
+<li>
+<p>第二个函数用于创建新表</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// When the connection is retrieved, we want to drop the table (if drop is set to true)</span>
+Function&lt;SQLConnection, <span class="predefined-type">Future</span>&lt;SQLConnection&gt;&gt; dropTable = connection -&gt; {
+  <span class="predefined-type">Future</span>&lt;SQLConnection&gt; future = <span class="predefined-type">Future</span>.future();
+  <span class="keyword">if</span> (!drop) {
+    future.complete(connection); <span class="comment">// Immediate completion.</span>
+  } <span class="keyword">else</span> {
+    connection.execute(DROP_STATEMENT, completer(future, connection));
+  }
+  <span class="keyword">return</span> future;
+};
+
+<span class="comment">// When the table is dropped, we recreate it</span>
+Function&lt;SQLConnection, <span class="predefined-type">Future</span>&lt;<span class="predefined-type">Void</span>&gt;&gt; createTable = connection -&gt; {
+  <span class="predefined-type">Future</span>&lt;<span class="predefined-type">Void</span>&gt; future = <span class="predefined-type">Future</span>.future();
+  connection.execute(CREATE_TABLE_STATEMENT, future.completer());
+  <span class="keyword">return</span> future;
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>每一个函数（<code>Function</code> 对象包装的函数）都返回一个 <code>Future</code> 对象。第一个函数的结果用作第二个函数的输入。</p>
+</div>
+<div class="paragraph">
+<p>现在是时候构建我们的调用链了：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 链式操作：</span>
+<span class="comment">// 获取连接 -&gt; 删表 -&gt; 建表 -&gt; 关闭连接</span>
+
+Chain.chain(connectionRetrieved, dropTable, createTable)       <b class="conum">(1)</b>
+    .setHandler(ar -&gt; {                                        <b class="conum">(2)</b>
+      <span class="comment">// 只要连接获取成功，无论结果如何，都要关闭连接</span>
+      <span class="keyword">if</span> (connectionRetrieved.result() != <span class="predefined-constant">null</span>) {               <b class="conum">(3)</b>
+        connectionRetrieved.result().close();
+      }
+
+      <span class="comment">// 操作完成，给future赋值</span>
+      databaseReady.completer().handle(ar);                     <b class="conum">(4)</b>
+    });</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>在 (1) 中我们构建了我们的调用链，其中 <code>chain</code> 方法的第一个参数是触发链式操作的 <code>Future</code> 对象，其余两个参数是相应的调用函数。
+我们给返回的 <code>Future</code> 对象绑定上一个 <code>Handler</code> (2)，当链式操作执行完毕后会被调用。在 <code>Handler</code> (3)中，我们检查连接是否关闭，若没关闭就将其关闭。最后操作完成，我们完成要返回的 <code>Future</code>。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_通过基于回调的操作从数据库中查询结果">10.6. 通过基于回调的操作从数据库中查询结果</h3>
+<div class="paragraph">
+<p>你可能会问：我们为什么要进行这样的组合？我们来体验一番不使用任何的组合子（只用回调）实现一个异步方法的过程。当收到HTTP请求时，<code>retrieveOperations</code> 方法会被调用并以JSON的形式返回最近10条操作纪录。
+我们可以总结为以下几步：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>获取数据库连接</p>
+</li>
+<li>
+<p>执行数据库查询操作</p>
+</li>
+<li>
+<p>遍历结果，得到列表</p>
+</li>
+<li>
+<p>往HTTP Response中写入结果</p>
+</li>
+<li>
+<p>关闭数据库连接</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>其中 (1) 和 (2) 是异步的。(5) 也是异步的，但我们不需要等待其结果。在 <code>retrieveOperations</code> 方法的实现中，我们不使用任何的组合（这也是这个练习的目的）：</p>
+</div>
+<div class="listingblock assignment">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 1. 获取数据库连接</span>
+jdbc.getConnection(ar -&gt; {
+  SQLConnection connection = ar.result();
+  <span class="keyword">if</span> (ar.failed()) {
+    context.fail(ar.cause());
+  } <span class="keyword">else</span> {
+    <span class="comment">// 2. 执行数据库查询操作</span>
+    connection.query(SELECT_STATEMENT, result -&gt; {
+      <span class="predefined-type">ResultSet</span> set = result.result();
+
+      <span class="comment">// 3. 构造操作列表</span>
+      <span class="predefined-type">List</span>&lt;JsonObject&gt; operations = set.getRows().stream()
+          .map(json -&gt; <span class="keyword">new</span> JsonObject(json.getString(<span class="string"><span class="delimiter">&quot;</span><span class="content">OPERATION</span><span class="delimiter">&quot;</span></span>)))
+          .collect(Collectors.toList());
+
+      <span class="comment">// 4. 往response中写入结果</span>
+      context.response().setStatusCode(<span class="integer">200</span>).end(Json.encodePrettily(operations));
+
+      <span class="comment">// 5. 关闭数据库连接</span>
+      connection.close();
+    });
+  }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>所以显然你可以不使用组合来实现异步方法，但想象一下有非常多的异步操作需要一个接一个地执行的时候，你就会陷入回调地狱(callback hell)中，这时候代码看起来非常臃肿。
+所以我们推荐使用Vert.x提供的操作组合子来进行操作组合。</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+所有的操作组合子(<code>all</code>, <code>compose</code>, <code>any</code>, <code>chain</code> 等等)都是基于回调实现的。事实上，回调才是纯的异步编程，而 <code>Future</code> 和组合子都是为了简化异步操作和组合而产生的（同步的思想写出异步的代码）。
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_展示时间">10.7. 展示时间！</h3>
+<div class="paragraph">
+<p>首先你需要构建项目：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>cd audit-service
+mvn clean package docker:build</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>然后启动Docker容器：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>docker run -p 8082:8080 --rm --name audit vertx-microservice-workshop/audit-service</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>你需要重新启动Dashobard以便访问我们刚刚发布的REST服务（由Docker以链接的形式导入）：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>docker stop dashboard
+docker run -p 8083:8080 --rm --name dashboard --link audit:AUDIT vertx-microservice-workshop/trader-dashboard</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>刷新一下Dashboard，你将会看到右上角显示出各种金融相关的操作。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_仪表板_dashboard_详解">11. 仪表板(Dashboard)详解</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>这一部分是关于Dashboard的内容。在这一部分中你不需要写任何代码。这一部分只是解释Dashboard的一些工作原理：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>如何配置Vert.x Web以便访问静态资源</p>
+</li>
+<li>
+<p>如何配置SockJS - Event Bus 通信通道(bridge)</p>
+</li>
+<li>
+<p>如何实现基于其它REST服务的REST端点（代理模式）</p>
+</li>
+<li>
+<p>如何在浏览器端使用Event Bus服务</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Dashboard部分是一个单独的Verticle (<code>io.vertx.workshop.dashboard.DashboardVerticle</code>)。</p>
+</div>
+<div class="sect2">
+<h3 id="_vert_x_web与静态文件">11.1. Vert.x Web与静态文件</h3>
+<div class="paragraph">
+<p>正如我们之前所提到的那样，Vert.x Web是一个用于构建Web应用的Vert.x组件。整个架构的核心是 <code>Router</code> 对象（路由）。
+你可以创建并配置<strong>路由</strong>。对每一个路由，你都需要配置其 <em>HTTP Method</em> 与 <em>URL路径</em> ，并与对应的 <code>Handler</code> 相结合。
+<code>router</code> 对象可以通过下面的代码进行创建：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">Router router = Router.router(vertx);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vert.x Web提供了一系列的 <code>Handler</code> 用于处理各种请求，比如访问静态资源：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 静态内容</span>
+router.route(<span class="string"><span class="delimiter">&quot;</span><span class="content">/*</span><span class="delimiter">&quot;</span></span>).handler(StaticHandler.create());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>当路由配置完毕后，你需要创建一个HTTP服务端并使用路由来处理HTTP请求：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">vertx.createHttpServer()
+    .requestHandler(router::accept)
+    .listen(<span class="integer">8080</span>);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sockjs_event_bus_通信通道">11.2. SockJS - Event Bus 通信通道</h3>
+<div class="paragraph">
+<p><strong>SockJS</strong>是一个提供类似于WebSocket对象的JavaScript库。SockJS提供了一组一致的、跨浏览器的JavaScript API，这组API可以用于创建浏览器和服务端之间的，低延时、全双工、跨域的通信通道(communication channel)。
+在底层，SockJS首先会尝试使用原生的WebSocket，如果失败了则会尝试使用各种不同的浏览器相关的传输协议，并且会将其通过类似于WebSocket的抽象结果呈现出来。
+SockJS客户端需要一个对应的处理通信的服务器，而且你可以想象到，Vert.x帮你实现了！</p>
+</div>
+<div class="paragraph">
+<p>有了SockJS - Event Bus通信通道，来自Event Bus的事件可以被发送到浏览器端，而且我们也可以用JavaScript代码向Event Bus发送消息。</p>
+</div>
+<div class="paragraph">
+<p>你需要添加以下代码开启SockJS - Event Bus Bridge功能：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">SockJSHandler sockJSHandler = SockJSHandler.create(vertx);                      <b class="conum">(1)</b>
+BridgeOptions options = <span class="keyword">new</span> BridgeOptions();
+options
+    .addOutboundPermitted(<span class="keyword">new</span> PermittedOptions().setAddress(<span class="string"><span class="delimiter">&quot;</span><span class="content">market</span><span class="delimiter">&quot;</span></span>))         <b class="conum">(2)</b>
+    .addOutboundPermitted(<span class="keyword">new</span> PermittedOptions().setAddress(<span class="string"><span class="delimiter">&quot;</span><span class="content">portfolio</span><span class="delimiter">&quot;</span></span>))
+    .addOutboundPermitted(<span class="keyword">new</span> PermittedOptions().setAddress(<span class="string"><span class="delimiter">&quot;</span><span class="content">service.portfolio</span><span class="delimiter">&quot;</span></span>))
+    .addInboundPermitted(<span class="keyword">new</span> PermittedOptions().setAddress(<span class="string"><span class="delimiter">&quot;</span><span class="content">service.portfolio</span><span class="delimiter">&quot;</span></span>));
+
+sockJSHandler.bridge(options);                                                 <b class="conum">(3)</b>
+router.route(<span class="string"><span class="delimiter">&quot;</span><span class="content">/eventbus/*</span><span class="delimiter">&quot;</span></span>).handler(sockJSHandler);                            <b class="conum">(4)</b></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>在 (1) 中，我们创建了 <code>SockJSHandler</code>。我们需要对其进行配置，因为默认情况下，为了安全起见不允许传输任何数据，因此我们需要指定能够传输数据对应的地址 (2)。
+<code>Outbound</code> 地址代表从Event Bus向浏览器端传输，而 <code>Inbound</code> 地址代表从浏览器端向Event Bus传输。最后在 (3) 和 (4) 中，我们对 <code>Handler</code> 进行了配置，并且通过 <code>router</code> 配置了路由。
+<code>/eventbus/*</code> 这个路径会被SockJS 客户端（浏览器端）用于识别连接以及发送和接受消息。</p>
+</div>
+<div class="paragraph">
+<p>这并不是Event Bus唯一的通信通道，Vert.x还为原生系统实现了TCP Event Bus Bridge。并且，SockJS通道也可用于Node.js。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_委托rest调用">11.3. 委托REST调用</h3>
+<div class="paragraph">
+<p>我们常常需要基于另一个REST API来实现我们的REST API，这种模式在传统的架构中性能代价很大，因为它会一直阻塞调用线程，直到完成另一个REST API的调用过程。
+而在Vert.x的异步、非阻塞模型下，一切问题都迎刃而解。</p>
+</div>
+<div class="paragraph">
+<p>比如在Dashboard中，我们想要获取最近的操作列表。而操作列表由审计服务提供，因此在Dashboard中我们设有如下的路由：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">router.get(<span class="string"><span class="delimiter">&quot;</span><span class="content">/operations</span><span class="delimiter">&quot;</span></span>).handler(<span class="local-variable">this</span>::lastOperations);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>对应的 <code>Handler</code>：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">private</span> <span class="type">void</span> lastOperations(RoutingContext context) {
+    HttpEndpoint.get(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">AUDIT</span><span class="delimiter">&quot;</span></span>), client -&gt; {
+        <span class="keyword">if</span> (client.failed() || client.result() == <span class="predefined-constant">null</span>) {
+            context.response()
+                .putHeader(<span class="string"><span class="delimiter">&quot;</span><span class="content">content-type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>)
+                .setStatusCode(<span class="integer">200</span>)
+                .end(<span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">message</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">No audit service</span><span class="delimiter">&quot;</span></span>).encode());
+        } <span class="keyword">else</span> {
+            client.result().get(<span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>, response -&gt; {
+              response
+                  .exceptionHandler(context::fail)
+                  .bodyHandler(buffer -&gt; {
+                    context.response()
+                        .putHeader(<span class="string"><span class="delimiter">&quot;</span><span class="content">content-type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>)
+                        .setStatusCode(<span class="integer">200</span>)
+                        .end(buffer);
+                    client.result().close();
+                  });
+            })
+                .exceptionHandler(context::fail)
+                .end();
+        }
+    });
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_在浏览器端使用event_bus服务">11.4. 在浏览器端使用Event Bus服务</h3>
+<div class="paragraph">
+<p>正如我们之前所说的，SockJS与Event Bus之间存在通信通道，可以让浏览器发送和接收消息。因为Event Bus服务通过Event Bus消息进行通信，这使得在浏览器端实现一个客户端成为可能。Vert.x自动为你生成此客户端。</p>
+</div>
+<div class="paragraph">
+<p>所以，如果你浏览 <code>index.html</code> 的源码，你会看到：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="html"><span class="tag">&lt;script</span> <span class="attribute-name">src</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">libs/portfolio_service-proxy.js</span><span class="delimiter">&quot;</span></span><span class="tag">&gt;</span><span class="tag">&lt;/script&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>下面我们就可以使用服务了：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript"><span class="keyword">var</span> service = <span class="keyword">new</span> PortfolioService(eventbus, <span class="string"><span class="delimiter">&quot;</span><span class="content">service.portfolio</span><span class="delimiter">&quot;</span></span>);
+service.getPortfolio(<span class="keyword">function</span> (err, res) {
+   <span class="comment">// ....</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>是的，你可以直接在你的浏览器里调用相应的服务了。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_终">12. 终</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>你终于完成了整个金融系统！或者你只是直接跳到了此章节。。。无论如何，恭喜你！我们希望你能喜欢这个实验，并且能从中学到需要的知识。Vert.x还可以做很多事情，篇幅所限，我们不再讲述。</p>
+</div>
+<div class="paragraph">
+<p>不要忘记响应式系统的含义，并且在写Vert.x应用的时候，时刻铭记：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Vert.x是一个工具集，而不是一个框架</p>
+</li>
+<li>
+<p>第一次接触到异步、非阻塞的开发模式可能会很难理解，不过之后你就会被其优美的特性所吸引。不要忘了，计算机也是异步的，所以采用这种开发模型可以有效地利用计算机的资源。</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>如果需要的话，你可以访问下面的页面来了解更多有关Vert.x的内容：</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://vertx.io">Vert.x 官方网站</a></p>
+</li>
+<li>
+<p><a href="http://vertx.io/blog/posts/introduction-to-vertx.html">一系列介绍Vert.x开发入门的博客文章</a></p>
+</li>
+<li>
+<p><a href="https://github.com/vert-x3/vertx-microservice-toolbox">Vert.x 微服务构建工具集</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_引用">13. 引用</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>这是我们推荐的一些阅读材料，它们不局限于Vert.x和微服务这两个话题。</p>
+</div>
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p>A. S. Tanenbaum, M Van Steam. Distributed Systems - Principles and Paradigms. 2003</p>
+</li>
+<li>
+<p>L. Bass, I. Weber, L. Zhu. Devops, A software Architect&#8217;s Perspective. 2015</p>
+</li>
+<li>
+<p>P. Clements, F. Bachmann, L Bass, D. Garlan, J. Ivers, R. Little, P. Merson, R. Nord, J.
+Stafford. Documenting Software Architecture. 2010</p>
+</li>
+<li>
+<p>S. Krakowiak. Middleware Architecture with Patterns and Frameworks. 2009 (unfinished),
+<a href="http://lig-membres.imag.fr/krakowia/Files/MW-Book/Chapters/Preface/preface.html" class="bare">http://lig-membres.imag.fr/krakowia/Files/MW-Book/Chapters/Preface/preface.html</a></p>
+</li>
+<li>
+<p>J. Lewis, M. Fowler. Microservices - a definition of this new architectural term, 2014,
+<a href="http://martinfowler.com/articles/microservices.html" class="bare">http://martinfowler.com/articles/microservices.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnote_1">
+<a href="#_footnoteref_1">1</a>. 异步: 调用者不需要一直等待返回结果， 而是传递一个 <em>回调函数</em> 。当得到结果时，回调函数会被调用
+</div>
+<div class="footnote" id="_footnote_2">
+<a href="#_footnoteref_2">2</a>. 非阻塞: 代码不能阻塞执行线程 - 所以必须避免阻塞IO，也就是需要长时间处理过程的方法
+</div>
+<div class="footnote" id="_footnote_3">
+<a href="#_footnoteref_3">3</a>. 可以容易并且迅速地移动，与敏捷方法(Agile Methodologies)无关
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+文档版本：v0.2<br>
+最后更新时间：2016-05-03 01:38:25 (UTC +08:00)
+</div>
+</div>
+</body>
+</html>
