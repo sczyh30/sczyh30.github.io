@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/en/"/>
-  <updated>2016-05-02T17:29:53.837Z</updated>
+  <updated>2016-05-16T16:34:18.280Z</updated>
   <id>http://www.sczyh30.com/en/</id>
   
   <author>
@@ -16,11 +16,96 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>GSoC 2016 | Vert.x | Community Bonding Period</title>
+    <link href="http://www.sczyh30.com/en/2016/05/15/gsoc-2016-community-bonding/"/>
+    <id>http://www.sczyh30.com/en/2016/05/15/gsoc-2016-community-bonding/</id>
+    <published>2016-05-14T16:00:00.000Z</published>
+    <updated>2016-05-16T16:34:18.280Z</updated>
+    
+    <content type="html">&lt;p&gt;In this blog I’ll summarize the four weeks during the Community Bonding Period of GSoC 2016 :)&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h1 id=&quot;Week-1&quot;&gt;&lt;a href=&quot;#Week-1&quot; class=&quot;headerlink&quot; title=&quot;Week 1&quot;&gt;&lt;/a&gt;Week 1&lt;/h1&gt;&lt;p&gt;The stuff of the first week:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Make contact with my mentors&lt;/li&gt;
+&lt;li&gt;Set up development environment&lt;/li&gt;
+&lt;li&gt;Do more research on my project&lt;/li&gt;
+&lt;li&gt;Read more documents and articles about Vert.x&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Week-2&quot;&gt;&lt;a href=&quot;#Week-2&quot; class=&quot;headerlink&quot; title=&quot;Week 2&quot;&gt;&lt;/a&gt;Week 2&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Discuss with mentors to refine my summer timeline and prepare a good project plan&lt;/li&gt;
+&lt;li&gt;Translate the document of &lt;code&gt;Vert.x - From zero to (micro)-hero&lt;/code&gt; Microservice Lab into Chinese(a wonderful lab!)&lt;/li&gt;
+&lt;li&gt;Learn more about various components of Vert.x&lt;/li&gt;
+&lt;li&gt;Work on &lt;em&gt;Vert.x Blueprint - Todo Backend&lt;/em&gt;, use multiple persistence&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Week-3&quot;&gt;&lt;a href=&quot;#Week-3&quot; class=&quot;headerlink&quot; title=&quot;Week 3&quot;&gt;&lt;/a&gt;Week 3&lt;/h1&gt;&lt;h3 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Refine project plan&lt;/li&gt;
+&lt;li&gt;Work on the English document of &lt;em&gt;Vert.x Blueprint - Todo Backend&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Refine the code and document of &lt;em&gt;Vert.x Blueprint - Todo Backend&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Learn more about &lt;code&gt;EventBus&lt;/code&gt; and Vert.x Service Proxy&lt;/li&gt;
+&lt;li&gt;Design the structure of &lt;em&gt;Vert.x Blueprint - Kue&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Initial structure of &lt;em&gt;Vert.x Blueprint - Kue&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;I viewed the code of Kue (Node.js version) and find it weird. Maybe I could write a &lt;code&gt;Kue&lt;/code&gt; class referring to the encapsulation of &lt;code&gt;KueVerticle&lt;/code&gt;. Every components of the Kue could use &lt;code&gt;EventBus&lt;/code&gt; to interact with each other.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Week-4&quot;&gt;&lt;a href=&quot;#Week-4&quot; class=&quot;headerlink&quot; title=&quot;Week 4&quot;&gt;&lt;/a&gt;Week 4&lt;/h1&gt;&lt;h3 id=&quot;Objectives-1&quot;&gt;&lt;a href=&quot;#Objectives-1&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h3&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Finish Chinese version document of Todo Backend&lt;/li&gt;
+&lt;li&gt;Work on the Vert.x Blueprint - Kue (Initial implementation)&lt;/li&gt;
+&lt;li&gt;Learn from Kue’s design&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;tip&quot;&gt;&lt;br&gt;    Pending…&lt;br&gt;&lt;/div&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;In this blog I’ll summarize the four weeks during the Community Bonding Period of GSoC 2016 :)&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Working on GSoC 2016 with Vert.x Community</title>
+    <link href="http://www.sczyh30.com/en/2016/04/29/working-on-gsoc-2016-with-vertx/"/>
+    <id>http://www.sczyh30.com/en/2016/04/29/working-on-gsoc-2016-with-vertx/</id>
+    <published>2016-04-28T16:00:00.000Z</published>
+    <updated>2016-05-16T16:42:26.177Z</updated>
+    
+    <content type="html">&lt;p&gt;Exciting! I have been accepted for Google Summer of Code 2016 with Vert.x Community. My project is &lt;strong&gt;Vert.x Blueprint&lt;/strong&gt;. Looking forward to an amazing summer with Vert.x~~&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h1 id=&quot;About-my-project&quot;&gt;&lt;a href=&quot;#About-my-project&quot; class=&quot;headerlink&quot; title=&quot;About my project&quot;&gt;&lt;/a&gt;About my project&lt;/h1&gt;&lt;p&gt;Vert.x is an excellent full-stack toolkit which can help us build FRP-sytle, high concurrent, scalable applications. And I hope more developers could make full use of Vert.x to build their applications rapidly and concisely. So it is necessary to implement a series of applications using various part of the Vert.x toolkit to demonstrate the ability to build many kinds of applications.&lt;/p&gt;
+&lt;p&gt;My goal is to implement some different applications using Vert.x and write detailed documents (both in English and Simplified Chinese) as guideline for the newcomer to Vert.x in order to help them understand the foundations of a vert.x application rapidly and then build complex applications. If time is permitted, I am willing to contribute to Vert.x Microservice Tools or Vert.x Scala Version~&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Exciting! I have been accepted for Google Summer of Code 2016 with Vert.x Community. My project is &lt;strong&gt;Vert.x Blueprint&lt;/strong&gt;. Looking forward to an amazing summer with Vert.x~~&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
     <title>My new blog in English</title>
     <link href="http://www.sczyh30.com/en/2016/04/26/new-english-blog/"/>
     <id>http://www.sczyh30.com/en/2016/04/26/new-english-blog/</id>
     <published>2016-04-25T16:00:00.000Z</published>
-    <updated>2016-05-02T17:29:53.837Z</updated>
+    <updated>2016-05-16T15:55:50.765Z</updated>
     
     <content type="html">&lt;p&gt;&lt;strong&gt;A blog in English independently is very necessary!&lt;/strong&gt;&lt;/p&gt;
 &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
