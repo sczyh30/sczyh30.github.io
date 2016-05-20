@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/"/>
-  <updated>2016-04-27T11:46:41.343Z</updated>
+  <updated>2016-05-20T11:57:09.854Z</updated>
   <id>http://www.sczyh30.com/</id>
   
   <author>
@@ -16,11 +16,116 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>使用 Docker Compose 编排容器集群</title>
+    <link href="http://www.sczyh30.com/posts/Architecture/service-with-docker-compose/"/>
+    <id>http://www.sczyh30.com/posts/Architecture/service-with-docker-compose/</id>
+    <published>2016-05-18T16:00:00.000Z</published>
+    <updated>2016-05-20T11:57:09.854Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;a href=&quot;https://docs.docker.com/compose/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Docker Compose&lt;/a&gt;可以让我们方便、快速地编排容器集群，有利于分布式架构的实现。&lt;/p&gt;
+&lt;p&gt;假设我们有一个应用以MySQL作为数据存储，如果没有编排工具的话，我们在构建此应用的Docker镜像时必须将MySQL一同打包进镜像中，这样不仅会使镜像体积臃肿，而且不利于分布式架构的实现（假如要做读写分离、主从复制之类的）。而有了Docker Compose，我们就可以创建两个镜像：单独的应用镜像和MySQL镜像。在运行时，分别创建两个容器，并且将两个容器链接(link)在一起，使它们之间可以按照配置相互通信。这样就将我们的单体应用拆分成了多个组件构成的应用（其实这就是微服务的思想），从而更有利于服务间的解耦以及分布式架构的实现。&lt;/p&gt;
+&lt;p&gt;下面举一个例子，完整实现可见&lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-todo-backend&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;vertx-blueprint-todo-backend | GitHub&lt;/a&gt;。现有一服务&lt;code&gt;Vert.x Blueprint Todo Backend&lt;/code&gt;已打包成jar包，该服务以Redis作为数据存储。该服务以及Redis监听的地址和端口通过JSON配置文件来提供。我们可以设计两个镜像：服务镜像（通过&lt;code&gt;Dockerfile&lt;/code&gt;构建）以及官方Redis镜像，运行时分别创建一个容器实例，然后通过Docker Compose将两个容器组合起来。首先来看一下我们的&lt;code&gt;Dockerfile&lt;/code&gt;：&lt;/p&gt;
+&lt;figure class=&quot;highlight dockerfile&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;FROM&lt;/span&gt; java:&lt;span class=&quot;number&quot;&gt;8&lt;/span&gt;-jre&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;ENV&lt;/span&gt; VERTICLE_FILE build/libs/vertx-blueprint-todo-backend-fat.jar&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;ENV&lt;/span&gt; VERTICLE_HOME /usr/verticles&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;EXPOSE&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;8082&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;COPY&lt;/span&gt; &lt;span class=&quot;bash&quot;&gt;&lt;span class=&quot;variable&quot;&gt;$VERTICLE_FILE&lt;/span&gt; &lt;span class=&quot;variable&quot;&gt;$VERTICLE_HOME&lt;/span&gt;/&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;span class=&quot;built_in&quot;&gt;COPY&lt;/span&gt; &lt;span class=&quot;bash&quot;&gt;config/config_docker.json &lt;span class=&quot;variable&quot;&gt;$VERTICLE_HOME&lt;/span&gt;/&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;WORKDIR&lt;/span&gt; &lt;span class=&quot;bash&quot;&gt;&lt;span class=&quot;variable&quot;&gt;$VERTICLE_HOME&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;span class=&quot;built_in&quot;&gt;ENTRYPOINT&lt;/span&gt; &lt;span class=&quot;bash&quot;&gt;[&lt;span class=&quot;string&quot;&gt;&quot;sh&quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&quot;-c&quot;&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;span class=&quot;built_in&quot;&gt;CMD&lt;/span&gt; &lt;span class=&quot;bash&quot;&gt;[&lt;span class=&quot;string&quot;&gt;&quot;java -jar vertx-blueprint-todo-backend-fat.jar -conf config_docker.json&quot;&lt;/span&gt;]&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;服务容器运行时对外暴露8082端口。再看一下服务配置文件：&lt;/p&gt;
+&lt;figure class=&quot;highlight json&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &quot;&lt;span class=&quot;attribute&quot;&gt;service.type&lt;/span&gt;&quot;: &lt;span class=&quot;value&quot;&gt;&lt;span class=&quot;string&quot;&gt;&quot;redis&quot;&lt;/span&gt;&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &quot;&lt;span class=&quot;attribute&quot;&gt;http.port&lt;/span&gt;&quot;: &lt;span class=&quot;value&quot;&gt;&lt;span class=&quot;number&quot;&gt;8082&lt;/span&gt;&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &quot;&lt;span class=&quot;attribute&quot;&gt;http.address&lt;/span&gt;&quot;: &lt;span class=&quot;value&quot;&gt;&lt;span class=&quot;string&quot;&gt;&quot;0.0.0.0&quot;&lt;/span&gt;&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &quot;&lt;span class=&quot;attribute&quot;&gt;redis.host&lt;/span&gt;&quot;: &lt;span class=&quot;value&quot;&gt;&lt;span class=&quot;string&quot;&gt;&quot;redis&quot;&lt;/span&gt;&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &quot;&lt;span class=&quot;attribute&quot;&gt;redis.port&lt;/span&gt;&quot;: &lt;span class=&quot;value&quot;&gt;&lt;span class=&quot;number&quot;&gt;6379&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;注意我们将Redis的host设为&lt;code&gt;redis&lt;/code&gt;，这个&lt;code&gt;redis&lt;/code&gt;是对应的访问路径，后面会提到。下面来看Docker Compose的配置文件&lt;code&gt;docker-compose.yml&lt;/code&gt;：&lt;/p&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;version: &amp;#34;2&amp;#34;&amp;#10;services:&amp;#10;  redis:&amp;#10;    container_name: vertx-todo-backend_redis&amp;#10;    image: redis:latest&amp;#10;    expose:&amp;#10;      - &amp;#34;6379&amp;#34;&amp;#10;&amp;#10;  vertx-todo-backend:&amp;#10;    depends_on:&amp;#10;      - redis&amp;#10;    container_name: vertx-todo-backend_service&amp;#10;    build: .&amp;#10;    links:&amp;#10;      - redis&amp;#10;    ports:&amp;#10;      - &amp;#34;8082:8082&amp;#34;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;其中&lt;code&gt;version: &amp;quot;2&amp;quot;&lt;/code&gt;代表对应镜像版本，最新的需要Docker 1.10.0支持。在&lt;code&gt;services&lt;/code&gt;中，我们定义了两个&lt;code&gt;service&lt;/code&gt;：&lt;code&gt;redis&lt;/code&gt;和&lt;code&gt;vertx-todo-backend&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;先来看&lt;code&gt;redis&lt;/code&gt;中的配置。&lt;code&gt;container_name&lt;/code&gt;代表容器名称，&lt;code&gt;image&lt;/code&gt;代表对应的镜像，&lt;code&gt;expose&lt;/code&gt;代表在集群内暴露的端口号（不对外暴露）。其它容器通过服务名&lt;code&gt;redis&lt;/code&gt;访问此镜像。&lt;/p&gt;
+&lt;p&gt;再来看&lt;code&gt;vertx-todo-backend&lt;/code&gt;。我们的服务需要依赖Redis，因此容器的启动顺序应该是&lt;code&gt;redis -&amp;gt; vertx-todo-backend&lt;/code&gt;，因此我们配置了&lt;code&gt;depends_on&lt;/code&gt;选项，此选项下的所有容器都将会在本容器启动之前启动（注意只是启动，并不是其它容器初始化完成后本容器才启动。如果需要等待其它容器初始化完毕，则需要另写脚本）。&lt;code&gt;build&lt;/code&gt;对应着&lt;code&gt;Dockerfile&lt;/code&gt;文件的路径，&lt;code&gt;links&lt;/code&gt;代表链接的镜像，&lt;code&gt;ports&lt;/code&gt;代表对外暴露的端口。&lt;/p&gt;
+&lt;p&gt;配置好以后，我们在目录下执行&lt;code&gt;docker-compose up --build&lt;/code&gt;，一会就可以看到容器集群运行起来了，非常方便。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/vbptds-docker-compose-running.png&quot; alt=&quot;Docker Compose&quot;&gt;&lt;/p&gt;
+&lt;p&gt;更多的有关Docker Compose的信息，参考&lt;a href=&quot;https://docs.docker.com/compose/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;官方文档&lt;/a&gt;。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;a href=&quot;https://docs.docker.com/compose/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Docker Compose&lt;/a&gt;可以让我们方便、快速地编排容器集群，有利于分布式架构的实现。&lt;/p&gt;
+&lt;p&gt;假设我们有一个
+    
+    </summary>
+    
+      <category term="Architecture" scheme="http://www.sczyh30.com/categories/Architecture/"/>
+    
+    
+      <category term="Docker" scheme="http://www.sczyh30.com/tags/Docker/"/>
+    
+      <category term="容器" scheme="http://www.sczyh30.com/tags/%E5%AE%B9%E5%99%A8/"/>
+    
+      <category term="微服务" scheme="http://www.sczyh30.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>在Gradle中使用Annotation Processing Tool | Vert.x Codegen 示例</title>
+    <link href="http://www.sczyh30.com/posts/Develop/gradle-annotation-processing-vertx-codegen/"/>
+    <id>http://www.sczyh30.com/posts/Develop/gradle-annotation-processing-vertx-codegen/</id>
+    <published>2016-05-17T16:00:00.000Z</published>
+    <updated>2016-05-20T11:59:13.952Z</updated>
+    
+    <content type="html">&lt;p&gt;在Maven中，我们可以很方便地利用 &lt;em&gt;Annotation Processing Tool(APT)&lt;/em&gt; 来生成代码，配置简洁明了。比如在Maven中配置&lt;a href=&quot;https://github.com/vert-x3/vertx-codegen&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Codegen&lt;/a&gt;：&lt;/p&gt;
+&lt;figure class=&quot;highlight xml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;pluginManagement&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;plugins&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;&amp;lt;!-- Configure the execution of the compiler to execute the codegen processor --&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;plugin&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;maven-compiler-plugin&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;version&lt;/span&gt;&amp;gt;&lt;/span&gt;3.1&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;version&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;configuration&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;source&lt;/span&gt;&amp;gt;&lt;/span&gt;1.8&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;source&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;target&lt;/span&gt;&amp;gt;&lt;/span&gt;1.8&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;target&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;encoding&lt;/span&gt;&amp;gt;&lt;/span&gt;$&amp;#123;project.build.sourceEncoding&amp;#125;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;encoding&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;configuration&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;executions&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;execution&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;id&lt;/span&gt;&amp;gt;&lt;/span&gt;default-compile&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;id&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;configuration&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;annotationProcessors&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;              &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;annotationProcessor&lt;/span&gt;&amp;gt;&lt;/span&gt;io.vertx.codegen.CodeGenProcessor&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;annotationProcessor&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;annotationProcessors&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;compilerArgs&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;              &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;arg&lt;/span&gt;&amp;gt;&lt;/span&gt;-AoutputDirectory=$&amp;#123;project.basedir&amp;#125;/src/main&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;arg&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;compilerArgs&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;configuration&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;execution&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;executions&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;plugin&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;plugins&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;pluginManagement&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;而Gradle就不是那么方便了，官方文档里没有讲，各种插件又不太好使，因此自己摸索了摸索。其实，我们只要搞明白&lt;code&gt;APT&lt;/code&gt;的处理过程，一切问题就迎刃而解了。在编译阶段，我们可以通过&lt;code&gt;-processor&lt;/code&gt;来配置对应的注解处理器，并将注解处理器的包文件加到&lt;code&gt;CLASSPATH&lt;/code&gt;中。因此，我们可以在Gradle中写一个task来处理注解：&lt;/p&gt;
+&lt;figure class=&quot;highlight gradle&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;task&lt;/span&gt; annotationProcessing(type: JavaCompile, &lt;span class=&quot;keyword&quot;&gt;group&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&#39;build&#39;&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;source&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;sourceSets&lt;/span&gt;.main.java&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;classpath&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;configurations&lt;/span&gt;.&lt;span class=&quot;keyword&quot;&gt;compile&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;destinationDir&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;project&lt;/span&gt;.&lt;span class=&quot;keyword&quot;&gt;file&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&#39;src/main/generated&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;options&lt;/span&gt;.compilerArgs = [&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;&quot;-proc:only&quot;&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;&quot;-processor&quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&quot;xxx.yyy.zzzProcessor&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  ]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;其中&lt;code&gt;source&lt;/code&gt;代表源代码目录，&lt;code&gt;classpath&lt;/code&gt;设为所有的依赖，&lt;code&gt;destinationDir&lt;/code&gt;代表输出路径，&lt;code&gt;options.compilerArgs&lt;/code&gt;代表&lt;code&gt;javac&lt;/code&gt;的配置项。&lt;/p&gt;
+&lt;p&gt;下面我们来看一个例子：如何在Gradle中使用Vert.x Codegen。首先先写处理注解的task：&lt;/p&gt;
+&lt;figure class=&quot;highlight gradle&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;task&lt;/span&gt; annotationProcessing(type: JavaCompile, &lt;span class=&quot;keyword&quot;&gt;group&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&#39;build&#39;&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;source&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;sourceSets&lt;/span&gt;.main.java&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;classpath&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;configurations&lt;/span&gt;.&lt;span class=&quot;keyword&quot;&gt;compile&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;destinationDir&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;project&lt;/span&gt;.&lt;span class=&quot;keyword&quot;&gt;file&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&#39;src/main/generated&#39;&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;options&lt;/span&gt;.compilerArgs = [&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;&quot;-proc:only&quot;&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;&quot;-processor&quot;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&quot;io.vertx.codegen.CodeGenProcessor&quot;&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;&quot;-AoutputDirectory=$&amp;#123;destinationDir.absolutePath&amp;#125;&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  ]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;注意Vert.x Codegen要设定&lt;code&gt;outputDirectory&lt;/code&gt;项（输出路径）方可生成代码。&lt;/p&gt;
+&lt;p&gt;下面我们在 &lt;code&gt;compileJava&lt;/code&gt; 中引用 &lt;code&gt;annotationProcessing&lt;/code&gt; ：&lt;/p&gt;
+&lt;figure class=&quot;highlight gradle&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;compileJava &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;targetCompatibility&lt;/span&gt; = &lt;span class=&quot;number&quot;&gt;1.8&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;sourceCompatibility&lt;/span&gt; = &lt;span class=&quot;number&quot;&gt;1.8&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  dependsOn annotationProcessing&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这样在进行构建的时候，Gradle就可以利用APT来处理注解，生成代码了。如果要引用这些生成的代码，还要把它们加到源码路径中：&lt;/p&gt;
+&lt;figure class=&quot;highlight gradle&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;sourceSets&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  main &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    java &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      srcDirs += &lt;span class=&quot;string&quot;&gt;&#39;src/main/generated&#39;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在Maven中，我们可以很方便地利用 &lt;em&gt;Annotation Processing Tool(APT)&lt;/em&gt; 来生成代码，配置简洁明了。比如在Maven中配置&lt;a href=&quot;https://github.com/vert-x3/vertx-codegen&quot; ta
+    
+    </summary>
+    
+      <category term="Develop" scheme="http://www.sczyh30.com/categories/Develop/"/>
+    
+    
+      <category term="APT" scheme="http://www.sczyh30.com/tags/APT/"/>
+    
+      <category term="Gradle" scheme="http://www.sczyh30.com/tags/Gradle/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>微服务设计模式 | Circuit Breaker Pattern</title>
+    <link href="http://www.sczyh30.com/posts/Microservice/circuit-breaker-pattern/"/>
+    <id>http://www.sczyh30.com/posts/Microservice/circuit-breaker-pattern/</id>
+    <published>2016-05-05T16:00:00.000Z</published>
+    <updated>2016-05-20T10:52:52.457Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/circuit-breaker-states.png&quot; alt=&quot;Circuit Breaker Pattern States&quot;&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/circuit-breaker-states.png&quot; alt=&quot;Circuit Breaker Pattern States&quot;&gt;&lt;/p&gt;
+
+    
+    </summary>
+    
+      <category term="Microservice" scheme="http://www.sczyh30.com/categories/Microservice/"/>
+    
+    
+      <category term="云服务" scheme="http://www.sczyh30.com/tags/%E4%BA%91%E6%9C%8D%E5%8A%A1/"/>
+    
+      <category term="微服务" scheme="http://www.sczyh30.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
+    
+  </entry>
+  
+  <entry>
     <title>类型系统 | Existential Type | Scala ++ Java ++ Haskell</title>
     <link href="http://www.sczyh30.com/posts/Functional-Programming/type-system-existential-types-scala-java/"/>
     <id>http://www.sczyh30.com/posts/Functional-Programming/type-system-existential-types-scala-java/</id>
     <published>2016-04-25T16:00:00.000Z</published>
-    <updated>2016-04-27T11:46:41.343Z</updated>
+    <updated>2016-04-27T13:36:58.811Z</updated>
     
     <content type="html">&lt;p&gt;&lt;strong&gt;Existential type&lt;/strong&gt;(存在类型)提供了一种在类型系统上抽象的方式，其中&lt;strong&gt;existential type&lt;/strong&gt;这个名称源于&lt;strong&gt;existential quantification&lt;/strong&gt;(全称量词，数学符号&lt;code&gt;∃&lt;/code&gt;)。可以这样理解：某种形式的类型存在，但是在上下文中不知道它的具体类型。比如我们定义一种类型&lt;code&gt;type T = ∃x {a: x; f: (x =&amp;gt; Int);}&lt;/code&gt;，它可以表示这种类型有一个类型为&lt;code&gt;x&lt;/code&gt;的成员变量a，一个类型为&lt;code&gt;x =&amp;gt; Int&lt;/code&gt;的成员函数f，而类型&lt;code&gt;x&lt;/code&gt;是任意的。&lt;/p&gt;
 &lt;p&gt;这篇文章我们来探讨一下existential type在Java、Scala和Haskell中的运用。&lt;/p&gt;
@@ -117,11 +222,11 @@
   </entry>
   
   <entry>
-    <title>Vert.x 异步编程 | Vert.x实例的创建流程及内部实现</title>
+    <title>Vert.x 异步编程 | Vertx实例的创建流程及内部实现</title>
     <link href="http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/"/>
     <id>http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/</id>
     <published>2016-04-20T16:00:00.000Z</published>
-    <updated>2016-05-02T16:30:57.569Z</updated>
+    <updated>2016-05-02T18:02:09.907Z</updated>
     
     <content type="html">&lt;p&gt;在Vert.x中，&lt;code&gt;Vertx&lt;/code&gt;接口是最为重要的一个接口，vertx-core的基础功能都在此接口中提供。这篇文章中我们就来分析一下&lt;code&gt;Vertx&lt;/code&gt;接口体系的内部实现以及创建流程。本文对应Vert.x的版本为 &lt;strong&gt;3.2.1&lt;/strong&gt;。&lt;/p&gt;
 &lt;h1 id=&quot;Vertx接口体系&quot;&gt;Vertx接口体系&lt;/h1&gt;&lt;p&gt;我们来看一下&lt;code&gt;Vertx&lt;/code&gt;接口的UML关系：&lt;/p&gt;
@@ -274,7 +379,7 @@
     <link href="http://www.sczyh30.com/posts/Functional-Programming/scala-type-lambda/"/>
     <id>http://www.sczyh30.com/posts/Functional-Programming/scala-type-lambda/</id>
     <published>2016-04-12T16:00:00.000Z</published>
-    <updated>2016-04-21T13:09:36.354Z</updated>
+    <updated>2016-04-21T13:09:37.084Z</updated>
     
     <content type="html">&lt;p&gt;这里来总结一下Scala类型系统中的Type Lambda，这是一个神奇的Trick，可以在类型上做有限的类似于Lambda Calculus的运算。&lt;/p&gt;
 &lt;h1 id=&quot;Type_Lambda&quot;&gt;Type Lambda&lt;/h1&gt;&lt;p&gt;为了便于理解，这里就以熟悉的Monad开始。首先定义我们的Monad Typeclass:&lt;/p&gt;
@@ -364,7 +469,7 @@
     <link href="http://www.sczyh30.com/posts/Miscellaneous/play-music-on-linux/"/>
     <id>http://www.sczyh30.com/posts/Miscellaneous/play-music-on-linux/</id>
     <published>2016-04-07T16:00:00.000Z</published>
-    <updated>2016-04-11T15:26:51.291Z</updated>
+    <updated>2016-04-11T15:26:55.269Z</updated>
     
     <content type="html">&lt;p&gt;今天在Ubuntu下搭了各种MIDI环境，为后边玩 &lt;em&gt;Haskell School of Music&lt;/em&gt; 中讲的Euterpea音乐库做准备。&lt;/p&gt;
 &lt;h1 id=&quot;ASLA&quot;&gt;ASLA&lt;/h1&gt;&lt;p&gt;首先介绍一下ASLA(Advanced Linux Sound Architecture)，它为Linux提供了MIDI和音频功能，相当于Linux下音频的基础。Ubuntu应该自带ALSA。&lt;/p&gt;
@@ -418,7 +523,7 @@
     <link href="http://www.sczyh30.com/posts/Scala/slick-3-type-system-query-prolouge/"/>
     <id>http://www.sczyh30.com/posts/Scala/slick-3-type-system-query-prolouge/</id>
     <published>2016-04-06T16:00:00.000Z</published>
-    <updated>2016-04-12T12:24:24.989Z</updated>
+    <updated>2016-04-12T12:48:00.517Z</updated>
     
     <content type="html">&lt;p&gt;这两天在给Samsara Aquarius的各个Service写分页的时候，设计了一个抽象层，想把一些公共的分页逻辑放在这个trait中，但是被Slick的类型系统折磨了一点时间。。今天粗略看了一下相关的源码，结合这几天遇到的问题，总结一下。因此就把这篇文章作为Prologue吧。。。（Slick的版本为3.1.1）&lt;/p&gt;
 &lt;h1 id=&quot;蛋疼的类型参数&quot;&gt;蛋疼的类型参数&lt;/h1&gt;&lt;p&gt;在Slick里面，分页可以通过&lt;code&gt;drop&lt;/code&gt;和&lt;code&gt;take&lt;/code&gt;函数实现。&lt;code&gt;query.drop(offset).take(n)&lt;/code&gt;对应的SQL为&lt;code&gt;LIMIT n, offset&lt;/code&gt;。因此在一开始，我设计了一个trait作为分页逻辑的抽象：&lt;/p&gt;
@@ -484,7 +589,7 @@
     <link href="http://www.sczyh30.com/posts/Scala/slick-3-summary-functional-relational-mapping/"/>
     <id>http://www.sczyh30.com/posts/Scala/slick-3-summary-functional-relational-mapping/</id>
     <published>2016-04-01T16:00:00.000Z</published>
-    <updated>2016-04-12T14:05:01.739Z</updated>
+    <updated>2016-04-12T14:05:05.416Z</updated>
     
     <content type="html">&lt;p&gt;不同于平常的ORM框架，Slick提供了一种函数响应式操作数据库的方式：Functional Relational Mapping。这种函数响应式的操作方式允许我们将数据库的每一个表都看作是一个 &lt;strong&gt;集合&lt;/strong&gt;，对数据库的CRUD操作可以转化为对这些“集合”的操作，因此我们可以充分利用各种Monadic的算子而不需要自己编写SQL（当然，需要保证Slick解析的SQL性能好）。并且，Slick是以 &lt;strong&gt;异步&lt;/strong&gt; 的方式操作数据库，返回Future，这有助于我们编写异步响应式的程序，比MyBatis等等的同步阻塞ORM框架之流好很多。这里我们就来总结一下Slick中Functional Relational Mapping的使用以及与SQL语句的对应关系（MySQL语法）。后面有时间的话，我还会总结一下Slick中FRM的实现原理。&lt;/p&gt;
 &lt;h1 id=&quot;Functional_Relational_Mapping_⇔_SQL&quot;&gt;Functional Relational Mapping ⇔ SQL&lt;/h1&gt;&lt;p&gt;首先我们需要自己定义对应的映射Table，当然也可以用Generator生成。假设有以下两个表：&lt;br&gt;&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;operator&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`article`&lt;/span&gt; (&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`id`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt; AUTO_INCREMENT,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`title`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;85&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`author`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;45&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`url`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;150&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`cid`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`update_date`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;date&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;PRIMARY&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`id`&lt;/span&gt;),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`index_title`&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`title`&lt;/span&gt;),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`index_cid`&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`cid`&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;) &lt;span class=&quot;keyword&quot;&gt;ENGINE&lt;/span&gt;=&lt;span class=&quot;keyword&quot;&gt;InnoDB&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;CHARSET&lt;/span&gt;=utf8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`category`&lt;/span&gt; (&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`cid`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt; AUTO_INCREMENT,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`name`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;45&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`abbr`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;45&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;PRIMARY&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`cid`&lt;/span&gt;),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;UNIQUE&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`name_UNIQUE`&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`name`&lt;/span&gt;),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;UNIQUE&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`abbr_UNIQUE`&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`abbr`&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;) &lt;span class=&quot;keyword&quot;&gt;ENGINE&lt;/span&gt;=&lt;span class=&quot;keyword&quot;&gt;InnoDB&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;CHARSET&lt;/span&gt;=utf8&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -731,7 +836,7 @@
     <link href="http://www.sczyh30.com/posts/Java/java-8-completable-future/"/>
     <id>http://www.sczyh30.com/posts/Java/java-8-completable-future/</id>
     <published>2016-02-29T16:00:00.000Z</published>
-    <updated>2016-05-02T17:11:12.215Z</updated>
+    <updated>2016-05-02T17:11:40.813Z</updated>
     
     <content type="html">&lt;p&gt;Future对象代表一个尚未完成异步操作的结果。从JDK 1.5以来，JUC包一直提供着最基本的Future，不过它太鸡肋了，除了&lt;code&gt;get&lt;/code&gt;、&lt;code&gt;cancel&lt;/code&gt;、&lt;code&gt;isDone&lt;/code&gt;和&lt;code&gt;isCancelled&lt;/code&gt;方法之外就没有其他的操作了，这样很不方便。好在JDK 1.8中引入了具有FRP风格的&lt;code&gt;CompletableFuture&lt;/code&gt;，它类似于Scala中的&lt;code&gt;Future&lt;/code&gt;。&lt;code&gt;CompletableFuture&lt;/code&gt;属于Monad， 因此支持一系列的函数式的组合、运算操作，非常方便，可以写出很FRP风格的代码而摆脱callback hell。&lt;/p&gt;
 &lt;p&gt;下面我们来结合FRP的思想，总结一下这些操作（&lt;em&gt;有的时候为了方便表示，我会用Haskell或Scala的语法来表示类型，毕竟Java的类型系统太渣&lt;/em&gt;）：&lt;/p&gt;
@@ -780,7 +885,7 @@
     <link href="http://www.sczyh30.com/posts/Functional-Programming/scala-fp-union-curry-howard-isomorphism/"/>
     <id>http://www.sczyh30.com/posts/Functional-Programming/scala-fp-union-curry-howard-isomorphism/</id>
     <published>2016-02-25T16:00:00.000Z</published>
-    <updated>2016-04-21T13:08:18.201Z</updated>
+    <updated>2016-04-21T13:10:10.853Z</updated>
     
     <content type="html">&lt;p&gt;所谓的联合类型(union type)，在逻辑上是“或”的意思，如&lt;code&gt;A or B or C&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;假设我们想实现这样一个函数size，它可以计算一个联合类型对象（Int与String）的长度。我们期望size函数只接受Int类型或String类型（以及它们的子类型，如Null和Nothing）的对象，而不接受任何其他类型的对象：&lt;br&gt;&lt;figure class=&quot;highlight scala&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;size&lt;/span&gt;(&lt;/span&gt;x: &lt;span class=&quot;type&quot;&gt;Int&lt;/span&gt; ∨ &lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;) = x &lt;span class=&quot;keyword&quot;&gt;match&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;case&lt;/span&gt; i: &lt;span class=&quot;type&quot;&gt;Int&lt;/span&gt; =&amp;gt; i&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;case&lt;/span&gt; s: &lt;span class=&quot;type&quot;&gt;String&lt;/span&gt; =&amp;gt; s.length&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;size(&lt;span class=&quot;number&quot;&gt;24&lt;/span&gt;) == &lt;span class=&quot;number&quot;&gt;24&lt;/span&gt;   &lt;span class=&quot;comment&quot;&gt;// OK&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;size(&lt;span class=&quot;string&quot;&gt;&quot;fuck&quot;&lt;/span&gt;) == &lt;span class=&quot;number&quot;&gt;4&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// OK&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;size(&lt;span class=&quot;number&quot;&gt;1.0&lt;/span&gt;)        &lt;span class=&quot;comment&quot;&gt;// 编译错误&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -1137,173 +1242,6 @@
       <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
     
       <category term="异步" scheme="http://www.sczyh30.com/tags/%E5%BC%82%E6%AD%A5/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>TCP 相关知识总结目录</title>
-    <link href="http://www.sczyh30.com/posts/Network/tcp-series/"/>
-    <id>http://www.sczyh30.com/posts/Network/tcp-series/</id>
-    <published>2016-02-04T16:00:00.000Z</published>
-    <updated>2016-02-26T13:58:04.991Z</updated>
-    
-    <content type="html">&lt;p&gt;寒假翻了翻TCP/IP Illustrated, Volume 1的第二版，将里面的一些新知识与上个暑假总结的第一版的相关知识结合起来，针对TCP部分重新做了个总结~目前已经大体总结完毕，这里列个目录方便查阅：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.sczyh30.com/posts/Network/tcp-connection/&quot;&gt;TCP连接的建立和终止&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.sczyh30.com/posts/Network/tcp-retransmission/&quot;&gt;TCP 超时与重传机制&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.sczyh30.com/posts/Network/tcp-flow-control/&quot;&gt;TCP 流量控制 &amp;amp;&amp;amp; 滑动窗口机制&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.sczyh30.com/posts/Network/tcp-congestion-control/&quot;&gt;TCP 拥塞控制&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;http://www.sczyh30.com/posts/Network/tcp-keepalive-heartbeat/&quot;&gt;TCP Keepalive机制 &amp;amp;&amp;amp; 心跳检测&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;寒假翻了翻TCP/IP Illustrated, Volume 1的第二版，将里面的一些新知识与上个暑假总结的第一版的相关知识结合起来，针对TCP部分重新做了个总结~目前已经大体总结完毕，这里列个目录方便查阅：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;http://ww
-    
-    </summary>
-    
-      <category term="Network" scheme="http://www.sczyh30.com/categories/Network/"/>
-    
-    
-      <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
-    
-      <category term="TCP" scheme="http://www.sczyh30.com/tags/TCP/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>TCP Keepalive &amp;&amp; Heartbeat</title>
-    <link href="http://www.sczyh30.com/posts/Network/tcp-keepalive-heartbeat/"/>
-    <id>http://www.sczyh30.com/posts/Network/tcp-keepalive-heartbeat/</id>
-    <published>2016-02-03T16:00:00.000Z</published>
-    <updated>2016-02-15T13:52:59.406Z</updated>
-    
-    <content type="html">&lt;p&gt;在默认情况下，在建立TCP连接之后，空闲时刻客户端和服务端不会互相发送数据包确认连接。假如有一端发生异常而掉线（如死机、防火墙拦截包、服务器爆炸），另一端若不进行连接确认，则会一直消耗资源。&lt;/p&gt;
-&lt;p&gt;为了保证连接的有效性，可以检测到对方端非正常的断开，我们通常利用两种机制来实现：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;利用TCP协议的Keepalive&lt;/li&gt;
-&lt;li&gt;在应用层实现心跳检测(Heart Beat)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&quot;TCP_Keepalive&quot;&gt;TCP Keepalive&lt;/h1&gt;&lt;p&gt;TCP Keepalive通过定时发送Keepalive探测包来探测连接的对端是否存活。&lt;/p&gt;
-&lt;p&gt;交互过程：&lt;/p&gt;
-&lt;p&gt;在收到对端的确认报文后，设置keepalive timer。当长时间两端无交互并且保活定时器超时的时候，本段会发送keepalive probe等待对端确认。若对端在一定时间内确认（具体的规则貌似比较繁琐），keepalive timer重置；否则，长时间未响应，连接终止。&lt;/p&gt;
-&lt;p&gt;TCP Keepalive默认是关闭的，因为它会消耗额外的资源，并且可能会关闭正常的连接。（它也非TCP标准，详情可见The Host Requirements RFC [RFC1122]）&lt;/p&gt;
-&lt;p&gt;在Linux Kernal中可以调整以下几个数值来设置Keepalive的属性：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;sysctl variables&lt;/th&gt;
-&lt;th&gt;net.ipv4.tcp_keepalive_time&lt;/th&gt;
-&lt;th&gt;net.ipv4.tcp_keepalive_intvl&lt;/th&gt;
-&lt;th&gt;net.ipv4.tcp_keepalive_probes&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;default&lt;/td&gt;
-&lt;td&gt;7200s&lt;/td&gt;
-&lt;td&gt;75s&lt;/td&gt;
-&lt;td&gt;9&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h1 id=&quot;Heart_Beat&quot;&gt;Heart Beat&lt;/h1&gt;&lt;p&gt;很多应用层协议都有心跳检测机制，客户端每隔一段时间就会向服务端发送一个数据包，通知服务端自己&lt;strong&gt;可以正常工作&lt;/strong&gt;，同时传递一些数据。&lt;/p&gt;
-&lt;p&gt;两种方式的特点：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;TCP Keepalive是TCP协议自带的实现，使用简单，其发送的数据包与应用层心跳检测包相比更小，但其功能也简单，仅提供检测连接功能&lt;/li&gt;
-&lt;li&gt;应用层心跳包不依赖于传输层协议，无论传输层协议是TCP还是UDP都可以用&lt;/li&gt;
-&lt;li&gt;应用层心跳包可以定制，可以应对更复杂的情况或传输一些额外信息&lt;/li&gt;
-&lt;li&gt;Keepalive仅代表连接保持着，而心跳包往往还代表客户端可正常工作&lt;/li&gt;
-&lt;/ul&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在默认情况下，在建立TCP连接之后，空闲时刻客户端和服务端不会互相发送数据包确认连接。假如有一端发生异常而掉线（如死机、防火墙拦截包、服务器爆炸），另一端若不进行连接确认，则会一直消耗资源。&lt;/p&gt;
-&lt;p&gt;为了保证连接的有效性，可以检测到对方端非正常的断开，我们通常利用两种
-    
-    </summary>
-    
-      <category term="Network" scheme="http://www.sczyh30.com/categories/Network/"/>
-    
-    
-      <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
-    
-      <category term="TCP" scheme="http://www.sczyh30.com/tags/TCP/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>TCP 拥塞控制</title>
-    <link href="http://www.sczyh30.com/posts/Network/tcp-congestion-control/"/>
-    <id>http://www.sczyh30.com/posts/Network/tcp-congestion-control/</id>
-    <published>2016-01-27T16:00:00.000Z</published>
-    <updated>2016-02-15T13:50:06.894Z</updated>
-    
-    <content type="html">&lt;p&gt;TCP拥塞控制这一块东西比较多~这里只总结重要的。&lt;/p&gt;
-&lt;p&gt;TCP的拥塞控制主要依赖于&lt;strong&gt;拥塞窗口&lt;/strong&gt;(congestion window, cwnd)和&lt;strong&gt;慢启动阈值&lt;/strong&gt;(slow start threshold, ssthresh)。cwnd是发送端根据网络的拥塞程度所预设的一个窗口大小，而ssthresh则是慢启动窗口的阈值，cwnd超过此阈值则转变控制策略。&lt;/p&gt;
-&lt;p&gt;TCP拥塞控制的主要算法有&lt;strong&gt;慢启动&lt;/strong&gt;(Slow Start)、&lt;strong&gt;拥塞避免&lt;/strong&gt;(Congestion Avoidance)、&lt;strong&gt;快速重传&lt;/strong&gt;(Fast Retransmit)、&lt;strong&gt;快速恢复&lt;/strong&gt;(Fast Recovery)等。&lt;/p&gt;
-&lt;h2 id=&quot;Slow_Start&quot;&gt;Slow Start&lt;/h2&gt;&lt;p&gt;如果TCP连接一建立就向服务器大量发包，很容易导致拥塞。因此，新建立的连接不能一开始就大量发送数据包，而是应该根据网络状况，逐步地增加每次发送数据包的量，这就是慢启动。慢启动通常在新建立TCP连接或由于RTO而丢包时执行。&lt;/p&gt;
-&lt;p&gt;具体来说，新建TCP连接时，cwnd需初始化为一个或几个最大发送报文段大小(send maximum segment size, SMSS)。具体规则（IW为初始窗口大小）：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;IW = 1*(SMSS) (if SMSS &amp;lt;= 2190 bytes)&lt;/p&gt;
-&lt;p&gt;IW = 2*(SMSS) and not more than 2 segments (if SMSS &amp;gt; 2190 bytes)&lt;/p&gt;
-&lt;p&gt;IW = 3*(SMSS) and not more than 3 segments (if 2190 ≥ SMSS &amp;gt; 1095 bytes)&lt;/p&gt;
-&lt;p&gt;IW = 4*(SMSS) and not more than 4 segments (otherwise)&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;发送端按照cwnd大小发送数据，每当数据被确认时，cwnd就以2为倍数进行指数级增长，即 $cwnd&lt;em&gt;{n}=2*cwnd&lt;/em&gt;{n-1}$&lt;/p&gt;
-&lt;p&gt;比如：&lt;/p&gt;
-&lt;figure class=&quot;highlight applescript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;开始 &lt;span class=&quot;comment&quot;&gt;---&amp;gt; cwnd = 1*SMSS  &lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;经过一个RTT &lt;span class=&quot;comment&quot;&gt;---&amp;gt; cwnd = 2*SMSS  &lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;经过两个RTT &lt;span class=&quot;comment&quot;&gt;---&amp;gt; cwnd = 2^2=4*SMSS  &lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;经过三个RTT &lt;span class=&quot;comment&quot;&gt;---&amp;gt; cwnd = 2^3=8*SMSS&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;如果带宽为W，那么经过 $RTT log_{2}W$ 时间就可以占满带宽。&lt;/p&gt;
-&lt;p&gt;显然，慢启动并不慢，cwnd会飞速增长。但是cwnd不能无限制地进行指数增长。当cwnd值超过慢启动阈值(ssthresh)时，慢启动过程结束，进入拥塞避免阶段。拥塞避免算法将在下面总结。&lt;/p&gt;
-&lt;h2 id=&quot;Congestion_Avoidance&quot;&gt;Congestion Avoidance&lt;/h2&gt;&lt;p&gt;当cwnd值超过ssthresh值时，慢启动过程结束，进入拥塞避免阶段。在拥塞避免阶段，cwnd将不再呈指数增长，而是呈线性增长。一般来说：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;收到一个ACK时，cwnd = cwnd + 1/cwnd&lt;/li&gt;
-&lt;li&gt;当每过一个RTT时，cwnd = cwnd + 1&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;这样放缓了拥塞窗口的增长速率，避免增长过快导致网络拥塞，慢慢的增加调整到网络的最佳值。&lt;/p&gt;
-&lt;h2 id=&quot;拥塞状态&quot;&gt;拥塞状态&lt;/h2&gt;&lt;p&gt;在慢启动阶段与拥塞避免阶段，只要判断发送方出现丢包，就会进行相应的控制。有两种情况：&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;1)&lt;/strong&gt; 等待RTO超时，重传数据包，此时TCP反应强烈：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;将ssthresh降低为此时cwnd的一半&lt;/li&gt;
-&lt;li&gt;将cwnd重新设为初始值(IW)&lt;/li&gt;
-&lt;li&gt;重新进入慢启动阶段&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;原则：加法增大、乘法减小。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;2)&lt;/strong&gt; 连续收到3个duplicate ACK时，重传数据包，无须等待RTO。此情况即为下面的快速重传。&lt;/p&gt;
-&lt;h2 id=&quot;Fast_Retransmit&quot;&gt;Fast Retransmit&lt;/h2&gt;&lt;p&gt;TCP在收到一个乱序的报文段时，会立即发送一个重复的ACK，并且此ACK不可被延迟。&lt;/p&gt;
-&lt;p&gt;如果连续收到3个或3个以上重复的ACK，TCP会判定此报文段丢失，需要重新传递，而无需等待RTO。这就叫做快速重传。&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;注：快速重传始于BSD 4.3 Tahoe，但Tahoe的TCP实现没有包含快速恢复阶段，快速重传后会退回至慢启动阶段。&lt;/em&gt;&lt;/p&gt;
-&lt;h2 id=&quot;Fast_Recovery&quot;&gt;Fast Recovery&lt;/h2&gt;&lt;p&gt;快速恢复是指快速重传后直接进入拥塞避免阶段而非慢启动阶段。总结一下快速恢复的步骤（以SMSS为单位）：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;​当收到3个重复的ACK时，将ssthresh设置为cwnd的一半(ssthresh = cwnd/2)，然后将cwnd的值设为ssthresh加3(cwnd = ssthresh + 3)，然后快速重传丢失的报文段&lt;/li&gt;
-&lt;li&gt;每次收到重复的ACK时，cwnd增加1(cwnd += 1)，并发送1个packet(如果允许的话)&lt;/li&gt;
-&lt;li&gt;当收到新的ACK时，将cwnd设置为第一步中ssthresh的值(cwnd = ssthresh)，代表恢复过程结束&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;快速恢复后将进入拥塞避免阶段。&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;注：快速恢复始于BSD 4.3 Reno。&lt;/em&gt;&lt;/p&gt;
-&lt;h2 id=&quot;NewReno&quot;&gt;NewReno&lt;/h2&gt;&lt;p&gt;快速恢复存在的一个问题是它只能针对一个packet重传而不能针对多个packet，这样会RTO到吐。因此后来标准提出了NewReno作为Reno的补充。NewReno可以解决一个窗口内多个packet丢失的情况（Partial ACK），即NewReno算法需要处理完该窗口内所有packet的ACK后方可结束恢复状态。这是一种激进的优化，适合不支持SACK的情况。（通过recovery变量实现）&lt;/p&gt;
-&lt;h2 id=&quot;SACK&quot;&gt;SACK&lt;/h2&gt;&lt;p&gt;SACK维持一个名为pipe的变量，代表流量的估计值。发包的时间由pipe决定。具体细节可见 &lt;a href=&quot;https://tools.ietf.org/html/rfc2018&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;RFC 2018&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;SACK可能会出现pipe计算不精确的情况，这样会使算法退化回Tahoe。Forward Acknowledgment (FACK)是对SACK的改进，它可以精确地计算pipe值。&lt;/p&gt;
-&lt;h2 id=&quot;其它&quot;&gt;其它&lt;/h2&gt;&lt;p&gt;更多的拥塞控制算法见&lt;a href=&quot;http://en.wikipedia.org/wiki/TCP_congestion-avoidance_algorithm&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;TCP Congestion Avoidance Algorithm&lt;/a&gt;。&lt;/p&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;TCP拥塞控制这一块东西比较多~这里只总结重要的。&lt;/p&gt;
-&lt;p&gt;TCP的拥塞控制主要依赖于&lt;strong&gt;拥塞窗口&lt;/strong&gt;(congestion window, cwnd)和&lt;strong&gt;慢启动阈值&lt;/strong&gt;(slow start threshold,
-    
-    </summary>
-    
-      <category term="Network" scheme="http://www.sczyh30.com/categories/Network/"/>
-    
-    
-      <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
-    
-      <category term="TCP" scheme="http://www.sczyh30.com/tags/TCP/"/>
     
   </entry>
   

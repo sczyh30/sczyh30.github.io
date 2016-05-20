@@ -2,6 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.sczyh30.com/posts/Develop/gradle-annotation-processing-vertx-codegen/</loc>
+    
+    <lastmod>2016-05-20T11:59:13.952Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Architecture/service-with-docker-compose/</loc>
+    
+    <lastmod>2016-05-20T11:57:09.854Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
+    
+    <lastmod>2016-05-20T10:56:14.009Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/haskell-category-basic/</loc>
+    
+    <lastmod>2016-05-20T10:55:11.956Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Microservice/circuit-breaker-pattern/</loc>
+    
+    <lastmod>2016-05-20T10:52:52.457Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/about/index.html</loc>
+    
+    <lastmod>2016-05-20T10:49:24.577Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/</loc>
+    
+    <lastmod>2016-05-02T18:02:09.907Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.sczyh30.com/posts/Scala/play-framework-2-5-summary-1/</loc>
     
     <lastmod>2016-05-02T17:12:05.087Z</lastmod>
@@ -11,14 +60,7 @@
   <url>
     <loc>http://www.sczyh30.com/posts/Java/java-8-completable-future/</loc>
     
-    <lastmod>2016-05-02T17:11:12.215Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/FP/haskell-category-basic/</loc>
-    
-    <lastmod>2016-05-02T17:07:17.313Z</lastmod>
+    <lastmod>2016-05-02T17:11:40.813Z</lastmod>
     
   </url>
   
@@ -39,14 +81,14 @@
   <url>
     <loc>http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-1/</loc>
     
-    <lastmod>2016-05-02T16:58:13.786Z</lastmod>
+    <lastmod>2016-05-02T16:58:25.984Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/</loc>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/type-system-existential-types-scala-java/</loc>
     
-    <lastmod>2016-05-02T16:30:57.569Z</lastmod>
+    <lastmod>2016-04-27T13:36:58.811Z</lastmod>
     
   </url>
   
@@ -58,23 +100,9 @@
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/about/index.html</loc>
-    
-    <lastmod>2016-04-27T12:01:25.032Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.sczyh30.com/posts/C-C/cpp-move-semantic/</loc>
     
-    <lastmod>2016-04-27T12:00:09.733Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/type-system-existential-types-scala-java/</loc>
-    
-    <lastmod>2016-04-27T11:46:41.343Z</lastmod>
+    <lastmod>2016-04-27T12:00:10.499Z</lastmod>
     
   </url>
   
@@ -86,58 +114,51 @@
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/scala-type-lambda/</loc>
-    
-    <lastmod>2016-04-21T13:09:36.354Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://www.sczyh30.com/posts/Functional-Programming/scala-fp-union-curry-howard-isomorphism/</loc>
     
-    <lastmod>2016-04-21T13:08:18.201Z</lastmod>
+    <lastmod>2016-04-21T13:10:10.853Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/scala-type-lambda/</loc>
     
-    <lastmod>2016-04-15T05:03:48.177Z</lastmod>
+    <lastmod>2016-04-21T13:09:37.084Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Scala/slick-3-summary-functional-relational-mapping/</loc>
     
-    <lastmod>2016-04-12T14:05:01.739Z</lastmod>
+    <lastmod>2016-04-12T14:05:05.416Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Scala/slick-3-type-system-query-prolouge/</loc>
     
-    <lastmod>2016-04-12T12:24:24.989Z</lastmod>
+    <lastmod>2016-04-12T12:48:00.517Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Develop/os-learning-1/</loc>
     
-    <lastmod>2016-04-12T11:50:29.698Z</lastmod>
+    <lastmod>2016-04-12T11:50:32.136Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Java/jvm-gc-hotspot-implements/</loc>
     
-    <lastmod>2016-04-12T11:45:23.082Z</lastmod>
+    <lastmod>2016-04-12T11:45:23.563Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Miscellaneous/play-music-on-linux/</loc>
     
-    <lastmod>2016-04-11T15:26:51.291Z</lastmod>
+    <lastmod>2016-04-11T15:26:55.269Z</lastmod>
     
   </url>
   
