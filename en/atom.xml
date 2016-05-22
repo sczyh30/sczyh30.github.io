@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>sczyh30&#39;s Metaspace</title>
   <subtitle>Follow my heart</subtitle>
-  <link href="/atom.xml" rel="self"/>
+  <link href="/en/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/en/"/>
-  <updated>2016-05-16T16:34:18.280Z</updated>
+  <updated>2016-05-22T02:10:28.101Z</updated>
   <id>http://www.sczyh30.com/en/</id>
   
   <author>
@@ -16,11 +16,40 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>GSoC 2016 | Work Period | Week 1</title>
+    <link href="http://www.sczyh30.com/en/2016/05/22/gsoc-2016-work-period-week-1/"/>
+    <id>http://www.sczyh30.com/en/2016/05/22/gsoc-2016-work-period-week-1/</id>
+    <published>2016-05-22T15:00:00.000Z</published>
+    <updated>2016-05-22T02:10:28.101Z</updated>
+    
+    <content type="html">&lt;h3 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h3&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Refine the code and document of &lt;strong&gt;Vert.x Blueprint - Todo Backend&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Work on the Vert.x Blueprint - Kue (Initial implementation)&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h3&gt;&lt;p&gt;In this week, I’m planning to do the f
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
     <title>GSoC 2016 | Vert.x | Community Bonding Period</title>
-    <link href="http://www.sczyh30.com/en/2016/05/15/gsoc-2016-community-bonding/"/>
-    <id>http://www.sczyh30.com/en/2016/05/15/gsoc-2016-community-bonding/</id>
-    <published>2016-05-14T16:00:00.000Z</published>
-    <updated>2016-05-16T16:34:18.280Z</updated>
+    <link href="http://www.sczyh30.com/en/2016/05/22/gsoc-2016-community-bonding/"/>
+    <id>http://www.sczyh30.com/en/2016/05/22/gsoc-2016-community-bonding/</id>
+    <published>2016-05-21T16:00:00.000Z</published>
+    <updated>2016-05-22T02:04:13.710Z</updated>
     
     <content type="html">&lt;p&gt;In this blog I’ll summarize the four weeks during the Community Bonding Period of GSoC 2016 :)&lt;/p&gt;
 &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
@@ -54,7 +83,22 @@
 &lt;li&gt;Work on the Vert.x Blueprint - Kue (Initial implementation)&lt;/li&gt;
 &lt;li&gt;Learn from Kue’s design&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class=&quot;tip&quot;&gt;&lt;br&gt;    Pending…&lt;br&gt;&lt;/div&gt;
+&lt;h3 id=&quot;Issues-1&quot;&gt;&lt;a href=&quot;#Issues-1&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Solved: How to use Vert.x Codegen in Gradle (for the lack of document)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Learned something about Kue’s design&lt;/li&gt;
+&lt;li&gt;Refactored some of &lt;em&gt;Vert.x Blueprint - Todo Backend&lt;/em&gt; code&lt;ul&gt;
+&lt;li&gt;Use &lt;code&gt;@DataObject&lt;/code&gt; annotation to generate converter&lt;/li&gt;
+&lt;li&gt;Use &lt;strong&gt;Docker Compose&lt;/strong&gt; to link two containers&lt;/li&gt;
+&lt;li&gt;Use &lt;strong&gt;Vert.x Launcher&lt;/strong&gt; and read configure from json file&lt;/li&gt;
+&lt;li&gt;Resolve the id issue using &lt;em&gt;incremental id&lt;/em&gt; (like auto_incr in db)&lt;/li&gt;
+&lt;li&gt;Remove redundant code&lt;/li&gt;
+&lt;li&gt;Update some part of documents&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The Community Bonding Period is ending and the code period will be coming~ Exciting! Wish an amazing code summer with Vert.x!&lt;/p&gt;
 </content>
     
     <summary type="html">
