@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/"/>
-  <updated>2016-05-20T11:57:09.854Z</updated>
+  <updated>2016-05-24T17:46:14.860Z</updated>
   <id>http://www.sczyh30.com/</id>
   
   <author>
@@ -16,11 +16,129 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Netflix Hystrix | 工作流程浅析 &amp;&amp; HystrixCircuitBreaker源码分析</title>
+    <link href="http://www.sczyh30.com/posts/Microservice/netflix-hystrix-how-it-works-summary/"/>
+    <id>http://www.sczyh30.com/posts/Microservice/netflix-hystrix-how-it-works-summary/</id>
+    <published>2016-05-23T16:00:00.000Z</published>
+    <updated>2016-05-24T17:46:14.860Z</updated>
+    
+    <content type="html">&lt;p&gt;这篇文章里我们来总结一下Netflix Hystrix的工作流程。这是官方提供的流程图(来自GitHub)：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/hystrix-command-flow-chart.png&quot; alt=&quot;Netflix Hystrix Flow Chart&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;工作流程&quot;&gt;工作流程&lt;/h1&gt;&lt;p&gt;我们来根据流程图来分析一下工作流程。&lt;/p&gt;
+&lt;p&gt;首先我们需要创建一个 &lt;code&gt;HystrixCommand&lt;/code&gt; 或 &lt;code&gt;HystrixObservableCommand&lt;/code&gt; 实例来代表向其它组件发出的操作请求（指令），然后通过相关的方法执行操作指令。这里有4个方法，前两个对应&lt;code&gt;HystrixCommand&lt;/code&gt;，后两个对应&lt;code&gt;HystrixObservableCommand&lt;/code&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;execute()&lt;/code&gt;：阻塞型方法，返回单个结果（或者抛出异常）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;queue()&lt;/code&gt;：异步方法，返回一个&lt;code&gt;Future&lt;/code&gt;对象，可以从中取出单个结果（或者抛出异常）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;observe()&lt;/code&gt;和&lt;code&gt;toObservable()&lt;/code&gt;都返回对应的&lt;code&gt;Observable&lt;/code&gt;对象，代表（多个）操作结果。注意&lt;code&gt;observe&lt;/code&gt;方法在调用的时候就开始执行对应的指令，而&lt;code&gt;toObservable&lt;/code&gt;方法相当于是&lt;code&gt;observe&lt;/code&gt;方法的lazy版本，当我们去&lt;code&gt;subscribe&lt;/code&gt;的时候，对应的指令才会被执行并产生结果&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;K             value   = command.execute();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Future&amp;lt;K&amp;gt;     fValue  = command.queue();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Observable&amp;lt;K&amp;gt; ohValue = command.observe();         &lt;span class=&quot;comment&quot;&gt;//hot observable&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Observable&amp;lt;K&amp;gt; ocValue = command.toObservable();    &lt;span class=&quot;comment&quot;&gt;//cold observable&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;从底层实现来讲，&lt;code&gt;HystrixCommand&lt;/code&gt;也是利用&lt;code&gt;Observable&lt;/code&gt;实现的，尽管它只返回单个结果。&lt;code&gt;HystrixCommand&lt;/code&gt;的&lt;code&gt;queue&lt;/code&gt;方法实际上是调用了&lt;code&gt;toObservable().toBlocking().toFuture()&lt;/code&gt;，而&lt;code&gt;execute&lt;/code&gt;方法实际上是调用了&lt;code&gt;queue().get()&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;执行操作指令时，Hystrix首先会检查缓存内是否有对应指令的结果，如果有的话，将缓存的结果直接以&lt;code&gt;Observable&lt;/code&gt;对象的形式返回。如果没有对应的缓存，Hystrix会检查Circuit Breaker的状态。如果Circuit Breaker的状态为开启状态，Hystrix将不会执行对应指令，而是直接进入失败处理状态（图中8 Fallback）。如果Circuit Breaker的状态为关闭状态，Hystrix会继续进行线程池、任务队列、信号量的检查（图中5），确认是否有足够的资源执行操作指令。如果资源满，Hystrix同样将不会执行对应指令并且直接进入失败处理状态。&lt;/p&gt;
+&lt;p&gt;如果资源充足，Hystrix将会执行操作指令。操作指令的调用最终都会到这两个方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;HystrixCommand.run()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;HystrixObservableCommand.construct()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果执行指令的时间超时，执行线程会抛出&lt;code&gt;TimeoutException&lt;/code&gt;异常。Hystrix会抛弃结果并直接进入失败处理状态。如果执行指令成功，Hystrix会进行一系列的数据记录，然后返回执行的结果。&lt;/p&gt;
+&lt;p&gt;同时，Hystrix会根据记录的数据来计算失败比率，一旦失败比率达到某一阈值将自动开启Circuit Breaker。&lt;/p&gt;
+&lt;p&gt;最后我们再来看一下Hystrix是如何处理失败的。如果我们在Command中实现了&lt;code&gt;HystrixCommand.getFallback()&lt;/code&gt;方法（或&lt;code&gt;HystrixObservableCommand.resumeWithFallback()&lt;/code&gt;方法，Hystrix会返回对应方法的结果。如果没有实现这些方法的话，从底层看Hystrix将会返回一个空的&lt;code&gt;Observable&lt;/code&gt;对象，并且可以通过&lt;code&gt;onError&lt;/code&gt;来终止并处理错误。从上层看：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;execute&lt;/code&gt;方法将会抛出异常&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;queue&lt;/code&gt;方法将会返回一个失败状态的&lt;code&gt;Future&lt;/code&gt;对象&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;observe()&lt;/code&gt;和&lt;code&gt;toObservable()&lt;/code&gt;方法都会返回上述的&lt;code&gt;Observable&lt;/code&gt;对象&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;HystrixCircuitBreaker源码分析&quot;&gt;HystrixCircuitBreaker源码分析&lt;/h1&gt;&lt;p&gt;Hystrix中的Circuit Breaker的实现比较明了。整个&lt;code&gt;HystrixCircuitBreaker&lt;/code&gt;接口一共有三个方法和三个静态类：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/hystrix-circuit-breaker-class-structure.png&quot; alt=&quot;Class Hierarchy of HystrixCircuitBreaker&quot;&gt;&lt;/p&gt;
+&lt;p&gt;其中&lt;code&gt;allowRequest()&lt;/code&gt;方法表示是否允许指令执行，&lt;code&gt;isOpen()&lt;/code&gt;方法表示断路器是否为开启状态，&lt;code&gt;markSuccess()&lt;/code&gt;用于将断路器关闭。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Factory&lt;/code&gt;静态类相当于Circuit Breaker Factory，用于获取相应的&lt;code&gt;HystrixCircuitBreaker&lt;/code&gt;。我们来看一下其实现：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Factory&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// String is HystrixCommandKey.name() (we can&#39;t use HystrixCommandKey directly as we can&#39;t guarantee it implements hashcode/equals correctly)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; ConcurrentHashMap&amp;lt;String, HystrixCircuitBreaker&amp;gt; circuitBreakersByCommand = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; ConcurrentHashMap&amp;lt;String, HystrixCircuitBreaker&amp;gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; HystrixCircuitBreaker &lt;span class=&quot;title&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(HystrixCommandKey key, HystrixCommandGroupKey group, HystrixCommandProperties properties, HystrixCommandMetrics metrics)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// this should find it for all but the first time&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        HystrixCircuitBreaker previouslyCached = circuitBreakersByCommand.get(key.name());&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (previouslyCached != &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; previouslyCached;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// if we get here this is the first time so we need to initialize&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// Create and add to the map ... use putIfAbsent to atomically handle the possible race-condition of&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 2 threads hitting this point at the same time and let ConcurrentHashMap provide us our thread-safety&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// If 2 threads hit here only one will get added and the other will get a non-null response instead.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        HystrixCircuitBreaker cbForCommand = circuitBreakersByCommand.putIfAbsent(key.name(), &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; HystrixCircuitBreakerImpl(key, group, properties, metrics));&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (cbForCommand == &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// this means the putIfAbsent step just created a new one so let&#39;s retrieve and return it&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; circuitBreakersByCommand.get(key.name());&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// this means a race occurred and while attempting to &#39;put&#39; another one got there before&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// and we instead retrieved it and will now return it&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; cbForCommand;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; HystrixCircuitBreaker &lt;span class=&quot;title&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(HystrixCommandKey key)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; circuitBreakersByCommand.get(key.name());&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;/* package */&lt;/span&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;reset&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        circuitBreakersByCommand.clear();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;Hystrix在&lt;code&gt;Factory&lt;/code&gt;类中维护了一个&lt;code&gt;ConcurrentHashMap&lt;/code&gt;用于存储与每一个&lt;code&gt;HystrixCommandKey&lt;/code&gt;相对应的&lt;code&gt;HystrixCircuitBreaker&lt;/code&gt;。每当我们通过&lt;code&gt;getInstance&lt;/code&gt;方法从中获取&lt;code&gt;HystrixCircuitBreaker&lt;/code&gt;的时候，Hystrix首先会检查&lt;code&gt;ConcurrentHashMap&lt;/code&gt;中有没有对应的缓存的断路器，如果有的话直接返回。如果没有的话就会新创建一个&lt;code&gt;HystrixCircuitBreaker&lt;/code&gt;实例，将其添加到缓存中并且返回。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;HystrixCircuitBreakerImpl&lt;/code&gt;静态类是&lt;code&gt;HystrixCircuitBreaker&lt;/code&gt;接口的实现。我们可以看到&lt;code&gt;HystrixCircuitBreakerImpl&lt;/code&gt;类中有四个成员变量。其中&lt;code&gt;properties&lt;/code&gt;是对应&lt;code&gt;HystrixCommand&lt;/code&gt;的属性类，&lt;code&gt;metrics&lt;/code&gt;是对应&lt;code&gt;HystrixCommand&lt;/code&gt;的度量数据类。由于会工作在并发环境下，我们用一个&lt;code&gt;AtomicBoolean&lt;/code&gt;类型的变量&lt;code&gt;circuitOpen&lt;/code&gt;来代表断路器的状态（默认是&lt;code&gt;false&lt;/code&gt;代表关闭，这里没有特意实现Half-Open这个状态），并用一个&lt;code&gt;AtomicLong&lt;/code&gt;类型的变量&lt;code&gt;circuitOpenedOrLastTestedTime&lt;/code&gt;记录着断路恢复计时器的初始时间，用于Open状态向Close状态的转换。&lt;/p&gt;
+&lt;p&gt;我们首先来看一下&lt;code&gt;isOpen&lt;/code&gt;方法的实现：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;annotation&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;isOpen&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (circuitOpen.get()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// if we&#39;re open we immediately return true and don&#39;t bother attempting to &#39;close&#39; ourself as that is left to allowSingleTest and a subsequent successful test to close&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// we&#39;re closed, so let&#39;s see if errors have made us so we should trip the circuit open&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    HealthCounts health = metrics.getHealthCounts();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// check if we are past the statisticalWindowVolumeThreshold&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (health.getTotalRequests() &amp;lt; properties.circuitBreakerRequestVolumeThreshold().get()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// we are not past the minimum volume threshold for the statisticalWindow so we&#39;ll return false immediately and not calculate anything&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;false&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (health.getErrorPercentage() &amp;lt; properties.circuitBreakerErrorThresholdPercentage().get()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;false&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// our failure rate is too high, trip the circuit&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (circuitOpen.compareAndSet(&lt;span class=&quot;keyword&quot;&gt;false&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;)) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// if the previousValue was false then we want to set the currentTime&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            circuitOpenedOrLastTestedTime.set(System.currentTimeMillis());&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// How could previousValue be true? If another thread was going through this code at the same time a race-condition could have&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// caused another thread to set it to true already even though we were in the process of doing the same&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// In this case, we know the circuit is open, so let the other thread set the currentTime and report back that the circuit is open&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;首先通过&lt;code&gt;circuitOpen.get()&lt;/code&gt;获取断路器的状态，如果是开启状态(&lt;code&gt;true&lt;/code&gt;)则返回&lt;code&gt;true&lt;/code&gt;。否则，Hystrix会从Metrics数据中获取&lt;code&gt;HealthCounts&lt;/code&gt;对象，然后检查对应的请求总数(&lt;code&gt;totalCount&lt;/code&gt;)是否小于属性中的请求容量阈值(&lt;code&gt;circuitBreakerRequestVolumeThreshold&lt;/code&gt;)，如果是的话表示断路器可以保持关闭状态，返回&lt;code&gt;false&lt;/code&gt;。如果不满足请求总数条件，就再检查错误比率(&lt;code&gt;errorPercentage&lt;/code&gt;)是否小于属性中的错误百分比阈值(&lt;code&gt;circuitBreakerErrorThresholdPercentage&lt;/code&gt;，默认 &lt;strong&gt;50&lt;/strong&gt;)，如果是的话表示断路器可以保持关闭状态，返回 &lt;code&gt;false&lt;/code&gt;；如果超过阈值，Hystrix会判定服务的某些地方出现了问题，因此通过CAS操作将断路器设为开启状态，并记录此时的系统时间作为定时器初始时间，最后返回 &lt;code&gt;true&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;我们再来看一下判断Open状态下计时器的实现方法&lt;code&gt;allowSingleTest&lt;/code&gt;:&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;allowSingleTest&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; timeCircuitOpenedOrWasLastTested = circuitOpenedOrLastTestedTime.get();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 1) if the circuit is open&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 2) and it&#39;s been longer than &#39;sleepWindow&#39; since we opened the circuit&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (circuitOpen.get() &amp;amp;&amp;amp; System.currentTimeMillis() &amp;gt; timeCircuitOpenedOrWasLastTested + properties.circuitBreakerSleepWindowInMilliseconds().get()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// We push the &#39;circuitOpenedTime&#39; ahead by &#39;sleepWindow&#39; since we have allowed one request to try.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// If it succeeds the circuit will be closed, otherwise another singleTest will be allowed at the end of the &#39;sleepWindow&#39;.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (circuitOpenedOrLastTestedTime.compareAndSet(timeCircuitOpenedOrWasLastTested, System.currentTimeMillis())) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// if this returns true that means we set the time so we&#39;ll return true to allow the singleTest&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// if it returned false it means another thread raced us and allowed the singleTest before we did&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;false&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;首先获取断路恢复计时器记录的初始时间&lt;code&gt;circuitOpenedOrLastTestedTime&lt;/code&gt;，然后判断以下两个条件是否同时满足：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;断路器的状态为开启状态(&lt;code&gt;circuitOpen.get() == true&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;当前时间与计时器初始时间之差大于计时器阈值&lt;code&gt;circuitBreakerSleepWindowInMilliseconds&lt;/code&gt;(默认为 &lt;strong&gt;5&lt;/strong&gt; 秒)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果同时满足的话，表示可以从&lt;code&gt;Open&lt;/code&gt;状态向&lt;code&gt;Close&lt;/code&gt;状态转换。Hystrix会通过CAS操作将&lt;code&gt;circuitOpenedOrLastTestedTime&lt;/code&gt;设为当前时间，并返回&lt;code&gt;true&lt;/code&gt;。如果不同时满足，返回&lt;code&gt;false&lt;/code&gt;，代表断路器关闭或者计时器时间未到。&lt;/p&gt;
+&lt;p&gt;有了这个函数以后，我们再来看一下&lt;code&gt;allowRequest&lt;/code&gt;的实现：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;annotation&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;allowRequest&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (properties.circuitBreakerForceOpen().get()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// properties have asked us to force the circuit open so we will allow NO requests&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;false&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (properties.circuitBreakerForceClosed().get()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// we still want to allow isOpen() to perform it&#39;s calculations so we simulate normal behavior&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        isOpen();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// properties have asked us to ignore errors so we will ignore the results of isOpen and just allow all traffic through&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; !isOpen() || allowSingleTest();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;非常直观。首先先读取属性中的强制设定值（可以强制设定状态），如果没有设定的话，就判断断路器是否关闭或者断路恢复计时器是否到达时间，只要满足其中一个条件就返回&lt;code&gt;true&lt;/code&gt;，即允许执行操作指令。&lt;/p&gt;
+&lt;p&gt;最后就是&lt;code&gt;markSuccess&lt;/code&gt;方法了，它用于关闭断路器并重置统计数据。代码非常直观，就不多说了：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;markSuccess&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (circuitOpen.get()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (circuitOpen.compareAndSet(&lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;false&lt;/span&gt;)) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            metrics.resetStream();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;Hystrix的Circuit Breaker可以用以下的图来总结：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/hystrix-circuit-breaker-1280.png&quot; alt=&quot;Hystrix Circuit Breaker&quot;&gt;&lt;/p&gt;
+&lt;p&gt;至于Hystrix在底层执行Command时是如何利用&lt;code&gt;HystrixCircuitBreaker&lt;/code&gt;的，可以看&lt;code&gt;AbstractCommand&lt;/code&gt;类中&lt;code&gt;toObservable&lt;/code&gt;方法的实现，后边再总结。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&quot;Reference&quot;&gt;Reference&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/Netflix/Hystrix/wiki/How-it-Works&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;How it Works - Netflix/Hystrix - Wiki&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这篇文章里我们来总结一下Netflix Hystrix的工作流程。这是官方提供的流程图(来自GitHub)：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/hystrix-command-flow-chart.
+    
+    </summary>
+    
+      <category term="Microservice" scheme="http://www.sczyh30.com/categories/Microservice/"/>
+    
+    
+      <category term="Netflix Hystrix" scheme="http://www.sczyh30.com/tags/Netflix-Hystrix/"/>
+    
+      <category term="云服务" scheme="http://www.sczyh30.com/tags/%E4%BA%91%E6%9C%8D%E5%8A%A1/"/>
+    
+      <category term="分布式系统" scheme="http://www.sczyh30.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/"/>
+    
+      <category term="微服务" scheme="http://www.sczyh30.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>并发编程算法 | Treiber Stack实现lock-free stack</title>
+    <link href="http://www.sczyh30.com/posts/Concurrency/concurrency-treiber-stack/"/>
+    <id>http://www.sczyh30.com/posts/Concurrency/concurrency-treiber-stack/</id>
+    <published>2016-05-21T16:00:00.000Z</published>
+    <updated>2016-05-24T14:36:10.936Z</updated>
+    
+    <content type="html">&lt;p&gt;多线程环境下各种数据结构的实现有了很大的变化，每当我们更新某个数据的时候，我们都要考虑其它线程是否对其进行了修改。最简单的一种方法就是加锁，不过加锁会导致性能低下，而且可能阻塞其他线程。因此，我们引入了非阻塞(non-blocking)的算法 —— 通过CAS操作保证操作的原子性，同时我们还引入了 &lt;em&gt;lock-free&lt;/em&gt; 的概念，它指的是一个线程出现问题（如阻塞，失败）但不影响其他线程（从总体看程序仍然是在运行的）。这里就来看一下Non-blocking stack的一个实现 —— &lt;strong&gt;Treiber Stack&lt;/strong&gt;。&lt;/p&gt;
+&lt;h1 id=&quot;Treiber_Stack&quot;&gt;Treiber Stack&lt;/h1&gt;&lt;p&gt;这里给出的是Treiber Stack的一个简化版的Java实现：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;36&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;37&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;38&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;39&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; java.util.concurrent.atomic.AtomicReference;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; * Concurrent stack implementation&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; * Treiber&#39;s Algorithm&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ConcurrentStack&lt;/span&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;E&lt;/span&gt;&amp;gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;private&lt;/span&gt; AtomicReference&amp;lt;Node&amp;lt;E&amp;gt;&amp;gt; top = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; AtomicReference&amp;lt;&amp;gt;();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(E elem)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        Node&amp;lt;E&amp;gt; newHead = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; Node&amp;lt;&amp;gt;(elem);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        Node&amp;lt;E&amp;gt; oldHead;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        do &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            oldHead = top.get();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            newHead.next = oldHead;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125; &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt; (!top.compareAndSet(oldHead, newHead));&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; E &lt;span class=&quot;title&quot;&gt;pop&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        Node&amp;lt;E&amp;gt; oldHead;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        Node&amp;lt;E&amp;gt; newHead;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        do &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            oldHead = top.get();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (oldHead == &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            newHead = oldHead.next;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125; &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt; (!top.compareAndSet(oldHead, newHead));&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; oldHead.item;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Node&lt;/span&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;E&lt;/span&gt;&amp;gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;final&lt;/span&gt; E item;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; Node&amp;lt;E&amp;gt; next;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Node&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(E item)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;.item = item;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;我们使用了&lt;code&gt;AtomicReference&lt;/code&gt;来实现Treiber Stack。每当我们&lt;code&gt;push&lt;/code&gt;进去一个元素的时候，我们首先根据要添加的元素创建一个&lt;code&gt;Node&lt;/code&gt;，然后获取原栈顶结点，并将新结点的下一个结点指向原栈顶结点。此时我们使用CAS操作来更改栈顶结点，如果此时的栈顶和之前的相同，代表CAS操作成功，那么就把新插入的元素设为栈顶；如果此时的栈顶和之前的不同（即其他线程改变了栈顶结点），CAS操作失败，那么需要重复上述操作（更新当前的栈顶元素并且重设next），直到成功。&lt;code&gt;pop&lt;/code&gt;操作的原理也相似。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&quot;Reference&quot;&gt;Reference&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Java Concurrency In Practice&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;多线程环境下各种数据结构的实现有了很大的变化，每当我们更新某个数据的时候，我们都要考虑其它线程是否对其进行了修改。最简单的一种方法就是加锁，不过加锁会导致性能低下，而且可能阻塞其他线程。因此，我们引入了非阻塞(non-blocking)的算法 —— 通过CAS操作保证操作的
+    
+    </summary>
+    
+      <category term="Concurrency" scheme="http://www.sczyh30.com/categories/Concurrency/"/>
+    
+    
+      <category term="Algorithm" scheme="http://www.sczyh30.com/tags/Algorithm/"/>
+    
+      <category term="多线程" scheme="http://www.sczyh30.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+      <category term="并发" scheme="http://www.sczyh30.com/tags/%E5%B9%B6%E5%8F%91/"/>
+    
+  </entry>
+  
+  <entry>
     <title>使用 Docker Compose 编排容器集群</title>
     <link href="http://www.sczyh30.com/posts/Architecture/service-with-docker-compose/"/>
     <id>http://www.sczyh30.com/posts/Architecture/service-with-docker-compose/</id>
-    <published>2016-05-18T16:00:00.000Z</published>
-    <updated>2016-05-20T11:57:09.854Z</updated>
+    <published>2016-05-19T16:00:00.000Z</published>
+    <updated>2016-05-23T15:20:08.101Z</updated>
     
     <content type="html">&lt;p&gt;&lt;a href=&quot;https://docs.docker.com/compose/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Docker Compose&lt;/a&gt;可以让我们方便、快速地编排容器集群，有利于分布式架构的实现。&lt;/p&gt;
 &lt;p&gt;假设我们有一个应用以MySQL作为数据存储，如果没有编排工具的话，我们在构建此应用的Docker镜像时必须将MySQL一同打包进镜像中，这样不仅会使镜像体积臃肿，而且不利于分布式架构的实现（假如要做读写分离、主从复制之类的）。而有了Docker Compose，我们就可以创建两个镜像：单独的应用镜像和MySQL镜像。在运行时，分别创建两个容器，并且将两个容器链接(link)在一起，使它们之间可以按照配置相互通信。这样就将我们的单体应用拆分成了多个组件构成的应用（其实这就是微服务的思想），从而更有利于服务间的解耦以及分布式架构的实现。&lt;/p&gt;
@@ -61,7 +179,7 @@
     <link href="http://www.sczyh30.com/posts/Develop/gradle-annotation-processing-vertx-codegen/"/>
     <id>http://www.sczyh30.com/posts/Develop/gradle-annotation-processing-vertx-codegen/</id>
     <published>2016-05-17T16:00:00.000Z</published>
-    <updated>2016-05-20T11:59:13.952Z</updated>
+    <updated>2016-05-20T11:59:16.424Z</updated>
     
     <content type="html">&lt;p&gt;在Maven中，我们可以很方便地利用 &lt;em&gt;Annotation Processing Tool(APT)&lt;/em&gt; 来生成代码，配置简洁明了。比如在Maven中配置&lt;a href=&quot;https://github.com/vert-x3/vertx-codegen&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Codegen&lt;/a&gt;：&lt;/p&gt;
 &lt;figure class=&quot;highlight xml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;pluginManagement&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;plugins&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;&amp;lt;!-- Configure the execution of the compiler to execute the codegen processor --&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;plugin&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;maven-compiler-plugin&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;version&lt;/span&gt;&amp;gt;&lt;/span&gt;3.1&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;version&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;configuration&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;source&lt;/span&gt;&amp;gt;&lt;/span&gt;1.8&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;source&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;target&lt;/span&gt;&amp;gt;&lt;/span&gt;1.8&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;target&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;encoding&lt;/span&gt;&amp;gt;&lt;/span&gt;$&amp;#123;project.build.sourceEncoding&amp;#125;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;encoding&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;configuration&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;executions&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;execution&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;id&lt;/span&gt;&amp;gt;&lt;/span&gt;default-compile&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;id&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;configuration&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;annotationProcessors&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;              &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;annotationProcessor&lt;/span&gt;&amp;gt;&lt;/span&gt;io.vertx.codegen.CodeGenProcessor&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;annotationProcessor&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;annotationProcessors&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;compilerArgs&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;              &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;arg&lt;/span&gt;&amp;gt;&lt;/span&gt;-AoutputDirectory=$&amp;#123;project.basedir&amp;#125;/src/main&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;arg&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;compilerArgs&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;          &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;configuration&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;execution&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;executions&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;plugin&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;plugins&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;title&quot;&gt;pluginManagement&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
@@ -99,15 +217,31 @@
     <link href="http://www.sczyh30.com/posts/Microservice/circuit-breaker-pattern/"/>
     <id>http://www.sczyh30.com/posts/Microservice/circuit-breaker-pattern/</id>
     <published>2016-05-05T16:00:00.000Z</published>
-    <updated>2016-05-20T10:52:52.457Z</updated>
+    <updated>2016-05-24T17:32:23.622Z</updated>
     
-    <content type="html">&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/circuit-breaker-states.png&quot; alt=&quot;Circuit Breaker Pattern States&quot;&gt;&lt;/p&gt;
+    <content type="html">&lt;p&gt;在分布式环境中，我们的应用可能会面临着各种各样的可恢复的异常（比如超时，网络环境异常），此时我们可以利用不断重试的方式来从异常中恢复(Retry Pattern)，使整个集群正常运行。&lt;/p&gt;
+&lt;p&gt;然而，也有一些异常比较顽固，突然发生，无法预测，而且很难恢复，并且还会导致级联失败（举个例子，假设一个服务集群的负载非常高，如果这时候集群的一部分挂掉了，还占了很大一部分资源，整个集群都有可能遭殃）。如果我们这时还是不断进行重试的话，结果大多都是失败的。因此，此时我们的应用需要立即进入失败状态(fast-fail)，并采取合适的方法进行恢复。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Circuit Breaker Pattern&lt;/strong&gt;（熔断器模式）就是这样的一种设计思想。它可以防止一个应用不断地去尝试一个很可能失败的操作。一个Circuit Breaker相当于一个代理，用于监测某个操作对应的失败比率(&lt;code&gt;fail / fail + success&lt;/code&gt;)。它会根据得到的数据来决定是否允许执行此操作，或者是立即抛出异常。&lt;/p&gt;
+&lt;h1 id=&quot;Circuit_Breaker原理&quot;&gt;Circuit Breaker原理&lt;/h1&gt;&lt;p&gt;我们可以用状态机来实现Circuit Breaker，它有以下三种状态：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;关闭(&lt;strong&gt;Closed&lt;/strong&gt;)：默认情况下Circuit Breaker是关闭的，此时允许操作执行。Circuit Breaker内部记录着最近失败的次数，如果对应的操作执行失败，次数就会续一次。如果在某个时间段内，失败次数（或者失败比率）达到阈值，Circuit Breaker会转换到开启(&lt;strong&gt;Open&lt;/strong&gt;)状态。在开启状态中，Circuit Breaker会启用一个超时计时器，设这个计时器的目的是给集群相应的时间来恢复故障。当计时器时间到的时候，Circuit Breaker会转换到半开启(&lt;strong&gt;Half-Open&lt;/strong&gt;)状态。&lt;/li&gt;
+&lt;li&gt;开启(&lt;strong&gt;Open&lt;/strong&gt;)：在此状态下，执行对应的操作将会立即失败并且立即抛出异常。&lt;/li&gt;
+&lt;li&gt;半开启(&lt;strong&gt;Half-Open&lt;/strong&gt;)：在此状态下，Circuit Breaker会允许执行一定数量的操作。如果所有操作全部成功，Circuit Breaker就会假定故障已经恢复，它就会转换到关闭状态，并且重置失败次数。如果其中 &lt;strong&gt;任意一次&lt;/strong&gt; 操作失败了，Circuit Breaker就会认为故障仍然存在，所以它会转换到开启状态并再次开启计时器（再给系统一些时间使其从失败中恢复）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Circuit Breaker的状态图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/circuit-breaker-states.png&quot; alt=&quot;Circuit Breaker Pattern States&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;简单实现&quot;&gt;简单实现&lt;/h1&gt;&lt;p&gt;&lt;em&gt;TODO&lt;/em&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&quot;Reference&quot;&gt;Reference&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Cloud Design Patterns&lt;/em&gt;, Microsoft&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://martinfowler.com/bliki/CircuitBreaker.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;CircuitBreaker | Martin Fowler&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </content>
     
     <summary type="html">
     
-      &lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/circuit-breaker-states.png&quot; alt=&quot;Circuit Breaker Pattern States&quot;&gt;&lt;/p&gt;
-
+      &lt;p&gt;在分布式环境中，我们的应用可能会面临着各种各样的可恢复的异常（比如超时，网络环境异常），此时我们可以利用不断重试的方式来从异常中恢复(Retry Pattern)，使整个集群正常运行。&lt;/p&gt;
+&lt;p&gt;然而，也有一些异常比较顽固，突然发生，无法预测，而且很难恢复，并且还会导致
     
     </summary>
     
@@ -226,7 +360,7 @@
     <link href="http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/"/>
     <id>http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/</id>
     <published>2016-04-20T16:00:00.000Z</published>
-    <updated>2016-05-02T18:02:09.907Z</updated>
+    <updated>2016-05-20T10:58:31.093Z</updated>
     
     <content type="html">&lt;p&gt;在Vert.x中，&lt;code&gt;Vertx&lt;/code&gt;接口是最为重要的一个接口，vertx-core的基础功能都在此接口中提供。这篇文章中我们就来分析一下&lt;code&gt;Vertx&lt;/code&gt;接口体系的内部实现以及创建流程。本文对应Vert.x的版本为 &lt;strong&gt;3.2.1&lt;/strong&gt;。&lt;/p&gt;
 &lt;h1 id=&quot;Vertx接口体系&quot;&gt;Vertx接口体系&lt;/h1&gt;&lt;p&gt;我们来看一下&lt;code&gt;Vertx&lt;/code&gt;接口的UML关系：&lt;/p&gt;
@@ -882,10 +1016,10 @@
   
   <entry>
     <title>Scala | 利用Curry-Howard Isomorphism实现union type</title>
-    <link href="http://www.sczyh30.com/posts/Functional-Programming/scala-fp-union-curry-howard-isomorphism/"/>
-    <id>http://www.sczyh30.com/posts/Functional-Programming/scala-fp-union-curry-howard-isomorphism/</id>
+    <link href="http://www.sczyh30.com/posts/Scala/scala-fp-union-curry-howard-isomorphism/"/>
+    <id>http://www.sczyh30.com/posts/Scala/scala-fp-union-curry-howard-isomorphism/</id>
     <published>2016-02-25T16:00:00.000Z</published>
-    <updated>2016-04-21T13:10:10.853Z</updated>
+    <updated>2016-05-24T14:25:46.184Z</updated>
     
     <content type="html">&lt;p&gt;所谓的联合类型(union type)，在逻辑上是“或”的意思，如&lt;code&gt;A or B or C&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;假设我们想实现这样一个函数size，它可以计算一个联合类型对象（Int与String）的长度。我们期望size函数只接受Int类型或String类型（以及它们的子类型，如Null和Nothing）的对象，而不接受任何其他类型的对象：&lt;br&gt;&lt;figure class=&quot;highlight scala&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;size&lt;/span&gt;(&lt;/span&gt;x: &lt;span class=&quot;type&quot;&gt;Int&lt;/span&gt; ∨ &lt;span class=&quot;type&quot;&gt;String&lt;/span&gt;) = x &lt;span class=&quot;keyword&quot;&gt;match&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;case&lt;/span&gt; i: &lt;span class=&quot;type&quot;&gt;Int&lt;/span&gt; =&amp;gt; i&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;case&lt;/span&gt; s: &lt;span class=&quot;type&quot;&gt;String&lt;/span&gt; =&amp;gt; s.length&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;size(&lt;span class=&quot;number&quot;&gt;24&lt;/span&gt;) == &lt;span class=&quot;number&quot;&gt;24&lt;/span&gt;   &lt;span class=&quot;comment&quot;&gt;// OK&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;size(&lt;span class=&quot;string&quot;&gt;&quot;fuck&quot;&lt;/span&gt;) == &lt;span class=&quot;number&quot;&gt;4&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// OK&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;size(&lt;span class=&quot;number&quot;&gt;1.0&lt;/span&gt;)        &lt;span class=&quot;comment&quot;&gt;// 编译错误&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -973,7 +1107,7 @@
     
     </summary>
     
-      <category term="Functional Programming" scheme="http://www.sczyh30.com/categories/Functional-Programming/"/>
+      <category term="Scala" scheme="http://www.sczyh30.com/categories/Scala/"/>
     
     
       <category term="Functional Programming" scheme="http://www.sczyh30.com/tags/Functional-Programming/"/>
@@ -1031,217 +1165,6 @@
       <category term="Haskell" scheme="http://www.sczyh30.com/tags/Haskell/"/>
     
       <category term="Scala" scheme="http://www.sczyh30.com/tags/Scala/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>快速排序实现及优化 | DualPivotQuicksort</title>
-    <link href="http://www.sczyh30.com/posts/Algorithm/algorithm-quicksort/"/>
-    <id>http://www.sczyh30.com/posts/Algorithm/algorithm-quicksort/</id>
-    <published>2016-02-22T16:00:00.000Z</published>
-    <updated>2016-03-23T07:18:12.279Z</updated>
-    
-    <content type="html">&lt;h1 id=&quot;快速排序的基本实现&quot;&gt;快速排序的基本实现&lt;/h1&gt;&lt;p&gt;快速排序算法是一种基于交换的高效的排序算法，它采用了&lt;strong&gt;分治法&lt;/strong&gt;的思想：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;从数列中取出一个数作为基准数（枢轴，pivot）。&lt;/li&gt;
-&lt;li&gt;将数组进行划分(partition)，将比基准数大的元素都移至枢轴右边，将小于等于基准数的元素都移至枢轴左边。&lt;/li&gt;
-&lt;li&gt;再对左右的子区间重复第二步的划分操作，直至每个子区间只有一个元素。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;快排最重要的一步就是划分了。划分的过程用通俗的语言讲就是“挖坑”和“填坑”。&lt;/p&gt;
-&lt;p&gt;举个例子，首先给一组数组：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;0&lt;/th&gt;
-&lt;th&gt;1&lt;/th&gt;
-&lt;th&gt;2&lt;/th&gt;
-&lt;th&gt;3&lt;/th&gt;
-&lt;th&gt;4&lt;/th&gt;
-&lt;th&gt;5&lt;/th&gt;
-&lt;th&gt;6&lt;/th&gt;
-&lt;th&gt;pivot&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;36&lt;/td&gt;
-&lt;td&gt;9&lt;/td&gt;
-&lt;td&gt;-7&lt;/td&gt;
-&lt;td&gt;45&lt;/td&gt;
-&lt;td&gt;23&lt;/td&gt;
-&lt;td&gt;61&lt;/td&gt;
-&lt;td&gt;15&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;为了方便起见，我们选择第一个元素36作为基准数，这样就腾出了第一个位置（挖坑），下面首先自右向左寻找比基准数小的元素填至第一个位置（填坑）：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;0&lt;/th&gt;
-&lt;th&gt;1&lt;/th&gt;
-&lt;th&gt;2&lt;/th&gt;
-&lt;th&gt;3&lt;/th&gt;
-&lt;th&gt;4&lt;/th&gt;
-&lt;th&gt;5&lt;/th&gt;
-&lt;th&gt;6&lt;/th&gt;
-&lt;th&gt;pivot&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;15&lt;/td&gt;
-&lt;td&gt;9&lt;/td&gt;
-&lt;td&gt;-7&lt;/td&gt;
-&lt;td&gt;45&lt;/td&gt;
-&lt;td&gt;23&lt;/td&gt;
-&lt;td&gt;61&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;36&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;第七个位置被腾出，然后再自左向右寻找比基准元素大的元素填在空位处：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;0&lt;/th&gt;
-&lt;th&gt;1&lt;/th&gt;
-&lt;th&gt;2&lt;/th&gt;
-&lt;th&gt;3&lt;/th&gt;
-&lt;th&gt;4&lt;/th&gt;
-&lt;th&gt;5&lt;/th&gt;
-&lt;th&gt;6&lt;/th&gt;
-&lt;th&gt;pivot&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;15&lt;/td&gt;
-&lt;td&gt;9&lt;/td&gt;
-&lt;td&gt;-7&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;23&lt;/td&gt;
-&lt;td&gt;61&lt;/td&gt;
-&lt;td&gt;45&lt;/td&gt;
-&lt;td&gt;36&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;再重复上面的动作，直到第一趟划分完毕。此时[a0,a3]都是小于基准值a4的，[a5,a6]都是大于基准值a4的：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;0&lt;/th&gt;
-&lt;th&gt;1&lt;/th&gt;
-&lt;th&gt;2&lt;/th&gt;
-&lt;th&gt;3&lt;/th&gt;
-&lt;th&gt;4&lt;/th&gt;
-&lt;th&gt;5&lt;/th&gt;
-&lt;th&gt;6&lt;/th&gt;
-&lt;th&gt;pivot&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;15&lt;/td&gt;
-&lt;td&gt;9&lt;/td&gt;
-&lt;td&gt;-7&lt;/td&gt;
-&lt;td&gt;23&lt;/td&gt;
-&lt;td&gt;36&lt;/td&gt;
-&lt;td&gt;61&lt;/td&gt;
-&lt;td&gt;45&lt;/td&gt;
-&lt;td&gt;36&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;然后再对两个子序列递归地进行上述的过程，最终可得到有序序列。&lt;/p&gt;
-&lt;p&gt;总结一下这个划分的过程：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;设两个指示i=left，j=right；设arr[left]为基准数&lt;/li&gt;
-&lt;li&gt;从后向前寻找比基准元素大的元素，填至空位处&lt;/li&gt;
-&lt;li&gt;从前向后寻找比基准元素小的元素，填至空位处&lt;/li&gt;
-&lt;li&gt;重复执行2、3步，直到两指示相等，将基准元素填至指示的位置，本次划分结束&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;用代码表示为：&lt;/p&gt;
-&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;partition&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; arr[], &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; left, &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; right)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; i = left, j = right;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; tmp = arr[left];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt;(i &amp;lt; j) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt;(i &amp;lt; j &amp;amp;&amp;amp; arr[j] &amp;gt; tmp)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            j--;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(i &amp;lt; j) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            arr[i] = arr[j];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            i++;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt;(i &amp;lt; j &amp;amp;&amp;amp; arr[i] &amp;lt; tmp)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            i++;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(i &amp;lt; j) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            arr[j] = arr[i];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            j--;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    arr[i] = tmp;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; i;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;quick_sort&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; arr[], &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; left, &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; right)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(left &amp;gt; right)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; j = partition(arr, left, right);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    quick_sort(arr, left, j - &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    quick_sort(arr, j + &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;, right);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;当然用Haskell写是最简单的了:)&lt;/p&gt;
-&lt;figure class=&quot;highlight haskell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;qs&lt;/span&gt; :: (&lt;span class=&quot;type&quot;&gt;Ord&lt;/span&gt; a) =&amp;gt; [a] -&amp;gt; [a]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;qs&lt;/span&gt; [] = []&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;title&quot;&gt;qs&lt;/span&gt; (x:xs) =&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; s = qs $ filter (&amp;lt;= x) xs&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        l = qs $ filter (&amp;gt; x)  xs&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; s ++ [x] ++ l&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;另一种实现划分的思路是先从左到右扫描一个比基准数大的元素，再从右到左扫描一个比基准数小的元素（左右两个指针i、j滑动），然后交换这两个元素，重复操作直到两指针相遇，然后将基准元素arr[left]与左子序列最后的元素arr[j]进行交换即可，用代码描述为：&lt;/p&gt;
-&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;partition&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; arr[], &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; left, &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; right)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; i = left, j = right + &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; temp = arr[left];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt;(&lt;span class=&quot;keyword&quot;&gt;true&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt;(arr[++i] &amp;lt; temp) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(i == right)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                &lt;span class=&quot;keyword&quot;&gt;break&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt;(arr[--j] &amp;gt; temp) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(j == left)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                &lt;span class=&quot;keyword&quot;&gt;break&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(i &amp;gt;= j)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;break&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        swap(&amp;amp;arr[i], &amp;amp;arr[j]);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    swap(&amp;amp;arr[left], &amp;amp;arr[j]);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; j;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;快速排序算法的平均时间复杂度为&lt;code&gt;O(NlogN)&lt;/code&gt;。快排的最差情况为序列完全有序，此时快排退化为冒泡排序，时间复杂度为&lt;code&gt;O(n^2)&lt;/code&gt;。&lt;/p&gt;
-&lt;h1 id=&quot;快速排序的改进和优化(2016-2-23更新)&quot;&gt;快速排序的改进和优化(2016.2.23更新)&lt;/h1&gt;&lt;p&gt;快速排序也有不足之处，比如&lt;strong&gt;对于元素较少或接近有序的数组来说，快速排序比插入排序慢&lt;/strong&gt;。针对这种情况，我们可以加个判断，&lt;strong&gt;对小数组使用插入排序&lt;/strong&gt;（Java标准库自带的排序就是这么干的，INSERTION_SORT_THRESHOLD = 47）。&lt;/p&gt;
-&lt;p&gt;另外一个改进快速排序性能的方法就是使用&lt;strong&gt;双枢轴&lt;/strong&gt;，即将数组三切分(大于枢轴，等于枢轴，小于枢轴），可以证明这样是熵最优的并且更高效。以Java标准库为例，JDK1.7中的DualPivotQuicksort实现了一种&lt;strong&gt;快速三向切分&lt;/strong&gt;的快速排序，它通过将相等元素聚集起来的方式使熵最优（原理：&lt;strong&gt;将相等元素聚集起来&lt;/strong&gt;，不必再切分这些元素）。&lt;/p&gt;
-&lt;p&gt;还有一个优化的杀手锏就是改进划分的策略，这里DualPivotQuicksort使用了一种称为&lt;strong&gt;五取样划分&lt;/strong&gt;的策略对数组进行划分。&lt;/p&gt;
-&lt;p&gt;总结一下，快排的改进主要有三种方法：小数组使用插入排序、双枢轴快速三向切分、五取样划分。具体实现可以看&lt;a href=&quot;http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/file/e2117e30fb39/src/share/classes/java/util/DualPivotQuicksort.java&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;DualPivotQuicksort的源码&lt;/a&gt;，实现的很复杂，非常奇妙。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20160220202246946&quot; alt=&quot;快速三向切分&quot;&gt;&lt;/p&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;快速排序的基本实现&quot;&gt;快速排序的基本实现&lt;/h1&gt;&lt;p&gt;快速排序算法是一种基于交换的高效的排序算法，它采用了&lt;strong&gt;分治法&lt;/strong&gt;的思想：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;从数列中取出一个数作为基准数（枢轴，pivot）。&lt;/li&gt;
-&lt;li&gt;将数组进行
-    
-    </summary>
-    
-      <category term="Algorithm" scheme="http://www.sczyh30.com/categories/Algorithm/"/>
-    
-    
-      <category term="Algorithm" scheme="http://www.sczyh30.com/tags/Algorithm/"/>
-    
-      <category term="Sort" scheme="http://www.sczyh30.com/tags/Sort/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>IO模型之阻塞、非阻塞、同步、异步浅析</title>
-    <link href="http://www.sczyh30.com/posts/Network/network-io-model/"/>
-    <id>http://www.sczyh30.com/posts/Network/network-io-model/</id>
-    <published>2016-02-15T16:00:00.000Z</published>
-    <updated>2016-03-17T12:01:09.758Z</updated>
-    
-    <content type="html">&lt;p&gt;//这里先简单总结一下，过几天有时间再详细写:)&lt;/p&gt;
-&lt;p&gt;服务器端编程常需要接触IO。最近学习Netty的时候对IO模型有了进一步的认识，这里总结一下。常见的IO模型有四种：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;同步阻塞IO（Blocking IO）&lt;/li&gt;
-&lt;li&gt;同步非阻塞IO（Non-blocking IO）&lt;/li&gt;
-&lt;li&gt;IO多路复用（IO Multiplexing），较为典型的为select和epoll模型&lt;/li&gt;
-&lt;li&gt;异步IO（Asynchronous IO）&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;这里先解析一下阻塞、非阻塞，同步和异步这两组概念。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;同步和异步&lt;/strong&gt;的概念描述的是&lt;strong&gt;用户线程与内核的交互方式&lt;/strong&gt;：同步是指用户线程发起IO请求后需要等待或者轮询内核IO操作完成后才能继续执行；而异步是指用户线程发起IO请求后仍继续执行，当内核IO操作完成后会通知用户线程，或者调用用户线程注册的回调函数。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;阻塞和非阻塞&lt;/strong&gt;的概念描述的是&lt;strong&gt;用户线程调用内核IO操作的方式&lt;/strong&gt;：阻塞是指IO操作需要彻底完成后才返回到用户空间；而非阻塞是指IO操作被调用后立即返回给用户一个状态值，无需等到IO操作彻底完成。&lt;/p&gt;
-&lt;p&gt;只有在同步的情况下才分阻塞和非阻塞。&lt;/p&gt;
-&lt;h1 id=&quot;通俗解释&quot;&gt;通俗解释&lt;/h1&gt;&lt;p&gt;同步阻塞IO：去餐厅吃饭，等餐的时候需要在取餐处一直等着，不能干其他事情。&lt;/p&gt;
-&lt;p&gt;同步非阻塞IO：去餐厅吃饭，等餐的时候可以干别的事，但需要不断去窗口询问饭是否准备好了（轮询）。&lt;/p&gt;
-&lt;p&gt;异步IO：去餐厅吃饭，等餐的时候只需要坐着等人送来即可。&lt;/p&gt;
-&lt;h1 id=&quot;详细解释&quot;&gt;详细解释&lt;/h1&gt;&lt;p&gt;Pending。。。&lt;/p&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;//这里先简单总结一下，过几天有时间再详细写:)&lt;/p&gt;
-&lt;p&gt;服务器端编程常需要接触IO。最近学习Netty的时候对IO模型有了进一步的认识，这里总结一下。常见的IO模型有四种：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;同步阻塞IO（Blocking IO）&lt;/li&gt;
-&lt;li&gt;同步非阻
-    
-    </summary>
-    
-      <category term="Network" scheme="http://www.sczyh30.com/categories/Network/"/>
-    
-    
-      <category term="AIO" scheme="http://www.sczyh30.com/tags/AIO/"/>
-    
-      <category term="IO" scheme="http://www.sczyh30.com/tags/IO/"/>
-    
-      <category term="Linux" scheme="http://www.sczyh30.com/tags/Linux/"/>
-    
-      <category term="Network" scheme="http://www.sczyh30.com/tags/Network/"/>
-    
-      <category term="异步" scheme="http://www.sczyh30.com/tags/%E5%BC%82%E6%AD%A5/"/>
     
   </entry>
   
