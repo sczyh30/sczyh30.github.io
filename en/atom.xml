@@ -5,7 +5,7 @@
   <link href="/en/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/en/"/>
-  <updated>2016-06-06T10:50:01.144Z</updated>
+  <updated>2016-06-06T11:45:50.960Z</updated>
   <id>http://www.sczyh30.com/en/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://www.sczyh30.com/en/2016/06/06/gsoc-2016-work-period-week3/"/>
     <id>http://www.sczyh30.com/en/2016/06/06/gsoc-2016-work-period-week3/</id>
     <published>2016-06-06T04:00:00.000Z</published>
-    <updated>2016-06-06T10:50:01.144Z</updated>
+    <updated>2016-06-06T11:45:50.960Z</updated>
     
     <content type="html">&lt;h3 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h3&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
 &lt;ul&gt;
@@ -43,7 +43,7 @@
 &lt;li&gt;Learn more about microservice (as well as Vert.x Microservice Toolbox)&lt;/li&gt;
 &lt;li&gt;Write a brief introduction to new features of Vert.x 3.3.0 (in Chinese, will publish in &lt;em&gt;Vert.x China Group&lt;/em&gt;)&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;PS: &lt;strong&gt;The Dragon Boat Festival&lt;/strong&gt; holiday will be coming from Thursday to Saturday this week so I may not spend very much time on work during the holiday~ &lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
 &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
 &lt;p&gt;Pending…&lt;/p&gt;
 </content>
@@ -71,7 +71,7 @@
 &lt;li&gt;Learn more about microservice (as well as Vert.x Microservice Toolbox)&lt;/li&gt;
 &lt;li&gt;Write a brief introduction to new features of Vert.x 3.3.0 (in Chinese, will publish in &lt;em&gt;Vert.x China Group&lt;/em&gt;)&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;PS: &lt;strong&gt;The Dragon Boat Festival&lt;/strong&gt; holiday will be coming from Thursday to Saturday this week so I may not spend very much time on work during the holiday~ &lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
     
     </summary>
     
@@ -168,10 +168,10 @@
   
   <entry>
     <title>GSoC 2016 | Work Period | Week 1</title>
-    <link href="http://www.sczyh30.com/en/2016/05/22/gsoc-2016-work-period-week-1/"/>
-    <id>http://www.sczyh30.com/en/2016/05/22/gsoc-2016-work-period-week-1/</id>
-    <published>2016-05-22T15:00:00.000Z</published>
-    <updated>2016-06-06T11:28:25.768Z</updated>
+    <link href="http://www.sczyh30.com/en/2016/05/29/gsoc-2016-work-period-week-1/"/>
+    <id>http://www.sczyh30.com/en/2016/05/29/gsoc-2016-work-period-week-1/</id>
+    <published>2016-05-28T16:00:00.000Z</published>
+    <updated>2016-06-06T11:42:38.055Z</updated>
     
     <content type="html">&lt;p&gt;&lt;img src=&quot;http://vertx.io/assets/logo-sm.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
 &lt;p&gt;This is the summary of Google Summer Of Code 2016, Week One.&lt;/p&gt;
