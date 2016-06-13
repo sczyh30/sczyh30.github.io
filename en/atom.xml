@@ -5,7 +5,7 @@
   <link href="/en/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/en/"/>
-  <updated>2016-06-06T11:45:50.960Z</updated>
+  <updated>2016-06-13T17:37:27.206Z</updated>
   <id>http://www.sczyh30.com/en/</id>
   
   <author>
@@ -16,41 +16,72 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>GSoC 2016 | Work Period | Week 3</title>
-    <link href="http://www.sczyh30.com/en/2016/06/06/gsoc-2016-work-period-week3/"/>
-    <id>http://www.sczyh30.com/en/2016/06/06/gsoc-2016-work-period-week3/</id>
-    <published>2016-06-06T04:00:00.000Z</published>
-    <updated>2016-06-06T11:45:50.960Z</updated>
+    <title>GSoC 2016 | Work Period | Week 4</title>
+    <link href="http://www.sczyh30.com/en/2016/06/13/gsoc-2016-work-period-week4/"/>
+    <id>http://www.sczyh30.com/en/2016/06/13/gsoc-2016-work-period-week4/</id>
+    <published>2016-06-13T04:00:00.000Z</published>
+    <updated>2016-06-13T17:37:27.206Z</updated>
     
-    <content type="html">&lt;h3 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h3&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+    <content type="html">&lt;p&gt;The GSoC Midterm Evaluation is coming~ Boost~O(∩_∩)O&lt;/p&gt;
+&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Core component of Vert.x Kue implementation complete&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Event system&lt;/strong&gt; in Kue&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;KueWorker&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Job&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Enhance &lt;strong&gt;Event system&lt;/strong&gt; and &lt;code&gt;KueWorker&lt;/code&gt; in Kue&lt;ul&gt;
+&lt;li&gt;Implement all basic events in original Kue&lt;/li&gt;
+&lt;li&gt;If possible, do some performance optimization&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;Basic implementation of Vert.x Kue HTTP component&lt;ul&gt;
-&lt;li&gt;REST API implementation&lt;/li&gt;
-&lt;li&gt;A simple UI (Vert.x Kue UI)&lt;/li&gt;
+&lt;li&gt;Add test cases and fix bugs&lt;/li&gt;
+&lt;li&gt;Add more examples&lt;/li&gt;
+&lt;li&gt;Finish all Vert.x Kue REST apis&lt;/li&gt;
+&lt;li&gt;Adapt Vert.x Kue REST API with original Kue’s UI&lt;/li&gt;
+&lt;li&gt;Code refinement&lt;/li&gt;
+&lt;li&gt;Initial document and design diagram update&lt;/li&gt;
+&lt;li&gt;Learn more about new features in Vert.x 3.3.0&lt;/li&gt;
 &lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Refine the code of Vert.x Kue&lt;ul&gt;
-&lt;li&gt;The &lt;code&gt;Job&lt;/code&gt; class is messy and need refinement&lt;/li&gt;
-&lt;li&gt;More concise&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Learn more about microservice (as well as Vert.x Microservice Toolbox)&lt;/li&gt;
-&lt;li&gt;Write a brief introduction to new features of Vert.x 3.3.0 (in Chinese, will publish in &lt;em&gt;Vert.x China Group&lt;/em&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;PS: &lt;strong&gt;The Dragon Boat Festival&lt;/strong&gt; holiday will be coming from Thursday to Saturday this week so I may not spend very much time on work during the holiday~ &lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
 &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
 &lt;p&gt;Pending…&lt;/p&gt;
 </content>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h3&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+      &lt;p&gt;The GSoC Midterm Evaluation is coming~ Boost~O(∩_∩)O&lt;/p&gt;
+&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Enhance &lt;strong&gt;Event system&lt;/strong&gt; and &lt;code&gt;KueWorker&lt;/code&gt; in Kue&lt;ul&gt;
+&lt;li&gt;Implement all basic events in original Kue&lt;/li&gt;
+&lt;li&gt;If possible, do some performance optimization&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Add test cases and fix bugs&lt;/li&gt;
+&lt;li&gt;Add more examples&lt;/li&gt;
+&lt;li&gt;Finish all Vert.x Kue REST apis&lt;/li&gt;
+&lt;li&gt;Adapt Vert.x Kue REST API with original Kue’s UI&lt;/li&gt;
+&lt;li&gt;Code refinement&lt;/li&gt;
+&lt;li&gt;Initial document and design diagram update&lt;/li&gt;
+&lt;li&gt;Learn more about new features in Vert.x 3.3.0&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>GSoC 2016 | Work Period | Week 3</title>
+    <link href="http://www.sczyh30.com/en/2016/06/12/gsoc-2016-work-period-week3/"/>
+    <id>http://www.sczyh30.com/en/2016/06/12/gsoc-2016-work-period-week3/</id>
+    <published>2016-06-12T15:00:00.000Z</published>
+    <updated>2016-06-13T17:51:25.478Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Core component of Vert.x Kue implementation complete&lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;Event system&lt;/strong&gt; in Kue&lt;/li&gt;
@@ -72,6 +103,76 @@
 &lt;li&gt;Write a brief introduction to new features of Vert.x 3.3.0 (in Chinese, will publish in &lt;em&gt;Vert.x China Group&lt;/em&gt;)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;PS: &lt;strong&gt;The Dragon Boat Festival&lt;/strong&gt; holiday will be coming from Thursday to Saturday this week so I may not spend very much time on work during the holiday~ &lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;Unsolved-Regex-match-in-route-path&quot;&gt;&lt;a href=&quot;#Unsolved-Regex-match-in-route-path&quot; class=&quot;headerlink&quot; title=&quot;Unsolved: Regex match in route path&quot;&gt;&lt;/a&gt;Unsolved: Regex match in route path&lt;/h2&gt;&lt;p&gt;In original Kue’s API, there is a route with path &lt;code&gt;/jobs/:from..:to/:order?&lt;/code&gt;. I tried this in Vert.x Web(&lt;code&gt;/jobs/:from..:to&lt;/code&gt;) but Vert.x Web cannot match it. So I used regex match &lt;code&gt;\/jobs\/([0-9]*)\.\.([0-9]*)(\/[^\/]+)?&lt;/code&gt;:&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;final&lt;/span&gt; String KUE_API_JOB_RANGE = &lt;span class=&quot;string&quot;&gt;&quot;\\/jobs\\/([0-9]*)\\.\\.([0-9]*)(\\/[^\\/]+)?&quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// ...&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;router.getWithRegex(KUE_API_JOB_RANGE).handler(&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;::apiJobRange);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;But nothing matched, which made me confused. And path like &lt;code&gt;/jobs/:from/to/:to&lt;/code&gt; can be matched.&lt;/p&gt;
+&lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;h2 id=&quot;Implementation-of-Vert-x-Kue-core&quot;&gt;&lt;a href=&quot;#Implementation-of-Vert-x-Kue-core&quot; class=&quot;headerlink&quot; title=&quot;Implementation of Vert.x Kue core&quot;&gt;&lt;/a&gt;Implementation of Vert.x Kue core&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Job processing interface &lt;code&gt;KueService&lt;/code&gt; now provides two methods: &lt;code&gt;process&lt;/code&gt; method do asynchronous procedure(use common verticles), while &lt;code&gt;processBlocking&lt;/code&gt; method could do blocking procedure(use worker verticles)&lt;/li&gt;
+&lt;li&gt;Add attempt support (could attempt when fails)&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;TODO: need enhancement and test&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Add worker and job cardinality metrics support&lt;/li&gt;
+&lt;li&gt;Add support for getting jobs with range(rank)&lt;/li&gt;
+&lt;li&gt;Basic refinement of &lt;code&gt;Job&lt;/code&gt; class&lt;/li&gt;
+&lt;li&gt;Refactored most of async methods to &lt;code&gt;Future&lt;/code&gt; based style (in order to support monadic transform and say goodbye to callback hell)&lt;/li&gt;
+&lt;li&gt;Fix issue: Sometimes throw &lt;code&gt;java.lang.ClassCastException&lt;/code&gt; caused by wrong time flow when processing a job&lt;/li&gt;
+&lt;li&gt;Fix issue: Generated json converter &lt;em&gt;sometimes&lt;/em&gt; could not distinguish some properties(e.g. &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;jobMetrics&lt;/code&gt;) correctly&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;See here:  &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-job-queue/tree/initial-work&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;sczyh30/vertx-blueprint-job-queue&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&quot;Basic-implementation-of-Vert-x-Kue-HTTP-component&quot;&gt;&lt;a href=&quot;#Basic-implementation-of-Vert-x-Kue-HTTP-component&quot; class=&quot;headerlink&quot; title=&quot;Basic implementation of Vert.x Kue HTTP component&quot;&gt;&lt;/a&gt;Basic implementation of Vert.x Kue HTTP component&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Basic implementation of Vert.x Kue REST API(get job, create job, delete job, get job by range(or state), etc)&lt;/li&gt;
+&lt;li&gt;Basic adaption between Vert.x Web and original Kue UI (rendered with &lt;code&gt;vertx-web-templ-jade&lt;/code&gt;; still have some problems to solve)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese&quot;&gt;&lt;a href=&quot;#Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese&quot; class=&quot;headerlink&quot; title=&quot;Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese&quot;&gt;&lt;/a&gt;Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese&lt;/h2&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Core component of Vert.x Kue implementation complete&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Event system&lt;/strong&gt; in Kue&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;KueWorker&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Job&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Basic implementation of Vert.x Kue HTTP component&lt;ul&gt;
+&lt;li&gt;REST API implementation&lt;/li&gt;
+&lt;li&gt;A simple UI (Vert.x Kue UI)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Refine the code of Vert.x Kue&lt;ul&gt;
+&lt;li&gt;The &lt;code&gt;Job&lt;/code&gt; class is messy and need refinement&lt;/li&gt;
+&lt;li&gt;More concise&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Learn more about microservice (as well as Vert.x Microservice Toolbox)&lt;/li&gt;
+&lt;li&gt;Write a brief introduction to new features of Vert.x 3.3.0 (in Chinese, will publish in &lt;em&gt;Vert.x China Group&lt;/em&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;PS: &lt;strong&gt;The Dragon Boat Festival&lt;/strong&gt; holiday will be coming from Thursday to Saturday this week so I may not spend very much time on work during the holiday~ &lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;Unsolved-Regex-match-in-route-path&quot;&gt;&lt;a href=&quot;#Unsolved-Regex-match-in-route-path&quot; class=&quot;headerlink&quot; title=&quot;Unsolved: Regex match in route path&quot;&gt;&lt;/a&gt;Unsolved: Regex match in route path&lt;/h2&gt;&lt;p&gt;In original Kue’s API, there is a route with path &lt;code&gt;/jobs/:from..:to/:order?&lt;/code&gt;. I tried this in Vert.x Web(&lt;code&gt;/jobs/:from..:to&lt;/code&gt;) but Vert.x Web cannot match it. So I used regex match &lt;code&gt;\/jobs\/([0-9]*)\.\.([0-9]*)(\/[^\/]+)?&lt;/code&gt;:&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;final&lt;/span&gt; String KUE_API_JOB_RANGE = &lt;span class=&quot;string&quot;&gt;&quot;\\/jobs\\/([0-9]*)\\.\\.([0-9]*)(\\/[^\\/]+)?&quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// ...&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;router.getWithRegex(KUE_API_JOB_RANGE).handler(&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;::apiJobRange);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;But nothing matched, which made me confused. And path like &lt;code&gt;/jobs/:from/to/:to&lt;/code&gt; can be matched.&lt;/p&gt;
+&lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;h2 id=&quot;Implementation-of-Vert-x-Kue-core&quot;&gt;&lt;a href=&quot;#Implementation-of-Vert-x-Kue-core&quot; class=&quot;headerlink&quot; title=&quot;Implementation of Vert.x Kue core&quot;&gt;&lt;/a&gt;Implementation of Vert.x Kue core&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Job processing interface &lt;code&gt;KueService&lt;/code&gt; now provides two methods: &lt;code&gt;process&lt;/code&gt; method do asynchronous procedure(use common verticles), while &lt;code&gt;processBlocking&lt;/code&gt; method could do blocking procedure(use worker verticles)&lt;/li&gt;
+&lt;li&gt;Add attempt support (could attempt when fails)&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;TODO: need enhancement and test&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Add worker and job cardinality metrics support&lt;/li&gt;
+&lt;li&gt;Add support for getting jobs with range(rank)&lt;/li&gt;
+&lt;li&gt;Basic refinement of &lt;code&gt;Job&lt;/code&gt; class&lt;/li&gt;
+&lt;li&gt;Refactored most of async methods to &lt;code&gt;Future&lt;/code&gt; based style (in order to support monadic transform and say goodbye to callback hell)&lt;/li&gt;
+&lt;li&gt;Fix issue: Sometimes throw &lt;code&gt;java.lang.ClassCastException&lt;/code&gt; caused by wrong time flow when processing a job&lt;/li&gt;
+&lt;li&gt;Fix issue: Generated json converter &lt;em&gt;sometimes&lt;/em&gt; could not distinguish some properties(e.g. &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;jobMetrics&lt;/code&gt;) correctly&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;See here:  &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-job-queue/tree/initial-work&quot;&gt;sczyh30/vertx-blueprint-job-queue&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&quot;Basic-implementation-of-Vert-x-Kue-HTTP-component&quot;&gt;&lt;a href=&quot;#Basic-implementation-of-Vert-x-Kue-HTTP-component&quot; class=&quot;headerlink&quot; title=&quot;Basic implementation of Vert.x Kue HTTP component&quot;&gt;&lt;/a&gt;Basic implementation of Vert.x Kue HTTP component&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Basic implementation of Vert.x Kue REST API(get job, create job, delete job, get job by range(or state), etc)&lt;/li&gt;
+&lt;li&gt;Basic adaption between Vert.x Web and original Kue UI (rendered with &lt;code&gt;vertx-web-templ-jade&lt;/code&gt;; still have some problems to solve)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese&quot;&gt;&lt;a href=&quot;#Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese&quot; class=&quot;headerlink&quot; title=&quot;Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese&quot;&gt;&lt;/a&gt;Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese&lt;/h2&gt;
     
     </summary>
     

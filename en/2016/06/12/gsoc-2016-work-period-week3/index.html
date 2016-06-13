@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> GSoC 2016 | Work Period | Week 3 · sczyh30's Metaspace</title><meta name="description" content="GSoC 2016 | Work Period | Week 3 - Eric Zhao"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="http://www.sczyh30.com/en/favicon.png"><link rel="stylesheet" href="/en/css/apollo.css"><link rel="stylesheet" href="http://fonts.useso.com/css?family=Source+Sans+Pro:400,600" type="text/css"></head><body><div class="wrap"><header><a href="/en/" class="logo-link"><img src="http://www.sczyh30.com/en/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="http://www.sczyh30.com/en" target="_blank" class="nav-list-link">BLOG(EN)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com" target="_blank" class="nav-list-link">BLOG(中文)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/archives/" target="_blank" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/about/" target="_blank" class="nav-list-link">ABOUT</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/atom.xml" target="_blank" class="nav-list-link">RSS</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">GSoC 2016 | Work Period | Week 3</h1><div class="post-time">Jun 12, 2016</div><div class="post-content"><h1 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h1><p>In this week, I’m planning to do the following stuff:</p>
+<ul>
+<li>Core component of Vert.x Kue implementation complete<ul>
+<li><strong>Event system</strong> in Kue</li>
+<li><code>KueWorker</code></li>
+<li><code>Job</code></li>
+</ul>
+</li>
+<li>Basic implementation of Vert.x Kue HTTP component<ul>
+<li>REST API implementation</li>
+<li>A simple UI (Vert.x Kue UI)</li>
+</ul>
+</li>
+<li>Refine the code of Vert.x Kue<ul>
+<li>The <code>Job</code> class is messy and need refinement</li>
+<li>More concise</li>
+</ul>
+</li>
+<li>Learn more about microservice (as well as Vert.x Microservice Toolbox)</li>
+<li>Write a brief introduction to new features of Vert.x 3.3.0 (in Chinese, will publish in <em>Vert.x China Group</em>)</li>
+</ul>
+<p>PS: <strong>The Dragon Boat Festival</strong> holiday will be coming from Thursday to Saturday this week so I may not spend very much time on work during the holiday~ <em>Have a great week :-)</em></p>
+<h1 id="Issues"><a href="#Issues" class="headerlink" title="Issues"></a>Issues</h1><h2 id="Unsolved-Regex-match-in-route-path"><a href="#Unsolved-Regex-match-in-route-path" class="headerlink" title="Unsolved: Regex match in route path"></a>Unsolved: Regex match in route path</h2><p>In original Kue’s API, there is a route with path <code>/jobs/:from..:to/:order?</code>. I tried this in Vert.x Web(<code>/jobs/:from..:to</code>) but Vert.x Web cannot match it. So I used regex match <code>\/jobs\/([0-9]*)\.\.([0-9]*)(\/[^\/]+)?</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String KUE_API_JOB_RANGE = <span class="string">"\\/jobs\\/([0-9]*)\\.\\.([0-9]*)(\\/[^\\/]+)?"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">router.getWithRegex(KUE_API_JOB_RANGE).handler(<span class="keyword">this</span>::apiJobRange);</span><br></pre></td></tr></table></figure>
+<p>But nothing matched, which made me confused. And path like <code>/jobs/:from/to/:to</code> can be matched.</p>
+<h1 id="Achievement"><a href="#Achievement" class="headerlink" title="Achievement"></a>Achievement</h1><h2 id="Implementation-of-Vert-x-Kue-core"><a href="#Implementation-of-Vert-x-Kue-core" class="headerlink" title="Implementation of Vert.x Kue core"></a>Implementation of Vert.x Kue core</h2><ul>
+<li>Job processing interface <code>KueService</code> now provides two methods: <code>process</code> method do asynchronous procedure(use common verticles), while <code>processBlocking</code> method could do blocking procedure(use worker verticles)</li>
+<li>Add attempt support (could attempt when fails)<ul>
+<li><em>TODO: need enhancement and test</em></li>
+</ul>
+</li>
+<li>Add worker and job cardinality metrics support</li>
+<li>Add support for getting jobs with range(rank)</li>
+<li>Basic refinement of <code>Job</code> class</li>
+<li>Refactored most of async methods to <code>Future</code> based style (in order to support monadic transform and say goodbye to callback hell)</li>
+<li>Fix issue: Sometimes throw <code>java.lang.ClassCastException</code> caused by wrong time flow when processing a job</li>
+<li>Fix issue: Generated json converter <em>sometimes</em> could not distinguish some properties(e.g. <code>id</code> and <code>jobMetrics</code>) correctly</li>
+</ul>
+<p>See here:  <a href="https://github.com/sczyh30/vertx-blueprint-job-queue/tree/initial-work" target="_blank" rel="external">sczyh30/vertx-blueprint-job-queue</a></p>
+<h2 id="Basic-implementation-of-Vert-x-Kue-HTTP-component"><a href="#Basic-implementation-of-Vert-x-Kue-HTTP-component" class="headerlink" title="Basic implementation of Vert.x Kue HTTP component"></a>Basic implementation of Vert.x Kue HTTP component</h2><ul>
+<li>Basic implementation of Vert.x Kue REST API(get job, create job, delete job, get job by range(or state), etc)</li>
+<li>Basic adaption between Vert.x Web and original Kue UI (rendered with <code>vertx-web-templ-jade</code>; still have some problems to solve)</li>
+</ul>
+<h2 id="Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese"><a href="#Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese" class="headerlink" title="Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese"></a>Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese</h2><a id="more"></a>
+</div></article></div></section><footer><div class="paginator"><a href="/en/2016/06/13/gsoc-2016-work-period-week4/" class="prev">PREV</a><a href="/en/2016/06/06/gsoc-2016-work-period-week2/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'sczyh30';
+var disqus_identifier = '2016/06/12/gsoc-2016-work-period-week3/';
+var disqus_title = 'GSoC 2016 | Work Period | Week 3';
+var disqus_url = 'http://www.sczyh30.com/en/2016/06/12/gsoc-2016-work-period-week3/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//sczyh30.disqus.com/count.js" async></script><div class="copyright"><p>© 2015 - 2016  <a href="http://www.sczyh30.com/en">Eric Zhao</a> |  sczyh30's Metaspace</p></div></footer></div><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script></body></html>
