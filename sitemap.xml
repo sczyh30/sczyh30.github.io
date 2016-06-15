@@ -2,16 +2,44 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/</loc>
+    
+    <lastmod>2016-06-15T16:57:59.254Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
+    
+    <lastmod>2016-06-15T16:56:46.119Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/</loc>
+    
+    <lastmod>2016-06-15T16:56:04.227Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Architecture/quorum-based-voting-for-replica-control/</loc>
+    
+    <lastmod>2016-05-25T09:07:47.292Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://www.sczyh30.com/posts/Microservice/netflix-hystrix-how-it-works-summary/</loc>
     
-    <lastmod>2016-05-24T17:46:14.860Z</lastmod>
+    <lastmod>2016-05-25T08:18:23.373Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Microservice/circuit-breaker-pattern/</loc>
     
-    <lastmod>2016-05-24T17:32:23.622Z</lastmod>
+    <lastmod>2016-05-25T03:27:25.168Z</lastmod>
     
   </url>
   
@@ -40,20 +68,6 @@
     <loc>http://www.sczyh30.com/posts/Develop/gradle-annotation-processing-vertx-codegen/</loc>
     
     <lastmod>2016-05-20T11:59:16.424Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/</loc>
-    
-    <lastmod>2016-05-20T10:58:31.093Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
-    
-    <lastmod>2016-05-20T10:56:39.732Z</lastmod>
     
   </url>
   
