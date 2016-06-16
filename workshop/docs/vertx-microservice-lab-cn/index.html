@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.4">
-<meta name="author" content="作者：Clement Escoffier, Julien Viet；译者：赵奕豪(Eric Zhao)">
+<meta name="author" content="作者：Clement Escoffier, Julien Viet；译者：赵奕豪(Eric Zhao)；审校：钟立飞">
 <title>Vert.x - 从零基础迈向微服务之巅</title>
 <style>
 @import "asciidoctor.css";
@@ -200,9 +200,9 @@ table.CodeRay td.code>pre{padding:0}
 <div id="header">
 <h1>Vert.x - 从零基础迈向微服务之巅</h1>
 <div class="details">
-<span id="author" class="author">作者：Clement Escoffier, Julien Viet；译者：赵奕豪(Eric Zhao)</span><br>
-<span id="revnumber">version 0.2,</span>
-<span id="revdate">2016年5月3日</span>
+<span id="author" class="author">作者：Clement Escoffier, Julien Viet；译者：赵奕豪(Eric Zhao)；审校：钟立飞</span><br>
+<span id="revnumber">version 0.3,</span>
+<span id="revdate">2016年6月16日</span>
 </div>
 </div>
 <div id="content">
@@ -234,7 +234,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 </ul>
 </li>
-<li><a href="#_开始">6. 开始！</a>
+<li><a href="#_让我们开始吧">6. 让我们开始吧！</a>
 <ul class="sectlevel2">
 <li><a href="#_获取源码">6.1. 获取源码</a></li>
 <li><a href="#_构建">6.2. 构建</a></li>
@@ -298,15 +298,15 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_展示时间">10.7. 展示时间！</a></li>
 </ul>
 </li>
-<li><a href="#_仪表板_dashboard_详解">11. 仪表板(Dashboard)详解</a>
+<li><a href="#_仪表盘_dashboard_详解">11. 仪表盘(Dashboard)详解</a>
 <ul class="sectlevel2">
 <li><a href="#_vert_x_web与静态文件">11.1. Vert.x Web与静态文件</a></li>
-<li><a href="#_sockjs_event_bus_通信通道">11.2. SockJS - Event Bus 通信通道</a></li>
+<li><a href="#_sockjs_event_bus_bridge">11.2. SockJS - Event Bus Bridge</a></li>
 <li><a href="#_委托rest调用">11.3. 委托REST调用</a></li>
 <li><a href="#_在浏览器端使用event_bus服务">11.4. 在浏览器端使用Event Bus服务</a></li>
 </ul>
 </li>
-<li><a href="#_终">12. 终</a></li>
+<li><a href="#_哈哈_终于成功啦">12. 哈哈，终于成功啦！</a></li>
 <li><a href="#_引用">13. 引用</a></li>
 </ul>
 </div>
@@ -345,8 +345,8 @@ Vert.x的定义是 <em>“一个在JVM上构建响应式应用的工具集(toolk
 <p>这个实验提供给参与者一个入门级的、能够亲自实践的一个环境，借助Vert.x，从构建服务，到使用服务，最后把所有的东西组合成一个完整的响应式系统。它可以描述何为响应式系统，何为响应式编程，以及如何去构建基于响应式微服务 <strong>集群</strong> 的应用。</p>
 </div>
 <div class="paragraph">
-<p>这是一个BYOL（bring your own laptop，使用您自己的笔记本电脑）环境，所以带上您的装有Windows，OS X，或Linux的
-笔记本电脑。你也需要安装Docker，这并不是因为Vert.x需要依赖Docker（它不需要），而是模拟分布式系统所需要。</p>
+<p>这是一段使用您自己的笔记本电脑去实践的时间，所以带上您的装有Windows，OS X，或Linux的
+笔记本电脑吧！你也需要安装Docker，这并不是因为Vert.x需要依赖Docker（它不需要），而是模拟分布式系统所需要。</p>
 </div>
 <div class="paragraph">
 <p>在下面的部分中，我们将会学习：</p>
@@ -360,13 +360,13 @@ Vert.x的定义是 <em>“一个在JVM上构建响应式应用的工具集(toolk
 <p>如何利用Vert.x开发包含几种服务类型的微服务，以及实现服务发现功能</p>
 </li>
 <li>
-<p><code>Verticle</code> 是什么，以及如何去使用</p>
+<p><code>Verticle</code> 是什么，以及如何去使用 <code>Verticle</code></p>
 </li>
 <li>
 <p>如何利用Vert.x的Event Bus发送和接收消息</p>
 </li>
 <li>
-<p>如何利用Vert.x向其它服务提供HTTP端点，以及如何去调用REST API</p>
+<p>如何利用Vert.x向其它服务提供HTTP端点，以及如何去调用它们</p>
 </li>
 <li>
 <p>如何对异步操作进行组合</p>
@@ -392,7 +392,7 @@ Vert.x的定义是 <em>“一个在JVM上构建响应式应用的工具集(toolk
 响应式应用的工具集(toolkit)”</em> 。</p>
 </div>
 <div class="paragraph">
-<p>这里面第一个重要的词是 <strong>工具集</strong> 。所以，Vert.x不是一个应用服务器，也不是一个容器或一个框架。
+<p>这里面第一个重要的词是 <strong>工具集</strong> 。所以，Vert.x不是一个应用服务器，也不是一个容器或一个框架，更不是一个JavaScript库。
 Vert.x就是一个 <code>jar</code> 包，所以一个Vert.x应用就是一个使用 <code>jar</code> 包的应用。
 Vert.x没有自己定义一个打包模型，每个Vert.x <strong>组件</strong> 都是普通的 <code>jar</code> 文件。
 我们假设你正在使用某种构建工具以给你的应用添加 <code>vertx-core</code> 依赖，比如 Maven 或 Gradle。
@@ -404,7 +404,7 @@ Vert.x没有自己定义一个打包模型，每个Vert.x <strong>组件</strong
 <div class="paragraph">
 <p>另一个重要的词是 <strong>响应式(reactive)</strong> 。Vert.x就是为构建响应式应用（系统）而设计的。响应式系统这个概念在
 <a href="http://reactivemanifesto.org">Reactive Manifesto</a> 中有详细的定义。尽管那篇文章读起来用时不长，
-我们在这里总结4个重点：</p>
+我们还是在这里总结一下里面的4个重点吧：</p>
 </div>
 <div class="ulist">
 <ul>
@@ -478,7 +478,7 @@ in.close();</code></pre>
 </div>
 <div class="paragraph">
 <p>Vert.x支持实现分布式应用，既可以通过内建的TCP和HTTP服务端/客户端实现，也可以通过Vert.x的Event Bus（事件总线）来实现。
-Event Bus是一个轻量级的发送和接受消息的结构，有了Event Bus，你可以向某些 <code>地址</code> 发送消息。它支持三种分布式机制：</p>
+Event Bus是一个轻量级的发送和接受消息的结构，有了Event Bus，你可以向某些 <code>地址</code> 发送消息。它支持三种消息发布机制：</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -495,8 +495,8 @@ Event Bus是一个轻量级的发送和接受消息的结构，有了Event Bus�
 </div>
 <div class="paragraph">
 <p>好啦，我们最后用一分钟的时间来总结一下你为什么要使用Vert.x。Vert.x非常灵活 —— 无论是简单的网络功能，
-复杂的现代Web应用，HTTP/REST 微服务，高并发事件处理，还是一个后端事件处理应用，Vert.x都可以胜任。它速度快，并且不限制你的开发结构。
-最后一点，它可以将你的应用变为响应式风格的。用几个词概括一下Vert.x的风格：<strong>响应式、伸缩性、弹性、异步</strong>！</p>
+复杂的现代Web应用，HTTP/REST 微服务，高并发事件处理，还是后端事件处理应用，Vert.x都可以胜任。它速度快，并且不限制你的开发结构。
+最后也是最重要的一点，它可以将你的应用变为响应式风格的。用几个词概括一下Vert.x的风格：<strong>响应式、伸缩性、弹性、异步</strong>！</p>
 </div>
 </div>
 </div>
@@ -504,7 +504,7 @@ Event Bus是一个轻量级的发送和接受消息的结构，有了Event Bus�
 <h2 id="_解道微服务">3. 解道微服务</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>除非（实际上我并不清楚）去年一年你都在山洞里呆着，否则你应该听说过 <em>微服务</em> 这个东西。
+<p>除非（实际上我并不清楚）去年一年你都在山洞里呆着，不然你应该听说过 <em>微服务</em> 这个东西。
 <strong>微服务</strong> 是什么呢？我们来看以下的定义（这里就不翻译了，原文能更好的表达其含义）：</p>
 </div>
 <div class="quoteblock">
@@ -565,7 +565,7 @@ Docker，云服务，软盘）进行限制。</p>
 是非常神奇的。。。事实上，这并不神奇。这其实是 <em>服务发现</em> 。</p>
 </div>
 <div class="paragraph">
-<p>在使用另一个组件提供的 <code>服务</code> 之前，你需要发现它。它的位置既可以在代码中写死（这种方法不好），也可以通过DNS查询查到它的服务名，
+<p>在使用另一个组件提供的 <code>服务</code> 之前，你需要去发现它。它的位置既可以在代码中写死（这种方法不好），也可以通过DNS查询查到它的服务名，
 也可以用更高级的方法。服务发现机制同时也提供了一种统一的视角来了解对应的服务是什么。拥有发现不同可用服务和资源的能力
 可以让你实现一定程度上的 <em>透明化</em> ，这也是分布式系统的一个内在特性。举个例子，它可以使你的组件顺利应对服务位置变化。
 它也使得实现负载均衡（比如轮询算法）、容错（比如寻找另一个服务生产者）等等的功能成为可能。</p>
@@ -615,7 +615,7 @@ Docker，云服务，软盘）进行限制。</p>
 <em>面向服务的计算</em> 的不同实现。</p>
 </div>
 <div class="paragraph">
-<p>微服务仅限于REST风格吗？当然不是。这是一个常见的误区。微服务可以使用任何风格的通信方式进行通信：
+<p>微服务仅限于REST风格吗？当然不是！这是一个常见的误区。微服务可以使用任何风格的通信方式进行通信：
 RPC、事件、消息、数据流等等。在这个实验中，我们将会了解到REST、异步RPC以及消息源(message source)的使用。</p>
 </div>
 </div>
@@ -648,7 +648,7 @@ RPC、事件、消息、数据流等等。在这个实验中，我们将会了�
 Bus的操作并且将其存储至数据库中。同时审计服务也会提供一组REST API来查询最近的操作。</p>
 </li>
 <li>
-<p>仪表板(The dashboard) —— 一个可以让你了解实时交易信息的Web UI接口。</p>
+<p>仪表盘(The dashboard) —— 一个可以让你了解实时交易信息的Web UI接口。</p>
 </li>
 </ul>
 </div>
@@ -868,7 +868,7 @@ Windows</a></p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_开始">6. 开始！</h2>
+<h2 id="_让我们开始吧">6. 让我们开始吧！</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_获取源码">6.1. 获取源码</h3>
@@ -916,13 +916,13 @@ mvn clean install</code></pre>
 为了让每一个组件都能发现服务，Vert.x需要在一个所有组件都能访问的地方存储 <em>服务记录(record)</em>。</p>
 </div>
 <div class="paragraph">
-<p>默认情况下，Vert.x的服务发现机制会使用一个分布式的映射(distributed map)来进行存储，所有集群内的成员都可以访问它。
+<p>默认情况下，Vert.x的服务发现机制会使用 <code>distributed map</code> 来进行存储，所有集群内的成员都可以访问它。
 所以，当你启动一个Vert.x应用，并且开启集群模式的时候，它会加入（或创建）一个集群。这个集群允许节点：</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>来去自由（加入或注销），也就是说可以管理成员发现(member discovery)</p>
+<p>来去自由（加入或注销），也就是说可以管理成员发现(member discovery) （成员 != 服务）</p>
 </li>
 <li>
 <p>共享数据，比如分布式映射、锁、计数器等等</p>
@@ -945,7 +945,7 @@ mvn clean install</code></pre>
 <h2 id="_第一个vert_x微服务_报价生成器">7. 第一个Vert.x微服务 - 报价生成器</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>免责声明：这个报价生成器是虚构的，非真实的，请勿用于现实。况且这就是一堆随机数。。。</p>
+<p>免责声明：这个报价生成器是虚构的，非真实的，请勿用于现实。况且这就是一堆随机数而已嘛。。。</p>
 </div>
 <div class="sect2">
 <h3 id="_项目结构">7.1. 项目结构</h3>
@@ -985,7 +985,7 @@ mvn clean install</code></pre>
 </ol>
 </div>
 <div class="paragraph">
-<p>构建 <em>Fat-jar</em> 是一个给Vert.x应用打包的一个简便方法。一个 <em>fat-jar</em> 里包括了你的应用以及所有的依赖（包括Vert.x本身）。
+<p>构建 <em>fat-jar</em> 是给Vert.x应用打包的一个简便方法。一个 <em>fat-jar</em> 里包括了你的应用以及所有的依赖（包括Vert.x本身）。
 想要运行应用也很简单，你只需要在终端中使用 <code>java -jar &#8230;&#8203;.</code> 命令而不需要指定 <code>CLASSPATH</code> 。等一下，我之前提到过Vert.x没有自己的一个打包方式。
 是的， <em>fat-jar</em> 非常简便，但这也是唯一的方法咯。</p>
 </div>
@@ -1032,7 +1032,7 @@ mvn clean install</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Verticle可以通过 <code>config()</code> 方法来获取配置信息。我们的服务就是从此处获取要模拟的公司的信息。配置信息是一个 <code>JsonObject</code> 实例。
+<p>Verticle可以通过 <code>config()</code> 方法来获取配置信息。我们的服务就是从此处获取要模拟的公司的信息。配置信息是一个 <code>JsonObject</code> 数据对象。
 在Vert.x中，JSON的使用非常普遍，所以你将会在这个实验中见到大量的JSON数据。</p>
 </div>
 <div class="paragraph">
@@ -1066,7 +1066,7 @@ mvn clean install</code></pre>
 </div>
 <div class="paragraph">
 <p>如果你还记得我们应用的架构的话，报价生成器也会提供一个HTTP端点，返回最近的报价值（这需要你去实现咯）。我们会用Docker去“发布”这个服务
-（不需要写代码，Docker会对其进行发布）。</p>
+（不需要写代码，Docker会自动对其进行发布）。</p>
 </div>
 </div>
 <div class="sect2">
@@ -1271,7 +1271,7 @@ already in use by container&#8230;&#8203;</code> 这样的错误，没关系。�
 </div>
 </div>
 <div class="paragraph">
-<p>有些部分可能暂时没有内容，这是因为我们才刚刚开始。。。</p>
+<p>有些部分可能暂时没有内容，这是因为我们才刚刚开始。。。不要着急，一切都会有的～</p>
 </div>
 </div>
 <div class="sect2">
@@ -1349,7 +1349,7 @@ already in use by container&#8230;&#8203;</code> 这样的错误，没关系。�
 <p>服务如何被调用</p>
 </li>
 <li>
-<p>服务的位置在哪里</p>
+<p>服务的位置（地址）在哪里</p>
 </li>
 </ol>
 </div>
@@ -1381,7 +1381,7 @@ already in use by container&#8230;&#8203;</code> 这样的错误，没关系。�
 <p>为失败处理而设计</p>
 </li>
 <li>
-<p>自动帮你处理对象的编码和解码</p>
+<p>自动帮你将消息发送至Event Bus并处理对象的编码和解码</p>
 </li>
 </ul>
 </div>
@@ -1397,10 +1397,10 @@ already in use by container&#8230;&#8203;</code> 这样的错误，没关系。�
 <div class="ulist">
 <ul>
 <li>
-<p><code>ProxyGen</code> - 可以让Vert.x自动生成Event Bus服务代理</p>
+<p><code>ProxyGen</code> - 可以让Vert.x Codegen自动生成Event Bus服务代理</p>
 </li>
 <li>
-<p><code>VertxGen</code> - 可以让Vert.x生成其它Vert.x支持的语言中的服务代理</p>
+<p><code>VertxGen</code> - 可以让Vert.x Codegen生成其它Vert.x支持的语言中的服务代理</p>
 </li>
 </ul>
 </div>
@@ -1562,7 +1562,7 @@ already in use by container&#8230;&#8203;</code> 这样的错误，没关系。�
 </div>
 <div class="paragraph">
 <p>好嘞，回到我们的代码世界。我们已经在代码中给出了 <code>buy</code> 方法和 <code>sell</code> 方法的源码，这两个方法只是在买入或卖出股票之前做一些检查。
-一旦触发某种操作，我们就会向Event Bus发送一条消息， <code>Audit Service</code>（审计服务）以及 <code>Dashboard</code>（仪表板）会利用这条消息进行相应的处理。
+一旦触发某种操作，我们就会向Event Bus发送一条消息， <code>Audit Service</code>（审计服务）以及 <code>Dashboard</code>（仪表盘）会利用这条消息进行相应的处理。
 所以，我们可以使用 <code>publish</code> 方法。</p>
 </div>
 <div class="paragraph">
@@ -1611,7 +1611,7 @@ already in use by container&#8230;&#8203;</code> 这样的错误，没关系。�
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">HttpEndpoint.get(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">CONSOLIDATION</span><span class="delimiter">&quot;</span></span>), <b class="conum">(1)</b>
+<pre class="CodeRay highlight"><code data-lang="java">HttpEndpoint.getClient(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">CONSOLIDATION</span><span class="delimiter">&quot;</span></span>), <b class="conum">(1)</b>
   client -&gt; {
        <span class="keyword">if</span> (client.failed()) {                                                     <b class="conum">(2)</b>
          <span class="comment">// 操作失败</span>
@@ -1749,9 +1749,9 @@ already in use by container&#8230;&#8203;</code> 这样的错误，没关系。�
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// Create the service record:</span>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 创建服务记录</span>
 Record record = EventBusService.createRecord(name, address, serviceClass);
-<span class="comment">// Publish it using the discovery service</span>
+<span class="comment">// 通过服务发现机制发布服务</span>
 discovery.publish(record, ar -&gt; {
   <span class="keyword">if</span> (ar.succeeded()) {
     registeredRecords.add(record);
@@ -1832,7 +1832,7 @@ even at runtime it does not know on which (public) IP and (public) port it is ac
 <div class="title">Note</div>
 </td>
 <td class="content">
-Dashboard通过异步RPC机制来调用投资组合服务。在编译时会生成一个JS客户端，使用SockJS进行通信。在底层，Event Bus与SockJS之间有一种连接关系。
+Dashboard通过异步RPC机制来调用投资组合服务。在编译时会生成一个JS客户端，使用SockJS进行通信。在底层，Event Bus与SockJS之间有一种连接关系(bridge)。
 </td>
 </tr>
 </table>
@@ -1879,13 +1879,13 @@ Dashboard通过异步RPC机制来调用投资组合服务。在编译时会生�
 </ol>
 </div>
 <div class="paragraph">
-<p>他不会检查他是否有足够的股票和现金，他只是在尝试。。。此逻辑在 <code>io.vertx.workshop.trader.impl.TraderUtils</code> 类中实现：</p>
+<p>他不会检查他是否有足够的股票和现金，他只是在尝试。。。此逻辑在 <code>io.vertx.workshop.trader.impl.TraderUtils</code> 类中实现。</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_部署多个实例以及多种语言编写的verticle">9.2. 部署多个实例以及多种语言编写的Verticle</h3>
 <div class="paragraph">
-<p><code>compulsive-trader</code> 项目包括一个 <em>主Verticle)</em> (<code>io.vertx.workshop.trader.impl.MainVerticle</code>)，用于对交易者进行配置和部署：</p>
+<p><code>compulsive-trader</code> 项目包括一个 <em>main-verticle</em> (<code>io.vertx.workshop.trader.impl.MainVerticle</code>)，用于对交易者进行配置和部署：</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1956,9 +1956,9 @@ public void start() throws Exception {
 <span class="predefined-type">Future</span>&lt;PortfolioService&gt; portfolioFuture = <span class="predefined-type">Future</span>.future();
 
 <span class="comment">// 获取服务，通过一种特殊的handler对future进行赋值</span>
-MessageSource.get(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">market-data</span><span class="delimiter">&quot;</span></span>),
+MessageSource.getConsumer(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">market-data</span><span class="delimiter">&quot;</span></span>),
     marketFuture.completer());                                                  <b class="conum">(2)</b>
-EventBusService.get(vertx, discovery, PortfolioService.class,
+EventBusService.getProxy(vertx, discovery, PortfolioService.class,
     portfolioFuture.completer());                                               <b class="conum">(3)</b>
 
 <span class="comment">// 两个服务都获取成功后，调用对应的hander</span>
@@ -2022,8 +2022,8 @@ CompositeFuture.all(marketFuture, portfolioFuture).setHandler(ar -&gt; {        
     <span class="predefined-type">Future</span>&lt;MessageConsumer&lt;JsonObject&gt;&gt; marketFuture = <span class="predefined-type">Future</span>.future();
     <span class="predefined-type">Future</span>&lt;PortfolioService&gt; portfolioFuture = <span class="predefined-type">Future</span>.future();
     <span class="comment">// Retrieve the services, use the &quot;special&quot; completed to assign the future</span>
-    MessageSource.get(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">market-data</span><span class="delimiter">&quot;</span></span>), marketFuture.completer());
-    EventBusService.get(vertx, discovery, PortfolioService.class, portfolioFuture.completer());
+    MessageSource.getConsumer(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">market-data</span><span class="delimiter">&quot;</span></span>), marketFuture.completer());
+    EventBusService.getProxy(vertx, discovery, PortfolioService.class, portfolioFuture.completer());
 
     <span class="comment">// When done (both services retrieved), execute the handler</span>
     CompositeFuture.all(marketFuture, portfolioFuture).setHandler(ar -&gt; {
@@ -2084,9 +2084,9 @@ mvn clean package docker:build</code></pre>
 <pre class="CodeRay highlight"><code data-lang="groovy"><span class="keyword">import</span> <span class="include">io.vertx.groovy.core.CompositeFuture</span>
 <span class="keyword">import</span> <span class="include">io.vertx.groovy.core.Future</span>
 <span class="keyword">import</span> <span class="include">io.vertx.groovy.core.eventbus.MessageConsumer</span>
-<span class="keyword">import</span> <span class="include">io.vertx.ext.discovery.groovy.DiscoveryService</span>
-<span class="keyword">import</span> <span class="include">io.vertx.ext.discovery.groovy.types.EventBusService</span>
-<span class="keyword">import</span> <span class="include">io.vertx.ext.discovery.groovy.types.MessageSource</span>
+<span class="keyword">import</span> <span class="include">io.vertx.groovy.servicediscovery.types.EventBusService</span>
+<span class="keyword">import</span> <span class="include">io.vertx.groovy.servicediscovery.types.MessageSource</span>
+<span class="keyword">import</span> <span class="include">io.vertx.groovy.servicediscovery.ServiceDiscovery</span>
 <span class="keyword">import</span> <span class="include">io.vertx.workshop.portfolio.PortfolioService</span>
 <span class="keyword">import</span> <span class="include">io.vertx.workshop.trader.impl.TraderUtils</span>
 
@@ -2096,14 +2096,14 @@ mvn clean package docker:build</code></pre>
 println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Groovy compulsive trader configured for company </span><span class="delimiter">&quot;</span></span> + company + <span class="string"><span class="delimiter">&quot;</span><span class="content"> and shares: </span><span class="delimiter">&quot;</span></span> + numberOfShares);
 
 <span class="comment">// We create the discovery service object.</span>
-<span class="keyword">def</span> discovery = DiscoveryService.create(vertx);
+<span class="keyword">def</span> discovery = ServiceDiscovery.create(vertx);
 
 <span class="predefined-type">Future</span>&lt;MessageConsumer&lt;<span class="predefined-type">Map</span>&gt;&gt; marketFuture = <span class="predefined-type">Future</span>.future();
 <span class="predefined-type">Future</span>&lt;PortfolioService&gt; portfolioFuture = <span class="predefined-type">Future</span>.future();
 
-MessageSource.get(vertx, discovery,
+MessageSource.getConsumer(vertx, discovery,
         [<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span> : <span class="string"><span class="delimiter">&quot;</span><span class="content">market-data</span><span class="delimiter">&quot;</span></span>], marketFuture.completer());
-EventBusService.get(vertx, discovery,
+EventBusService.getProxy(vertx, discovery,
         <span class="string"><span class="delimiter">&quot;</span><span class="content">io.vertx.workshop.portfolio.PortfolioService</span><span class="delimiter">&quot;</span></span>, portfolioFuture.completer());
 
 <span class="comment">// When done (both services retrieved), execute the handler</span>
@@ -2144,10 +2144,10 @@ CompositeFuture.all(marketFuture, portfolioFuture).setHandler( { ar -&gt;
 </ul>
 </div>
 <div class="paragraph">
-<p>当某个接口被 <code>@VertxGen</code> 注解修饰的时候，Vert.x会自动将其转化为其支持的语言版本。这种转化会针对不同的语言适配不同语言的特性，因此我们才在Groovy中使用 <code>Maps</code> 而不是 <code>JsonObject</code>。</p>
+<p>当某个接口被 <code>@VertxGen</code> 注解修饰的时候，Vert.x Codegen会自动生成其支持的语言对应的代码。这种转化会针对不同的语言适配不同语言的特性，因此我们才在Groovy中使用 <code>Maps</code> 而不是 <code>JsonObject</code>。</p>
 </div>
 <div class="paragraph">
-<p>这个例子使用 Groovy 写的，当然也可以用诸如 JavaScript、Ruby 或者 Ceylon 之类的语言编写。</p>
+<p>这个例子使用 Groovy 写的，当然我们也可以用诸如 JavaScript、Ruby 或者 Ceylon 之类的语言编写。</p>
 </div>
 <div class="paragraph">
 <p>是时候重新构建并启动我们的交易者服务了～在终端中键入 <code>CTRL+C</code> 来停止交易者服务（或者执行 <code>docker stop traders</code> 命令）。然后重新构建项目：</p>
@@ -2166,7 +2166,7 @@ CompositeFuture.all(marketFuture, portfolioFuture).setHandler( { ar -&gt;
 </div>
 </div>
 <div class="paragraph">
-<p>如果你回到Dashboard看看，你会发现你的投资组合数据正在变化。现在这三个交易者正努力让你变得富有～～</p>
+<p>如果你回到仪表盘看看，你会发现你的投资组合数据正在变化。现在这三个交易者正努力让你变得家财万贯～～</p>
 </div>
 </div>
 </div>
@@ -2182,7 +2182,7 @@ CompositeFuture.all(marketFuture, portfolioFuture).setHandler( { ar -&gt;
 <h3 id="_以异步方式获取数据">10.1. 以异步方式获取数据</h3>
 <div class="paragraph">
 <p>正如我们之前所说的，Vert.x是异步的，我们万万不可阻塞Event Loop线程。那么，你知道哪些操作是绝对阻塞的吗？答案是数据库操作，再确切一点 —— JDBC！
-还好，Vert.x提供了一个异步操作数据库的组件 - JDBC client。</p>
+还好，Vert.x提供了一个异步操作数据库的组件 - Vert.x JDBC client。</p>
 </div>
 <div class="paragraph">
 <p>它的原理非常简单（这也同样适用于其它阻塞操作）：</p>
@@ -2199,7 +2199,7 @@ CompositeFuture.all(marketFuture, portfolioFuture).setHandler( { ar -&gt;
 <div class="title">Note</div>
 </td>
 <td class="content">
-<em>Worker</em>？是的，<em>Worker</em> 是Vert.x中一种用于执行阻塞操作的线程。我们可以通过指定一个 Verticle 为 Worker 或通过 <code>vertx.executeBlocking</code> 方法来构造一个Worker线程。然而，我们也不能滥用这种特性，因为这会降低我们应用的可伸缩性。
+<em>Worker</em>？是的，<em>Worker</em> 是Vert.x中一种用于执行阻塞操作的线程。我们可以通过指定一个 Verticle 为 <code>Worker</code> 或通过 <code>vertx.executeBlocking</code> 方法来构造一个Worker线程。然而，我们也不能滥用这种特性，因为这会降低我们应用的可伸缩性。
 </td>
 </tr>
 </table>
@@ -2612,7 +2612,7 @@ docker run -p 8083:8080 --rm --name dashboard --link audit:AUDIT vertx-microserv
 </div>
 </div>
 <div class="sect1">
-<h2 id="_仪表板_dashboard_详解">11. 仪表板(Dashboard)详解</h2>
+<h2 id="_仪表盘_dashboard_详解">11. 仪表盘(Dashboard)详解</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>这一部分是关于Dashboard的内容。在这一部分中你不需要写任何代码。这一部分只是解释Dashboard的一些工作原理：</p>
@@ -2669,14 +2669,14 @@ router.route(<span class="string"><span class="delimiter">&quot;</span><span cla
 </div>
 </div>
 <div class="sect2">
-<h3 id="_sockjs_event_bus_通信通道">11.2. SockJS - Event Bus 通信通道</h3>
+<h3 id="_sockjs_event_bus_bridge">11.2. SockJS - Event Bus Bridge</h3>
 <div class="paragraph">
 <p><strong>SockJS</strong>是一个提供类似于WebSocket对象的JavaScript库。SockJS提供了一组一致的、跨浏览器的JavaScript API，这组API可以用于创建浏览器和服务端之间的，低延时、全双工、跨域的通信通道(communication channel)。
 在底层，SockJS首先会尝试使用原生的WebSocket，如果失败了则会尝试使用各种不同的浏览器相关的传输协议，并且会将其通过类似于WebSocket的抽象结果呈现出来。
 SockJS客户端需要一个对应的处理通信的服务器，而且你可以想象到，Vert.x帮你实现了！</p>
 </div>
 <div class="paragraph">
-<p>有了SockJS - Event Bus通信通道，来自Event Bus的事件可以被发送到浏览器端，而且我们也可以用JavaScript代码向Event Bus发送消息。</p>
+<p>有了SockJS - Event Bus Bridge，来自Event Bus的事件可以被发送到浏览器端，而且我们也可以用JavaScript代码向Event Bus发送消息。</p>
 </div>
 <div class="paragraph">
 <p>你需要添加以下代码开启SockJS - Event Bus Bridge功能：</p>
@@ -2701,7 +2701,7 @@ router.route(<span class="string"><span class="delimiter">&quot;</span><span cla
 <code>/eventbus/*</code> 这个路径会被SockJS 客户端（浏览器端）用于识别连接以及发送和接受消息。</p>
 </div>
 <div class="paragraph">
-<p>这并不是Event Bus唯一的通信通道，Vert.x还为原生系统实现了TCP Event Bus Bridge。并且，SockJS通道也可用于Node.js。</p>
+<p>这并不是Event Bus唯一的Bridge，Vert.x还为原生系统实现了TCP Event Bus Bridge。并且，SockJS Bridge也可用于Node.js。</p>
 </div>
 </div>
 <div class="sect2">
@@ -2724,7 +2724,7 @@ router.route(<span class="string"><span class="delimiter">&quot;</span><span cla
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="directive">private</span> <span class="type">void</span> lastOperations(RoutingContext context) {
-    HttpEndpoint.get(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">AUDIT</span><span class="delimiter">&quot;</span></span>), client -&gt; {
+    HttpEndpoint.getClient(vertx, discovery, <span class="keyword">new</span> JsonObject().put(<span class="string"><span class="delimiter">&quot;</span><span class="content">name</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">AUDIT</span><span class="delimiter">&quot;</span></span>), client -&gt; {
         <span class="keyword">if</span> (client.failed() || client.result() == <span class="predefined-constant">null</span>) {
             context.response()
                 .putHeader(<span class="string"><span class="delimiter">&quot;</span><span class="content">content-type</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">application/json</span><span class="delimiter">&quot;</span></span>)
@@ -2749,11 +2749,15 @@ router.route(<span class="string"><span class="delimiter">&quot;</span><span cla
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>它通过服务发现机制获取审计服务，并且一旦获取到HTTP Client，它会通过HTTP Client去调用审计服务REST API。
+回应结果会发送回HTTP Response中。最后，不要忘记关闭HTTP Client。</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_在浏览器端使用event_bus服务">11.4. 在浏览器端使用Event Bus服务</h3>
 <div class="paragraph">
-<p>正如我们之前所说的，SockJS与Event Bus之间存在通信通道，可以让浏览器发送和接收消息。因为Event Bus服务通过Event Bus消息进行通信，这使得在浏览器端实现一个客户端成为可能。Vert.x自动为你生成此客户端。</p>
+<p>正如我们之前所说的，SockJS与Event Bus之间存在通信通道(Bridge)，可以让浏览器发送和接收消息。因为Event Bus服务通过Event Bus消息进行通信，这使得在浏览器端实现一个客户端成为可能。Vert.x自动为你生成此客户端。</p>
 </div>
 <div class="paragraph">
 <p>所以，如果你浏览 <code>index.html</code> 的源码，你会看到：</p>
@@ -2775,16 +2779,16 @@ service.getPortfolio(<span class="keyword">function</span> (err, res) {
 </div>
 </div>
 <div class="paragraph">
-<p>是的，你可以直接在你的浏览器里调用相应的服务了。</p>
+<p>是的，你可以直接在你的浏览器里调用相应的服务了～O(∩_∩)O</p>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_终">12. 终</h2>
+<h2 id="_哈哈_终于成功啦">12. 哈哈，终于成功啦！</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>你终于完成了整个金融系统！或者你只是直接跳到了此章节。。。无论如何，恭喜你！我们希望你能喜欢这个实验，并且能从中学到需要的知识。Vert.x还可以做很多事情，篇幅所限，我们不再讲述。</p>
+<p>你终于成功地完成了整个金融系统！或者你只是直接跳到了此章节。。。无论如何，恭喜你！我们希望你能喜欢这个实验，享受实践微服务的乐趣，并且能从中学到需要的知识。Vert.x还可以做很多事情呢～篇幅所限，这篇文章里没有讲述。</p>
 </div>
 <div class="paragraph">
 <p>不要忘记响应式系统的含义，并且在写Vert.x应用的时候，时刻铭记：</p>
@@ -2862,8 +2866,8 @@ Stafford. Documenting Software Architecture. 2010</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-文档版本：v0.2<br>
-最后更新时间：2016-05-03 01:38:25 (UTC +08:00)
+Version 0.3<br>
+Last updated 2016-06-16 06:23:12 UTC
 </div>
 </div>
 </body>
