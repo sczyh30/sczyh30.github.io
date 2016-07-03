@@ -5,7 +5,7 @@
   <link href="/en/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/en/"/>
-  <updated>2016-06-20T12:51:24.925Z</updated>
+  <updated>2016-07-03T17:36:50.740Z</updated>
   <id>http://www.sczyh30.com/en/</id>
   
   <author>
@@ -16,26 +16,19 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>GSoC 2016 | Work Period | Week 5</title>
-    <link href="http://www.sczyh30.com/en/2016/06/20/gsoc-2016-work-period-week5/"/>
-    <id>http://www.sczyh30.com/en/2016/06/20/gsoc-2016-work-period-week5/</id>
-    <published>2016-06-20T02:00:00.000Z</published>
-    <updated>2016-06-20T12:51:24.925Z</updated>
+    <title>GSoC 2016 | Work Period | Week 7</title>
+    <link href="http://www.sczyh30.com/en/2016/07/04/gsoc-2016-work-period-week7/"/>
+    <id>http://www.sczyh30.com/en/2016/07/04/gsoc-2016-work-period-week7/</id>
+    <published>2016-07-03T16:00:00.000Z</published>
+    <updated>2016-07-03T17:36:50.740Z</updated>
     
-    <content type="html">&lt;p&gt;The GSoC Midterm Evaluation is coming~~&lt;/p&gt;
-&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+    <content type="html">&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Some extra things to implement or fix:&lt;ul&gt;
-&lt;li&gt;Job active TTL check&lt;/li&gt;
-&lt;li&gt;Job search functionality&lt;/li&gt;
-&lt;li&gt;Render issue with &lt;code&gt;_filter.jade&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Finish Chinese documentation of Vert.x Kue&lt;/li&gt;
+&lt;li&gt;Work on microservice blueprint&lt;/li&gt;
+&lt;li&gt;Learn more about &lt;strong&gt;Vert.x Microservice&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Finish documents and tutorials of &lt;strong&gt;Vert.x Kue&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;Finish tests&lt;/li&gt;
-&lt;li&gt;Add Docker Compose file&lt;/li&gt;
-&lt;li&gt;Prepare for the third Blueprint Application&lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Notice:&lt;/strong&gt; Because my semester final exams is pending this week and next week, I’ll have to be busy with them. So I might spend less time on it (have time in the evening). After the final exams I’ll speed up and make a wonderful blueprint!&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
 &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
 &lt;p&gt;Pending…&lt;/p&gt;
@@ -43,8 +36,34 @@
     
     <summary type="html">
     
-      &lt;p&gt;The GSoC Midterm Evaluation is coming~~&lt;/p&gt;
-&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+      &lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Finish Chinese documentation of Vert.x Kue&lt;/li&gt;
+&lt;li&gt;Work on microservice blueprint&lt;/li&gt;
+&lt;li&gt;Learn more about &lt;strong&gt;Vert.x Microservice&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Notice:&lt;/strong&gt; Because my semester final exams is pending this week and next week, I’ll have to be busy with them. So I might spend less time on it (have time in the evening). After the final exams I’ll speed up and make a wonderful blueprint!&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>GSoC 2016 | Work Period | Week 5 - Week 6</title>
+    <link href="http://www.sczyh30.com/en/2016/07/03/gsoc-2016-work-period-week5-6/"/>
+    <id>http://www.sczyh30.com/en/2016/07/03/gsoc-2016-work-period-week5-6/</id>
+    <published>2016-07-02T16:00:00.000Z</published>
+    <updated>2016-07-03T17:42:11.782Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Some extra things to implement or fix:&lt;ul&gt;
 &lt;li&gt;Job active TTL check&lt;/li&gt;
@@ -55,9 +74,44 @@
 &lt;li&gt;Finish documents and tutorials of &lt;strong&gt;Vert.x Kue&lt;/strong&gt;&lt;/li&gt;
 &lt;li&gt;Finish tests&lt;/li&gt;
 &lt;li&gt;Add Docker Compose file&lt;/li&gt;
-&lt;li&gt;Prepare for the third Blueprint Application&lt;/li&gt;
+&lt;li&gt;Prepare for the microservice blueprint&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;TODO-Job-search-functionality&quot;&gt;&lt;a href=&quot;#TODO-Job-search-functionality&quot; class=&quot;headerlink&quot; title=&quot;TODO: Job search functionality&quot;&gt;&lt;/a&gt;TODO: Job search functionality&lt;/h2&gt;&lt;p&gt;This need a full-index engine.&lt;/p&gt;
+&lt;h2 id=&quot;TODO-Run-Vert-x-Kue-in-Docker-Cluster&quot;&gt;&lt;a href=&quot;#TODO-Run-Vert-x-Kue-in-Docker-Cluster&quot; class=&quot;headerlink&quot; title=&quot;TODO: Run Vert.x Kue in Docker Cluster&quot;&gt;&lt;/a&gt;TODO: Run Vert.x Kue in Docker Cluster&lt;/h2&gt;&lt;p&gt;Maybe we need some configurations for Hazelcast to support it on Docker.&lt;/p&gt;
+&lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Finish English documents and tutorials of &lt;strong&gt;Vert.x Kue&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Finish part of Chinese documents and tutorials of &lt;strong&gt;Vert.x Kue&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Initial design for bluepint microservice&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These days my progress is slow…Because I have to prepare for the final exam(7.1 - 7.15) these days…&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Some extra things to implement or fix:&lt;ul&gt;
+&lt;li&gt;Job active TTL check&lt;/li&gt;
+&lt;li&gt;Job search functionality&lt;/li&gt;
+&lt;li&gt;Render issue with &lt;code&gt;_filter.jade&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Finish documents and tutorials of &lt;strong&gt;Vert.x Kue&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Finish tests&lt;/li&gt;
+&lt;li&gt;Add Docker Compose file&lt;/li&gt;
+&lt;li&gt;Prepare for the microservice blueprint&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;TODO-Job-search-functionality&quot;&gt;&lt;a href=&quot;#TODO-Job-search-functionality&quot; class=&quot;headerlink&quot; title=&quot;TODO: Job search functionality&quot;&gt;&lt;/a&gt;TODO: Job search functionality&lt;/h2&gt;&lt;p&gt;This need a full-index engine.&lt;/p&gt;
+&lt;h2 id=&quot;TODO-Run-Vert-x-Kue-in-Docker-Cluster&quot;&gt;&lt;a href=&quot;#TODO-Run-Vert-x-Kue-in-Docker-Cluster&quot; class=&quot;headerlink&quot; title=&quot;TODO: Run Vert.x Kue in Docker Cluster&quot;&gt;&lt;/a&gt;TODO: Run Vert.x Kue in Docker Cluster&lt;/h2&gt;&lt;p&gt;Maybe we need some configurations for Hazelcast to support it on Docker.&lt;/p&gt;
+&lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Finish English documents and tutorials of &lt;strong&gt;Vert.x Kue&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Finish part of Chinese documents and tutorials of &lt;strong&gt;Vert.x Kue&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Initial design for bluepint microservice&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These days my progress is slow…Because I have to prepare for the final exam(7.1 - 7.15) these days…&lt;/p&gt;
     
     </summary>
     
@@ -75,7 +129,7 @@
     <link href="http://www.sczyh30.com/en/2016/06/20/vertx-kue-brief-introduction-how-it-works/"/>
     <id>http://www.sczyh30.com/en/2016/06/20/vertx-kue-brief-introduction-how-it-works/</id>
     <published>2016-06-20T02:00:00.000Z</published>
-    <updated>2016-06-20T15:43:07.651Z</updated>
+    <updated>2016-07-03T17:31:21.070Z</updated>
     
     <content type="html">&lt;p&gt;In this blog post, I’ll give a brief introduction to illustrate how Vert.x Kue works.&lt;/p&gt;
 &lt;p&gt;In the workflow, first we deploy the &lt;code&gt;KueVerticle&lt;/code&gt; in clustered mode and register the &lt;code&gt;JobService&lt;/code&gt; on the event bus. The &lt;code&gt;JobService&lt;/code&gt; consists of various logic of &lt;code&gt;Job&lt;/code&gt;. After that, we could then deploy &lt;code&gt;KueHttpVerticle&lt;/code&gt; to provide REST API. Most of the apis calls &lt;code&gt;Future&lt;/code&gt;-based methods in &lt;code&gt;Kue&lt;/code&gt;. Finally we could deploy our job processing verticle. The verticle usually consists of three parts:&lt;/p&gt;
@@ -96,6 +150,7 @@
 &lt;p&gt;If the &lt;code&gt;KueWorker&lt;/code&gt; successfully gets the job, it will do process procedure. First we set &lt;code&gt;started_at&lt;/code&gt; flag on the job and then save it to the backend. Then we emit the job &lt;strong&gt;start&lt;/strong&gt; event on the event bus(both job address and worker address). Next, we will process the job using the given handler. Simultaneously, we consume &lt;code&gt;done&lt;/code&gt; and &lt;code&gt;done_fail&lt;/code&gt; events on the job-specific address. If &lt;code&gt;done&lt;/code&gt; event received, the job should be completed and we emit &lt;code&gt;complete&lt;/code&gt; event. If &lt;code&gt;done_fail&lt;/code&gt; event received, the job should be failed so we first do a failed attempt. If attempt failed, then send &lt;code&gt;error&lt;/code&gt; event on worker address. Else send &lt;code&gt;failed&lt;/code&gt; or &lt;code&gt;failed_attempt&lt;/code&gt; event depending on the attempt status.&lt;/p&gt;
 &lt;p&gt;There are three kinds of address:&lt;/p&gt;
 &lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * Handler address with certain job on event bus&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * Format: vertx.kue.handler.job.&amp;#123;handlerType&amp;#125;.&amp;#123;addressId&amp;#125;.&amp;#123;jobType&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * &lt;span class=&quot;doctag&quot;&gt;@return&lt;/span&gt; corresponding address&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; String &lt;span class=&quot;title&quot;&gt;getCertainJobAddress&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String handlerType, Job job)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;vertx.kue.handler.job.&quot;&lt;/span&gt; + handlerType + &lt;span class=&quot;string&quot;&gt;&quot;.&quot;&lt;/span&gt; + job.getAddress_id() + &lt;span class=&quot;string&quot;&gt;&quot;.&quot;&lt;/span&gt; + job.getType();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; * Global worker address with specific event type&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; String &lt;span class=&quot;title&quot;&gt;workerAddress&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String eventType)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;vertx.kue.handler.workers.&quot;&lt;/span&gt; + eventType;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * Worker address with specific event type and job-uuid on event bus&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * Format: vertx.kue.handler.workers.&amp;#123;eventType&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * &lt;span class=&quot;doctag&quot;&gt;@return&lt;/span&gt; corresponding address&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; String &lt;span class=&quot;title&quot;&gt;workerAddress&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String eventType, Job job)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;vertx.kue.handler.workers.&quot;&lt;/span&gt; + eventType + &lt;span class=&quot;string&quot;&gt;&quot;.&quot;&lt;/span&gt; + job.getAddress_id();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;Diagram&quot;&gt;&lt;a href=&quot;#Diagram&quot; class=&quot;headerlink&quot; title=&quot;Diagram&quot;&gt;&lt;/a&gt;Diagram&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;https://github.com/sczyh30/vertx-blueprint-job-queue/raw/initial-work/docs/images/kue_diagram.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
 &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
 </content>
     
@@ -120,6 +175,7 @@
 &lt;p&gt;If the &lt;code&gt;KueWorker&lt;/code&gt; successfully gets the job, it will do process procedure. First we set &lt;code&gt;started_at&lt;/code&gt; flag on the job and then save it to the backend. Then we emit the job &lt;strong&gt;start&lt;/strong&gt; event on the event bus(both job address and worker address). Next, we will process the job using the given handler. Simultaneously, we consume &lt;code&gt;done&lt;/code&gt; and &lt;code&gt;done_fail&lt;/code&gt; events on the job-specific address. If &lt;code&gt;done&lt;/code&gt; event received, the job should be completed and we emit &lt;code&gt;complete&lt;/code&gt; event. If &lt;code&gt;done_fail&lt;/code&gt; event received, the job should be failed so we first do a failed attempt. If attempt failed, then send &lt;code&gt;error&lt;/code&gt; event on worker address. Else send &lt;code&gt;failed&lt;/code&gt; or &lt;code&gt;failed_attempt&lt;/code&gt; event depending on the attempt status.&lt;/p&gt;
 &lt;p&gt;There are three kinds of address:&lt;/p&gt;
 &lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * Handler address with certain job on event bus&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * Format: vertx.kue.handler.job.&amp;#123;handlerType&amp;#125;.&amp;#123;addressId&amp;#125;.&amp;#123;jobType&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * &lt;span class=&quot;doctag&quot;&gt;@return&lt;/span&gt; corresponding address&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; String &lt;span class=&quot;title&quot;&gt;getCertainJobAddress&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String handlerType, Job job)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;vertx.kue.handler.job.&quot;&lt;/span&gt; + handlerType + &lt;span class=&quot;string&quot;&gt;&quot;.&quot;&lt;/span&gt; + job.getAddress_id() + &lt;span class=&quot;string&quot;&gt;&quot;.&quot;&lt;/span&gt; + job.getType();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; * Global worker address with specific event type&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; String &lt;span class=&quot;title&quot;&gt;workerAddress&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String eventType)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;vertx.kue.handler.workers.&quot;&lt;/span&gt; + eventType;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * Worker address with specific event type and job-uuid on event bus&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * Format: vertx.kue.handler.workers.&amp;#123;eventType&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   *&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   * &lt;span class=&quot;doctag&quot;&gt;@return&lt;/span&gt; corresponding address&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   */&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; String &lt;span class=&quot;title&quot;&gt;workerAddress&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String eventType, Job job)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;vertx.kue.handler.workers.&quot;&lt;/span&gt; + eventType + &lt;span class=&quot;string&quot;&gt;&quot;.&quot;&lt;/span&gt; + job.getAddress_id();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;Diagram&quot;&gt;&lt;a href=&quot;#Diagram&quot; class=&quot;headerlink&quot; title=&quot;Diagram&quot;&gt;&lt;/a&gt;Diagram&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;https://github.com/sczyh30/vertx-blueprint-job-queue/raw/initial-work/docs/images/kue_diagram.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
     
     </summary>
     
