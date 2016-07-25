@@ -2,23 +2,44 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/</loc>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/</loc>
     
-    <lastmod>2016-06-15T16:57:59.254Z</lastmod>
+    <lastmod>2016-07-25T12:40:23.012Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/</loc>
     
-    <lastmod>2016-06-15T16:56:46.119Z</lastmod>
+    <lastmod>2016-07-25T12:40:12.829Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/</loc>
+    
+    <lastmod>2016-07-25T12:37:55.935Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/play-framework-2-5-summary-1/</loc>
+    
+    <lastmod>2016-06-15T16:57:51.012Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-instance-internal-and-create/</loc>
     
-    <lastmod>2016-06-15T16:56:04.227Z</lastmod>
+    <lastmod>2016-06-15T16:57:03.036Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
+    
+    <lastmod>2016-06-15T16:56:50.788Z</lastmod>
     
   </url>
   
@@ -82,13 +103,6 @@
     <loc>http://www.sczyh30.com/about/index.html</loc>
     
     <lastmod>2016-05-20T10:49:24.577Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Scala/play-framework-2-5-summary-1/</loc>
-    
-    <lastmod>2016-05-02T17:12:05.087Z</lastmod>
     
   </url>
   
