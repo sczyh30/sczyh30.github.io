@@ -5,7 +5,7 @@
   <link href="/en/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/en/"/>
-  <updated>2016-07-03T17:36:50.740Z</updated>
+  <updated>2016-08-01T08:07:33.746Z</updated>
   <id>http://www.sczyh30.com/en/</id>
   
   <author>
@@ -16,11 +16,187 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>GSoC 2016 | Work Period | Week 7</title>
-    <link href="http://www.sczyh30.com/en/2016/07/04/gsoc-2016-work-period-week7/"/>
-    <id>http://www.sczyh30.com/en/2016/07/04/gsoc-2016-work-period-week7/</id>
-    <published>2016-07-03T16:00:00.000Z</published>
-    <updated>2016-07-03T17:36:50.740Z</updated>
+    <title>Vert.x Microservice Blueprint | Basic Design</title>
+    <link href="http://www.sczyh30.com/en/2016/08/01/vertx-blueprint-microservice-basic-design/"/>
+    <id>http://www.sczyh30.com/en/2016/08/01/vertx-blueprint-microservice-basic-design/</id>
+    <published>2016-07-31T16:00:00.000Z</published>
+    <updated>2016-08-01T08:07:33.746Z</updated>
+    
+    <content type="html">&lt;p&gt;The blueprint is an online shopping microservice application. You can treat it as a very simple C2C market like eBay.&lt;/p&gt;
+&lt;p&gt;Here is a diagram illustrating the microservice architecture:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/vertx-msb-initial-structure.png&quot; alt=&quot;Basic Design&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Currently I designed these components:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;account-microservice&lt;/code&gt;: Component for user account&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;product-microservice&lt;/code&gt;: Component for products we sell and buy&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;store-microservice&lt;/code&gt;: Component for individual stores in the market&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;checkout-microservice&lt;/code&gt;: Compoment for order checkout&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;payment-microservice&lt;/code&gt;: Compoment for payment transaction processing&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;order-microservice&lt;/code&gt;: Compoment for order dispatching, processing, analyzing and storage&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;NOTE&lt;/strong&gt;: this component should be divided into several sub-components&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;recommendation-microservice&lt;/code&gt;: Compoment for simple recommendation for friends and favorite products with Neo4j&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;cache-infrastructure&lt;/code&gt;: Cache component for services&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;api-gateway&lt;/code&gt;: API gateway (with load balance)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;shopping-ui&lt;/code&gt;: A SPA front-end for the microservice&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;monitor-dashboard&lt;/code&gt;: Dashboard for performance monitoring and backend metrics data demonstration&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Here is the user workflow: &lt;code&gt;User login and add products to chart -&amp;gt; Checkout -&amp;gt; Go to payment page and pay for the products -&amp;gt; Payment transaction success, order submitted -&amp;gt; (Wait for delivery...)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;All events are sent on the event bus.&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;The blueprint is an online shopping microservice application. You can treat it as a very simple C2C market like eBay.&lt;/p&gt;
+&lt;p&gt;Here is a diagram illustrating the microservice architecture:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xkkgd.com1.z0.glb.clouddn.com/vertx-msb-initial-structure.png&quot; alt=&quot;Basic Design&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Currently I designed these components:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;account-microservice&lt;/code&gt;: Component for user account&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;product-microservice&lt;/code&gt;: Component for products we sell and buy&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;store-microservice&lt;/code&gt;: Component for individual stores in the market&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;checkout-microservice&lt;/code&gt;: Compoment for order checkout&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;payment-microservice&lt;/code&gt;: Compoment for payment transaction processing&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;order-microservice&lt;/code&gt;: Compoment for order dispatching, processing, analyzing and storage&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;NOTE&lt;/strong&gt;: this component should be divided into several sub-components&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;recommendation-microservice&lt;/code&gt;: Compoment for simple recommendation for friends and favorite products with Neo4j&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;cache-infrastructure&lt;/code&gt;: Cache component for services&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;api-gateway&lt;/code&gt;: API gateway (with load balance)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;shopping-ui&lt;/code&gt;: A SPA front-end for the microservice&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;monitor-dashboard&lt;/code&gt;: Dashboard for performance monitoring and backend metrics data demonstration&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Here is the user workflow: &lt;code&gt;User login and add products to chart -&amp;gt; Checkout -&amp;gt; Go to payment page and pay for the products -&amp;gt; Payment transaction success, order submitted -&amp;gt; (Wait for delivery...)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;All events are sent on the event bus.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+      <category term="Microservice" scheme="http://www.sczyh30.com/en/tags/Microservice/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>GSoC 2016 | Work Period | Week 11</title>
+    <link href="http://www.sczyh30.com/en/2016/08/01/gsoc-work-period-week-11/"/>
+    <id>http://www.sczyh30.com/en/2016/08/01/gsoc-work-period-week-11/</id>
+    <published>2016-07-31T16:00:00.000Z</published>
+    <updated>2016-08-01T08:04:20.743Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Architecture enhancement&lt;/li&gt;
+&lt;li&gt;A simple SPA frontend for the microservice blueprint (use Vue.js)&lt;/li&gt;
+&lt;li&gt;Monitor dashboard&lt;/li&gt;
+&lt;li&gt;A simple recommendation component&lt;ul&gt;
+&lt;li&gt;Maybe I should write a individual component providing Neo4j integration with Vert.x&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Run the application with Docker Compose&lt;/li&gt;
+&lt;li&gt;Finish tests&lt;/li&gt;
+&lt;li&gt;Finish documents and tutorials&lt;/li&gt;
+&lt;li&gt;Prepare for next blueprint application (high performance)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Architecture enhancement&lt;/li&gt;
+&lt;li&gt;A simple SPA frontend for the microservice blueprint (use Vue.js)&lt;/li&gt;
+&lt;li&gt;Monitor dashboard&lt;/li&gt;
+&lt;li&gt;A simple recommendation component&lt;ul&gt;
+&lt;li&gt;Maybe I should write a individual component providing Neo4j integration with Vert.x&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Run the application with Docker Compose&lt;/li&gt;
+&lt;li&gt;Finish tests&lt;/li&gt;
+&lt;li&gt;Finish documents and tutorials&lt;/li&gt;
+&lt;li&gt;Prepare for next blueprint application (high performance)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>GSoC 2016 | Work Period | Week 9 - Week 10</title>
+    <link href="http://www.sczyh30.com/en/2016/08/01/gsoc-2016-work-period-week9-10/"/>
+    <id>http://www.sczyh30.com/en/2016/08/01/gsoc-2016-work-period-week9-10/</id>
+    <published>2016-07-31T16:00:00.000Z</published>
+    <updated>2016-08-01T08:04:11.953Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initial work for Online Shopping Microservice Blueprint&lt;/li&gt;
+&lt;li&gt;Prepare for next blueprint application (high performance)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;API-gateway&quot;&gt;&lt;a href=&quot;#API-gateway&quot; class=&quot;headerlink&quot; title=&quot;API gateway&quot;&gt;&lt;/a&gt;API gateway&lt;/h2&gt;&lt;p&gt;How to implement an API gateway with load balance.&lt;/p&gt;
+&lt;h2 id=&quot;Checkout-model&quot;&gt;&lt;a href=&quot;#Checkout-model&quot; class=&quot;headerlink&quot; title=&quot;Checkout model&quot;&gt;&lt;/a&gt;Checkout model&lt;/h2&gt;&lt;p&gt;TODO: The checkout-payment-order model should be changed.&lt;/p&gt;
+&lt;h2 id=&quot;Deployment&quot;&gt;&lt;a href=&quot;#Deployment&quot; class=&quot;headerlink&quot; title=&quot;Deployment&quot;&gt;&lt;/a&gt;Deployment&lt;/h2&gt;&lt;p&gt;In our design, the online shopping microservice blueprint contains many components, so we need to pay attention to how to deploy such a microservice application (e.g. use Docker Compose, Kubernetes; Deploy on Openshift)&lt;/p&gt;
+&lt;h2 id=&quot;Order-dispatching-design&quot;&gt;&lt;a href=&quot;#Order-dispatching-design&quot; class=&quot;headerlink&quot; title=&quot;Order dispatching design&quot;&gt;&lt;/a&gt;Order dispatching design&lt;/h2&gt;&lt;p&gt;In our current design, orders are sent via clustered event bus. But a real production environment, orders are supposed to be dispatched to message queues with recovery and persistence ability(e.g. Kafka). And the order processing component and order persistence component should pull orders from the MQ.&lt;/p&gt;
+&lt;h2 id=&quot;Integration-with-other-technologies&quot;&gt;&lt;a href=&quot;#Integration-with-other-technologies&quot; class=&quot;headerlink&quot; title=&quot;Integration with other technologies&quot;&gt;&lt;/a&gt;Integration with other technologies&lt;/h2&gt;&lt;p&gt;e.g. Kafka&lt;/p&gt;
+&lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Initial work for Online Shopping Microservice Blueprint&lt;/li&gt;
+&lt;/ul&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initial work for Online Shopping Microservice Blueprint&lt;/li&gt;
+&lt;li&gt;Prepare for next blueprint application (high performance)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;API-gateway&quot;&gt;&lt;a href=&quot;#API-gateway&quot; class=&quot;headerlink&quot; title=&quot;API gateway&quot;&gt;&lt;/a&gt;API gateway&lt;/h2&gt;&lt;p&gt;How to implement an API gateway with load balance.&lt;/p&gt;
+&lt;h2 id=&quot;Checkout-model&quot;&gt;&lt;a href=&quot;#Checkout-model&quot; class=&quot;headerlink&quot; title=&quot;Checkout model&quot;&gt;&lt;/a&gt;Checkout model&lt;/h2&gt;&lt;p&gt;TODO: The checkout-payment-order model should be changed.&lt;/p&gt;
+&lt;h2 id=&quot;Deployment&quot;&gt;&lt;a href=&quot;#Deployment&quot; class=&quot;headerlink&quot; title=&quot;Deployment&quot;&gt;&lt;/a&gt;Deployment&lt;/h2&gt;&lt;p&gt;In our design, the online shopping microservice blueprint contains many components, so we need to pay attention to how to deploy such a microservice application (e.g. use Docker Compose, Kubernetes; Deploy on Openshift)&lt;/p&gt;
+&lt;h2 id=&quot;Order-dispatching-design&quot;&gt;&lt;a href=&quot;#Order-dispatching-design&quot; class=&quot;headerlink&quot; title=&quot;Order dispatching design&quot;&gt;&lt;/a&gt;Order dispatching design&lt;/h2&gt;&lt;p&gt;In our current design, orders are sent via clustered event bus. But a real production environment, orders are supposed to be dispatched to message queues with recovery and persistence ability(e.g. Kafka). And the order processing component and order persistence component should pull orders from the MQ.&lt;/p&gt;
+&lt;h2 id=&quot;Integration-with-other-technologies&quot;&gt;&lt;a href=&quot;#Integration-with-other-technologies&quot; class=&quot;headerlink&quot; title=&quot;Integration with other technologies&quot;&gt;&lt;/a&gt;Integration with other technologies&lt;/h2&gt;&lt;p&gt;e.g. Kafka&lt;/p&gt;
+&lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Initial work for Online Shopping Microservice Blueprint&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>GSoC 2016 | Work Period | Week 7 - Week 8</title>
+    <link href="http://www.sczyh30.com/en/2016/07/16/gsoc-2016-work-period-week-7/"/>
+    <id>http://www.sczyh30.com/en/2016/07/16/gsoc-2016-work-period-week-7/</id>
+    <published>2016-07-15T16:00:00.000Z</published>
+    <updated>2016-08-01T05:25:49.505Z</updated>
     
     <content type="html">&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
 &lt;ul&gt;
@@ -30,8 +206,8 @@
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;Notice:&lt;/strong&gt; Because my semester final exams is pending this week and next week, I’ll have to be busy with them. So I might spend less time on it (have time in the evening). After the final exams I’ll speed up and make a wonderful blueprint!&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The final exams finally finished!!!&lt;/p&gt;
 &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
-&lt;p&gt;Pending…&lt;/p&gt;
 </content>
     
     <summary type="html">
@@ -44,6 +220,7 @@
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;Notice:&lt;/strong&gt; Because my semester final exams is pending this week and next week, I’ll have to be busy with them. So I might spend less time on it (have time in the evening). After the final exams I’ll speed up and make a wonderful blueprint!&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The final exams finally finished!!!&lt;/p&gt;
     
     </summary>
     
@@ -271,7 +448,7 @@
     <link href="http://www.sczyh30.com/en/2016/06/12/gsoc-2016-work-period-week3/"/>
     <id>http://www.sczyh30.com/en/2016/06/12/gsoc-2016-work-period-week3/</id>
     <published>2016-06-12T15:00:00.000Z</published>
-    <updated>2016-06-13T17:51:25.478Z</updated>
+    <updated>2016-08-01T08:03:58.591Z</updated>
     
     <content type="html">&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
 &lt;ul&gt;
@@ -295,9 +472,10 @@
 &lt;li&gt;Write a brief introduction to new features of Vert.x 3.3.0 (in Chinese, will publish in &lt;em&gt;Vert.x China Group&lt;/em&gt;)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;PS: &lt;strong&gt;The Dragon Boat Festival&lt;/strong&gt; holiday will be coming from Thursday to Saturday this week so I may not spend very much time on work during the holiday~ &lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
-&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;Unsolved-Regex-match-in-route-path&quot;&gt;&lt;a href=&quot;#Unsolved-Regex-match-in-route-path&quot; class=&quot;headerlink&quot; title=&quot;Unsolved: Regex match in route path&quot;&gt;&lt;/a&gt;Unsolved: Regex match in route path&lt;/h2&gt;&lt;p&gt;In original Kue’s API, there is a route with path &lt;code&gt;/jobs/:from..:to/:order?&lt;/code&gt;. I tried this in Vert.x Web(&lt;code&gt;/jobs/:from..:to&lt;/code&gt;) but Vert.x Web cannot match it. So I used regex match &lt;code&gt;\/jobs\/([0-9]*)\.\.([0-9]*)(\/[^\/]+)?&lt;/code&gt;:&lt;/p&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;Solved-Regex-match-in-route-path&quot;&gt;&lt;a href=&quot;#Solved-Regex-match-in-route-path&quot; class=&quot;headerlink&quot; title=&quot;Solved: Regex match in route path&quot;&gt;&lt;/a&gt;Solved: Regex match in route path&lt;/h2&gt;&lt;p&gt;In original Kue’s API, there is a route with path &lt;code&gt;/jobs/:from..:to/:order?&lt;/code&gt;. I tried this in Vert.x Web(&lt;code&gt;/jobs/:from..:to&lt;/code&gt;) but Vert.x Web cannot match it. So I used regex match &lt;code&gt;\/jobs\/([0-9]*)\.\.([0-9]*)(\/[^\/]+)?&lt;/code&gt;:&lt;/p&gt;
 &lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;final&lt;/span&gt; String KUE_API_JOB_RANGE = &lt;span class=&quot;string&quot;&gt;&quot;\\/jobs\\/([0-9]*)\\.\\.([0-9]*)(\\/[^\\/]+)?&quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// ...&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;router.getWithRegex(KUE_API_JOB_RANGE).handler(&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;::apiJobRange);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;But nothing matched, which made me confused. And path like &lt;code&gt;/jobs/:from/to/:to&lt;/code&gt; can be matched.&lt;/p&gt;
+&lt;p&gt;Solution: First use a supported pattern to catch string like &lt;code&gt;1..10&lt;/code&gt; then use regex parse.&lt;/p&gt;
 &lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;h2 id=&quot;Implementation-of-Vert-x-Kue-core&quot;&gt;&lt;a href=&quot;#Implementation-of-Vert-x-Kue-core&quot; class=&quot;headerlink&quot; title=&quot;Implementation of Vert.x Kue core&quot;&gt;&lt;/a&gt;Implementation of Vert.x Kue core&lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;Job processing interface &lt;code&gt;KueService&lt;/code&gt; now provides two methods: &lt;code&gt;process&lt;/code&gt; method do asynchronous procedure(use common verticles), while &lt;code&gt;processBlocking&lt;/code&gt; method could do blocking procedure(use worker verticles)&lt;/li&gt;
 &lt;li&gt;Add attempt support (could attempt when fails)&lt;ul&gt;
@@ -343,9 +521,10 @@
 &lt;li&gt;Write a brief introduction to new features of Vert.x 3.3.0 (in Chinese, will publish in &lt;em&gt;Vert.x China Group&lt;/em&gt;)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;PS: &lt;strong&gt;The Dragon Boat Festival&lt;/strong&gt; holiday will be coming from Thursday to Saturday this week so I may not spend very much time on work during the holiday~ &lt;em&gt;Have a great week :-)&lt;/em&gt;&lt;/p&gt;
-&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;Unsolved-Regex-match-in-route-path&quot;&gt;&lt;a href=&quot;#Unsolved-Regex-match-in-route-path&quot; class=&quot;headerlink&quot; title=&quot;Unsolved: Regex match in route path&quot;&gt;&lt;/a&gt;Unsolved: Regex match in route path&lt;/h2&gt;&lt;p&gt;In original Kue’s API, there is a route with path &lt;code&gt;/jobs/:from..:to/:order?&lt;/code&gt;. I tried this in Vert.x Web(&lt;code&gt;/jobs/:from..:to&lt;/code&gt;) but Vert.x Web cannot match it. So I used regex match &lt;code&gt;\/jobs\/([0-9]*)\.\.([0-9]*)(\/[^\/]+)?&lt;/code&gt;:&lt;/p&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;Solved-Regex-match-in-route-path&quot;&gt;&lt;a href=&quot;#Solved-Regex-match-in-route-path&quot; class=&quot;headerlink&quot; title=&quot;Solved: Regex match in route path&quot;&gt;&lt;/a&gt;Solved: Regex match in route path&lt;/h2&gt;&lt;p&gt;In original Kue’s API, there is a route with path &lt;code&gt;/jobs/:from..:to/:order?&lt;/code&gt;. I tried this in Vert.x Web(&lt;code&gt;/jobs/:from..:to&lt;/code&gt;) but Vert.x Web cannot match it. So I used regex match &lt;code&gt;\/jobs\/([0-9]*)\.\.([0-9]*)(\/[^\/]+)?&lt;/code&gt;:&lt;/p&gt;
 &lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;final&lt;/span&gt; String KUE_API_JOB_RANGE = &lt;span class=&quot;string&quot;&gt;&quot;\\/jobs\\/([0-9]*)\\.\\.([0-9]*)(\\/[^\\/]+)?&quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// ...&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;router.getWithRegex(KUE_API_JOB_RANGE).handler(&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;::apiJobRange);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;But nothing matched, which made me confused. And path like &lt;code&gt;/jobs/:from/to/:to&lt;/code&gt; can be matched.&lt;/p&gt;
+&lt;p&gt;Solution: First use a supported pattern to catch string like &lt;code&gt;1..10&lt;/code&gt; then use regex parse.&lt;/p&gt;
 &lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;h2 id=&quot;Implementation-of-Vert-x-Kue-core&quot;&gt;&lt;a href=&quot;#Implementation-of-Vert-x-Kue-core&quot; class=&quot;headerlink&quot; title=&quot;Implementation of Vert.x Kue core&quot;&gt;&lt;/a&gt;Implementation of Vert.x Kue core&lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;Job processing interface &lt;code&gt;KueService&lt;/code&gt; now provides two methods: &lt;code&gt;process&lt;/code&gt; method do asynchronous procedure(use common verticles), while &lt;code&gt;processBlocking&lt;/code&gt; method could do blocking procedure(use worker verticles)&lt;/li&gt;
 &lt;li&gt;Add attempt support (could attempt when fails)&lt;ul&gt;
