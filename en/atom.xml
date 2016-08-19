@@ -5,7 +5,7 @@
   <link href="/en/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/en/"/>
-  <updated>2016-08-01T08:07:33.746Z</updated>
+  <updated>2016-08-19T15:40:12.014Z</updated>
   <id>http://www.sczyh30.com/en/</id>
   
   <author>
@@ -14,6 +14,314 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>GSoC 2016 | Vert.x Blueprint Application</title>
+    <link href="http://www.sczyh30.com/en/2016/08/19/gsoc-2016-final-evaluation/"/>
+    <id>http://www.sczyh30.com/en/2016/08/19/gsoc-2016-final-evaluation/</id>
+    <published>2016-08-18T16:00:00.000Z</published>
+    <updated>2016-08-19T15:40:12.014Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;img src=&quot;https://developers.google.com/open-source/gsoc/resources/downloads/GSoC-icon-192.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;This blog post is intended to be an illustration of my work for &lt;strong&gt;GSoC Final Evaluation&lt;/strong&gt;.&lt;/p&gt;
+&lt;h1 id=&quot;Overview&quot;&gt;&lt;a href=&quot;#Overview&quot; class=&quot;headerlink&quot; title=&quot;Overview&quot;&gt;&lt;/a&gt;Overview&lt;/h1&gt;&lt;p&gt;Vert.x is a toolkit for the Java Virtual Machine enabling the implementation of reactive, highly concurrent, polyglot applications. The idea of the project is to implement a set of applications using the Vert.x toolkit to illustrate how different classes of applications can be done. This project aims to &lt;strong&gt;provide guidelines to Vert.x users to implement various applications&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;The blueprint project contains three parts: &lt;strong&gt;Todo Backend&lt;/strong&gt;, &lt;strong&gt;Vert.x Kue&lt;/strong&gt; and &lt;strong&gt;Online Shopping Microservice&lt;/strong&gt;. Both runnable code and very detailed documents and tutorials (both in English and Chinese) are provided.&lt;/p&gt;
+&lt;h1 id=&quot;Vert-x-Blueprint-Todo-Backend&quot;&gt;&lt;a href=&quot;#Vert-x-Blueprint-Todo-Backend&quot; class=&quot;headerlink&quot; title=&quot;Vert.x Blueprint - Todo Backend&quot;&gt;&lt;/a&gt;Vert.x Blueprint - Todo Backend&lt;/h1&gt;&lt;p&gt;The project &lt;strong&gt;repository&lt;/strong&gt;: &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-todo-backend&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;sczyh30/vertx-blueprint-todo-backend&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This blueprint is a todo-backend implementation using Vert.x and various persistence (e.g. Redis or MySQL). It is intended to be an introduction to basic Vert.x web RESTful service development. From this blueprint, developers could learn:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What is Vert.x and its basic design&lt;/li&gt;
+&lt;li&gt;What is and how to use &lt;code&gt;Verticle&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;How to develop a REST API using Vert.x Web&lt;/li&gt;
+&lt;li&gt;How to make use of &lt;strong&gt;asynchronous development model&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Future-based reactive asynchronous pattern&lt;/li&gt;
+&lt;li&gt;How to use persistence such as &lt;em&gt;Redis&lt;/em&gt; and &lt;em&gt;MySQL&lt;/em&gt; with the help of Vert.x data access components&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The tutorial documents:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-todo-backend/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;The tutorial document (English)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-todo-backend/cn/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;The tutorial document (Chinese)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-todo-backend/master/docs/img/vertx-todobackend-ui.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Vert-x-Blueprint-Vert-x-Kue&quot;&gt;&lt;a href=&quot;#Vert-x-Blueprint-Vert-x-Kue&quot; class=&quot;headerlink&quot; title=&quot;Vert.x Blueprint - Vert.x Kue&quot;&gt;&lt;/a&gt;Vert.x Blueprint - Vert.x Kue&lt;/h1&gt;&lt;p&gt;The project &lt;strong&gt;repository&lt;/strong&gt;: &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-job-queue&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;sczyh30/vertx-blueprint-job-queue&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This blueprint is a priority job queue developed with Vert.x and backed by Redis. It’s a Vert.x implementation version of &lt;a href=&quot;https://github.com/Automattic/kue&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Automattic/kue&lt;/a&gt; that can be used in production.&lt;/p&gt;
+&lt;p&gt;Feature document of Vert.x Kue is available here: &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-job-queue/blob/master/docs/en/vertx-kue-features-en.md&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Kue Features&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This blueprint is intended to be an introduction to message-based application development using Vert.x. From this blueprint, developers could learn:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;How to make use of &lt;strong&gt;Vert.x Event Bus&lt;/strong&gt; (distributed)&lt;/li&gt;
+&lt;li&gt;How to develop message based application with Vert.x&lt;/li&gt;
+&lt;li&gt;Event pattern of event bus (Pub/sub, point to point)&lt;/li&gt;
+&lt;li&gt;How to design clustered Vert.x applications&lt;/li&gt;
+&lt;li&gt;How to design and implement a job queue&lt;/li&gt;
+&lt;li&gt;How to use &lt;strong&gt;Vert.x Service Proxy&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;More complicated practice about Vert.x Redis&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The tutorial documents:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-job-queue/kue-core/index.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Kue Core Tutorial - English Version&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-job-queue/kue-http/index.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Kue Web Tutorial - English Version&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-job-queue/cn/kue-core/index.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Kue Core Tutorial - Chinese Version&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-job-queue/cn/kue-http/index.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Kue Web Tutorial - Chinese Version&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-job-queue/master/docs/images/vertx_kue_ui_1.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Vert-x-Blueprint-Online-Shopping-Microservice&quot;&gt;&lt;a href=&quot;#Vert-x-Blueprint-Online-Shopping-Microservice&quot; class=&quot;headerlink&quot; title=&quot;Vert.x Blueprint - Online Shopping Microservice&quot;&gt;&lt;/a&gt;Vert.x Blueprint - Online Shopping Microservice&lt;/h1&gt;&lt;p&gt;The project &lt;strong&gt;repository&lt;/strong&gt;: &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-microservice&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;sczyh30/vertx-blueprint-microservice&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This blueprint is an online shopping microservice application developed with Vert.x. It is intended to be an illustration on how to develop microservice applications using Vert.x toolkit. From this blueprint, developers could learn:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Microservice development with Vert.x&lt;/li&gt;
+&lt;li&gt;Asynchronous development model&lt;/li&gt;
+&lt;li&gt;Reactive and functional pattern&lt;/li&gt;
+&lt;li&gt;Event sourcing pattern&lt;/li&gt;
+&lt;li&gt;Asynchronous RPC on the clustered event bus&lt;/li&gt;
+&lt;li&gt;Various type of services (e.g. HTTP endpoint, message source, event bus service)&lt;/li&gt;
+&lt;li&gt;Vert.x Service Discovery&lt;/li&gt;
+&lt;li&gt;Vert.x Circuit Breaker&lt;/li&gt;
+&lt;li&gt;Microservice with polyglot persistence&lt;/li&gt;
+&lt;li&gt;How to implement an API gateway&lt;/li&gt;
+&lt;li&gt;Global authentication (OAuth 2 + Keycloak)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;And many more things…&lt;/p&gt;
+&lt;p&gt;The tutorial documents:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-microservice/index.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Microservice Blueprint Tutorial - Development (English Version)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-microservice/api-gateway.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Microservice Blueprint Tutorial - API Gateway (English Version)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-microservice/cn/index.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Microservice Blueprint Tutorial - Development (Chinese Version)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-microservice/cn/api-gateway.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vert.x Microservice Blueprint Tutorial - API Gateway (Chinese Version)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/master/docs/images/shopping-spa-index.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/master/docs/images/monitor-dashboard.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Final-Summary-amp-amp-Future&quot;&gt;&lt;a href=&quot;#Final-Summary-amp-amp-Future&quot; class=&quot;headerlink&quot; title=&quot;Final Summary &amp;amp;&amp;amp; Future&quot;&gt;&lt;/a&gt;Final Summary &amp;amp;&amp;amp; Future&lt;/h1&gt;&lt;p&gt;I really enjoy the work! During the work period I’ve learned a lot about Vert.x, various asynchronous development model, distributed systems, microservice architecture and many more things… This motivates me to investigate new technologies, and the infrastructure of Vert.x. This would be an unforgettable experience.&lt;/p&gt;
+&lt;p&gt;I’ll keep track of the blueprint project and planning to make some more improvements on the microservice blueprint to illustrate more usage about Vert.x and microservices (e.g. recommendation, Kafka, full-index search). And soon I’d like to contribute to &lt;strong&gt;Vert.x Microservice Toolbox&lt;/strong&gt; to add more features and integration with other technologies. As &lt;strong&gt;Vert.x Scala&lt;/strong&gt; is nearly technical preview, I’m also willing to contribute to Vert.x Scala version.&lt;/p&gt;
+&lt;h1 id=&quot;Thanks&quot;&gt;&lt;a href=&quot;#Thanks&quot; class=&quot;headerlink&quot; title=&quot;Thanks&quot;&gt;&lt;/a&gt;Thanks&lt;/h1&gt;&lt;p&gt;I would like to give my sincere thanks to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;My mentors, &lt;a href=&quot;https://github.com/pmlopes&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Paulo Lopes&lt;/a&gt; and &lt;a href=&quot;https://github.com/cescoffier&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Clement Escoffier&lt;/a&gt;. They provided me guidance and gave me a lot of help during the work :-)&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;Vert.x Community&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;The Google Summer of Code team, for this wonderful experience.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;https://developers.google.com/open-source/gsoc/resources/downloads/GSoC-icon-192.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;This blog post is intended to be an illustration of my work for &lt;strong&gt;GSoC Final Evaluation&lt;/strong&gt;.&lt;/p&gt;
+&lt;h1 id=&quot;Overview&quot;&gt;&lt;a href=&quot;#Overview&quot; class=&quot;headerlink&quot; title=&quot;Overview&quot;&gt;&lt;/a&gt;Overview&lt;/h1&gt;&lt;p&gt;Vert.x is a toolkit for the Java Virtual Machine enabling the implementation of reactive, highly concurrent, polyglot applications. The idea of the project is to implement a set of applications using the Vert.x toolkit to illustrate how different classes of applications can be done. This project aims to &lt;strong&gt;provide guidelines to Vert.x users to implement various applications&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;The blueprint project contains three parts: &lt;strong&gt;Todo Backend&lt;/strong&gt;, &lt;strong&gt;Vert.x Kue&lt;/strong&gt; and &lt;strong&gt;Online Shopping Microservice&lt;/strong&gt;. Both runnable code and very detailed documents and tutorials (both in English and Chinese) are provided.&lt;/p&gt;
+&lt;h1 id=&quot;Vert-x-Blueprint-Todo-Backend&quot;&gt;&lt;a href=&quot;#Vert-x-Blueprint-Todo-Backend&quot; class=&quot;headerlink&quot; title=&quot;Vert.x Blueprint - Todo Backend&quot;&gt;&lt;/a&gt;Vert.x Blueprint - Todo Backend&lt;/h1&gt;&lt;p&gt;The project &lt;strong&gt;repository&lt;/strong&gt;: &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-todo-backend&quot;&gt;sczyh30/vertx-blueprint-todo-backend&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This blueprint is a todo-backend implementation using Vert.x and various persistence (e.g. Redis or MySQL). It is intended to be an introduction to basic Vert.x web RESTful service development. From this blueprint, developers could learn:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What is Vert.x and its basic design&lt;/li&gt;
+&lt;li&gt;What is and how to use &lt;code&gt;Verticle&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;How to develop a REST API using Vert.x Web&lt;/li&gt;
+&lt;li&gt;How to make use of &lt;strong&gt;asynchronous development model&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Future-based reactive asynchronous pattern&lt;/li&gt;
+&lt;li&gt;How to use persistence such as &lt;em&gt;Redis&lt;/em&gt; and &lt;em&gt;MySQL&lt;/em&gt; with the help of Vert.x data access components&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The tutorial documents:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-todo-backend/&quot;&gt;The tutorial document (English)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-todo-backend/cn/&quot;&gt;The tutorial document (Chinese)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-todo-backend/master/docs/img/vertx-todobackend-ui.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Vert-x-Blueprint-Vert-x-Kue&quot;&gt;&lt;a href=&quot;#Vert-x-Blueprint-Vert-x-Kue&quot; class=&quot;headerlink&quot; title=&quot;Vert.x Blueprint - Vert.x Kue&quot;&gt;&lt;/a&gt;Vert.x Blueprint - Vert.x Kue&lt;/h1&gt;&lt;p&gt;The project &lt;strong&gt;repository&lt;/strong&gt;: &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-job-queue&quot;&gt;sczyh30/vertx-blueprint-job-queue&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This blueprint is a priority job queue developed with Vert.x and backed by Redis. It’s a Vert.x implementation version of &lt;a href=&quot;https://github.com/Automattic/kue&quot;&gt;Automattic/kue&lt;/a&gt; that can be used in production.&lt;/p&gt;
+&lt;p&gt;Feature document of Vert.x Kue is available here: &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-job-queue/blob/master/docs/en/vertx-kue-features-en.md&quot;&gt;Vert.x Kue Features&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This blueprint is intended to be an introduction to message-based application development using Vert.x. From this blueprint, developers could learn:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;How to make use of &lt;strong&gt;Vert.x Event Bus&lt;/strong&gt; (distributed)&lt;/li&gt;
+&lt;li&gt;How to develop message based application with Vert.x&lt;/li&gt;
+&lt;li&gt;Event pattern of event bus (Pub/sub, point to point)&lt;/li&gt;
+&lt;li&gt;How to design clustered Vert.x applications&lt;/li&gt;
+&lt;li&gt;How to design and implement a job queue&lt;/li&gt;
+&lt;li&gt;How to use &lt;strong&gt;Vert.x Service Proxy&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;More complicated practice about Vert.x Redis&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The tutorial documents:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-job-queue/kue-core/index.html&quot;&gt;Vert.x Kue Core Tutorial - English Version&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-job-queue/kue-http/index.html&quot;&gt;Vert.x Kue Web Tutorial - English Version&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-job-queue/cn/kue-core/index.html&quot;&gt;Vert.x Kue Core Tutorial - Chinese Version&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-job-queue/cn/kue-http/index.html&quot;&gt;Vert.x Kue Web Tutorial - Chinese Version&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-job-queue/master/docs/images/vertx_kue_ui_1.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Vert-x-Blueprint-Online-Shopping-Microservice&quot;&gt;&lt;a href=&quot;#Vert-x-Blueprint-Online-Shopping-Microservice&quot; class=&quot;headerlink&quot; title=&quot;Vert.x Blueprint - Online Shopping Microservice&quot;&gt;&lt;/a&gt;Vert.x Blueprint - Online Shopping Microservice&lt;/h1&gt;&lt;p&gt;The project &lt;strong&gt;repository&lt;/strong&gt;: &lt;a href=&quot;https://github.com/sczyh30/vertx-blueprint-microservice&quot;&gt;sczyh30/vertx-blueprint-microservice&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This blueprint is an online shopping microservice application developed with Vert.x. It is intended to be an illustration on how to develop microservice applications using Vert.x toolkit. From this blueprint, developers could learn:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Microservice development with Vert.x&lt;/li&gt;
+&lt;li&gt;Asynchronous development model&lt;/li&gt;
+&lt;li&gt;Reactive and functional pattern&lt;/li&gt;
+&lt;li&gt;Event sourcing pattern&lt;/li&gt;
+&lt;li&gt;Asynchronous RPC on the clustered event bus&lt;/li&gt;
+&lt;li&gt;Various type of services (e.g. HTTP endpoint, message source, event bus service)&lt;/li&gt;
+&lt;li&gt;Vert.x Service Discovery&lt;/li&gt;
+&lt;li&gt;Vert.x Circuit Breaker&lt;/li&gt;
+&lt;li&gt;Microservice with polyglot persistence&lt;/li&gt;
+&lt;li&gt;How to implement an API gateway&lt;/li&gt;
+&lt;li&gt;Global authentication (OAuth 2 + Keycloak)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;And many more things…&lt;/p&gt;
+&lt;p&gt;The tutorial documents:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-microservice/index.html&quot;&gt;Vert.x Microservice Blueprint Tutorial - Development (English Version)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-microservice/api-gateway.html&quot;&gt;Vert.x Microservice Blueprint Tutorial - API Gateway (English Version)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-microservice/cn/index.html&quot;&gt;Vert.x Microservice Blueprint Tutorial - Development (Chinese Version)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://sczyh30.github.io/vertx-blueprint-microservice/cn/api-gateway.html&quot;&gt;Vert.x Microservice Blueprint Tutorial - API Gateway (Chinese Version)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/master/docs/images/shopping-spa-index.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/master/docs/images/monitor-dashboard.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;Final-Summary-amp-amp-Future&quot;&gt;&lt;a href=&quot;#Final-Summary-amp-amp-Future&quot; class=&quot;headerlink&quot; title=&quot;Final Summary &amp;amp;&amp;amp; Future&quot;&gt;&lt;/a&gt;Final Summary &amp;amp;&amp;amp; Future&lt;/h1&gt;&lt;p&gt;I really enjoy the work! During the work period I’ve learned a lot about Vert.x, various asynchronous development model, distributed systems, microservice architecture and many more things… This motivates me to investigate new technologies, and the infrastructure of Vert.x. This would be an unforgettable experience.&lt;/p&gt;
+&lt;p&gt;I’ll keep track of the blueprint project and planning to make some more improvements on the microservice blueprint to illustrate more usage about Vert.x and microservices (e.g. recommendation, Kafka, full-index search). And soon I’d like to contribute to &lt;strong&gt;Vert.x Microservice Toolbox&lt;/strong&gt; to add more features and integration with other technologies. As &lt;strong&gt;Vert.x Scala&lt;/strong&gt; is nearly technical preview, I’m also willing to contribute to Vert.x Scala version.&lt;/p&gt;
+&lt;h1 id=&quot;Thanks&quot;&gt;&lt;a href=&quot;#Thanks&quot; class=&quot;headerlink&quot; title=&quot;Thanks&quot;&gt;&lt;/a&gt;Thanks&lt;/h1&gt;&lt;p&gt;I would like to give my sincere thanks to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;My mentors, &lt;a href=&quot;https://github.com/pmlopes&quot;&gt;Paulo Lopes&lt;/a&gt; and &lt;a href=&quot;https://github.com/cescoffier&quot;&gt;Clement Escoffier&lt;/a&gt;. They provided me guidance and gave me a lot of help during the work :-)&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;Vert.x Community&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;The Google Summer of Code team, for this wonderful experience.&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Vert.x Microservice Blueprint | Some changes &amp;&amp; refactoring</title>
+    <link href="http://www.sczyh30.com/en/2016/08/11/vertx-blueprint-microservice-design-refactor-01/"/>
+    <id>http://www.sczyh30.com/en/2016/08/11/vertx-blueprint-microservice-design-refactor-01/</id>
+    <published>2016-08-10T16:00:00.000Z</published>
+    <updated>2016-08-19T15:54:56.601Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;Simplified-architecture&quot;&gt;&lt;a href=&quot;#Simplified-architecture&quot; class=&quot;headerlink&quot; title=&quot;Simplified architecture&quot;&gt;&lt;/a&gt;Simplified architecture&lt;/h1&gt;&lt;p&gt;Some of the unecessary components has been removed:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Payment Microservice: The logic should be refactored in order to fit for real production logic.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;New diagram:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/initial-work/docs/images/entire-architecture.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;API-Gateway&quot;&gt;&lt;a href=&quot;#API-Gateway&quot; class=&quot;headerlink&quot; title=&quot;API Gateway&quot;&gt;&lt;/a&gt;API Gateway&lt;/h1&gt;&lt;p&gt;As suggested by Clement and Paulo, I use HTTP-HTTP pattern for API Gateway eventually. The API gateway itself is using HTTPS, but it communicates REST endpoints via HTTP.&lt;/p&gt;
+&lt;p&gt;So the API Gateway is responsible for:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Dispatching requests to corresponding endpoint.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;How to implement this?&lt;br&gt;&lt;strong&gt;My solution&lt;/strong&gt;: When publishing endpoints to the service discovery infrasture, every endpoints must provide an &lt;code&gt;api-name&lt;/code&gt; to identify the api, then when a request arrives from the gateway, the gateway will get the prefix pattern &lt;code&gt;/api/:name/*&lt;/code&gt; and find any corresponding endpoints via discovery, then consume the HTTP endpoint.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;Simple load balancing&lt;/li&gt;
+&lt;li&gt;Health check&lt;/li&gt;
+&lt;li&gt;Failure handling (using Vert.x Circuit Breaker)&lt;/li&gt;
+&lt;li&gt;Global auth state storage(in route context and session scope)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Auth&quot;&gt;&lt;a href=&quot;#Auth&quot; class=&quot;headerlink&quot; title=&quot;Auth&quot;&gt;&lt;/a&gt;Auth&lt;/h1&gt;&lt;p&gt;It’s convenient to use Keycloak via Vert.x OAuth2.&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Simplified-architecture&quot;&gt;&lt;a href=&quot;#Simplified-architecture&quot; class=&quot;headerlink&quot; title=&quot;Simplified architecture&quot;&gt;&lt;/a&gt;Simplified architecture&lt;/h1&gt;&lt;p&gt;Some of the unecessary components has been removed:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Payment Microservice: The logic should be refactored in order to fit for real production logic.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;New diagram:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/initial-work/docs/images/entire-architecture.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;API-Gateway&quot;&gt;&lt;a href=&quot;#API-Gateway&quot; class=&quot;headerlink&quot; title=&quot;API Gateway&quot;&gt;&lt;/a&gt;API Gateway&lt;/h1&gt;&lt;p&gt;As suggested by Clement and Paulo, I use HTTP-HTTP pattern for API Gateway eventually. The API gateway itself is using HTTPS, but it communicates REST endpoints via HTTP.&lt;/p&gt;
+&lt;p&gt;So the API Gateway is responsible for:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Dispatching requests to corresponding endpoint.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;How to implement this?&lt;br&gt;&lt;strong&gt;My solution&lt;/strong&gt;: When publishing endpoints to the service discovery infrasture, every endpoints must provide an &lt;code&gt;api-name&lt;/code&gt; to identify the api, then when a request arrives from the gateway, the gateway will get the prefix pattern &lt;code&gt;/api/:name/*&lt;/code&gt; and find any corresponding endpoints via discovery, then consume the HTTP endpoint.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;Simple load balancing&lt;/li&gt;
+&lt;li&gt;Health check&lt;/li&gt;
+&lt;li&gt;Failure handling (using Vert.x Circuit Breaker)&lt;/li&gt;
+&lt;li&gt;Global auth state storage(in route context and session scope)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Auth&quot;&gt;&lt;a href=&quot;#Auth&quot; class=&quot;headerlink&quot; title=&quot;Auth&quot;&gt;&lt;/a&gt;Auth&lt;/h1&gt;&lt;p&gt;It’s convenient to use Keycloak via Vert.x OAuth2.&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>GSoC 2016 | Work Period | Week 11</title>
+    <link href="http://www.sczyh30.com/en/2016/08/07/gsoc-work-period-week-11/"/>
+    <id>http://www.sczyh30.com/en/2016/08/07/gsoc-work-period-week-11/</id>
+    <published>2016-08-06T16:00:00.000Z</published>
+    <updated>2016-08-19T15:54:08.533Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Architecture enhancement&lt;/li&gt;
+&lt;li&gt;A simple SPA frontend for the microservice blueprint (use Vue.js)&lt;/li&gt;
+&lt;li&gt;Monitor dashboard&lt;/li&gt;
+&lt;li&gt;A simple recommendation component&lt;ul&gt;
+&lt;li&gt;Maybe I should write a individual component providing Neo4j integration with Vert.x&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Run the application with Docker Compose&lt;/li&gt;
+&lt;li&gt;Update tests&lt;/li&gt;
+&lt;li&gt;Update documents and tutorials&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;Solved-Global-auth&quot;&gt;&lt;a href=&quot;#Solved-Global-auth&quot; class=&quot;headerlink&quot; title=&quot;Solved: Global auth&quot;&gt;&lt;/a&gt;Solved: Global auth&lt;/h2&gt;&lt;p&gt;How to manage global auth in a microservice application. For example, we login in from the login page and our login data is saved in the session. When we visit resources that are protected behind the auth, how we validate the user info (e.g. via session data or use SSO)?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Solved:&lt;/strong&gt; Use OAuth 2 + Keycloak is a good point. The API gateway is responsible for storing authentication principal and validation.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Thought&lt;/strong&gt;: How to integrate well with SPA frontend?&lt;/p&gt;
+&lt;h2 id=&quot;Solved-Need-a-better-mechanism-for-API-gateway&quot;&gt;&lt;a href=&quot;#Solved-Need-a-better-mechanism-for-API-gateway&quot; class=&quot;headerlink&quot; title=&quot;Solved: Need a better mechanism for API gateway&quot;&gt;&lt;/a&gt;Solved: Need a better mechanism for API gateway&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Solved:&lt;/strong&gt; use HTTP-HTTP pattern. The API Gateway is a individual verticle and is responsible for dispatching requests, managing global authentication, handling failure, health checking and simple load balancing. The API Gateway itself uses HTTPS, but it interacts with the downstream REST endpoints via HTTP.&lt;/p&gt;
+&lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Refactored the architecture of the online shopping microservice, simplified some components (more features will be added into next version)&lt;/li&gt;
+&lt;li&gt;Enhanced the logic of the entire online shopping process&lt;/li&gt;
+&lt;li&gt;Code refinement and bug fixed&lt;/li&gt;
+&lt;li&gt;Added some tests (some tests are in local and weren’t committed as it requires some local envs)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Architecture enhancement&lt;/li&gt;
+&lt;li&gt;A simple SPA frontend for the microservice blueprint (use Vue.js)&lt;/li&gt;
+&lt;li&gt;Monitor dashboard&lt;/li&gt;
+&lt;li&gt;A simple recommendation component&lt;ul&gt;
+&lt;li&gt;Maybe I should write a individual component providing Neo4j integration with Vert.x&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Run the application with Docker Compose&lt;/li&gt;
+&lt;li&gt;Update tests&lt;/li&gt;
+&lt;li&gt;Update documents and tutorials&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Issues&quot;&gt;&lt;a href=&quot;#Issues&quot; class=&quot;headerlink&quot; title=&quot;Issues&quot;&gt;&lt;/a&gt;Issues&lt;/h1&gt;&lt;h2 id=&quot;Solved-Global-auth&quot;&gt;&lt;a href=&quot;#Solved-Global-auth&quot; class=&quot;headerlink&quot; title=&quot;Solved: Global auth&quot;&gt;&lt;/a&gt;Solved: Global auth&lt;/h2&gt;&lt;p&gt;How to manage global auth in a microservice application. For example, we login in from the login page and our login data is saved in the session. When we visit resources that are protected behind the auth, how we validate the user info (e.g. via session data or use SSO)?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Solved:&lt;/strong&gt; Use OAuth 2 + Keycloak is a good point. The API gateway is responsible for storing authentication principal and validation.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Thought&lt;/strong&gt;: How to integrate well with SPA frontend?&lt;/p&gt;
+&lt;h2 id=&quot;Solved-Need-a-better-mechanism-for-API-gateway&quot;&gt;&lt;a href=&quot;#Solved-Need-a-better-mechanism-for-API-gateway&quot; class=&quot;headerlink&quot; title=&quot;Solved: Need a better mechanism for API gateway&quot;&gt;&lt;/a&gt;Solved: Need a better mechanism for API gateway&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Solved:&lt;/strong&gt; use HTTP-HTTP pattern. The API Gateway is a individual verticle and is responsible for dispatching requests, managing global authentication, handling failure, health checking and simple load balancing. The API Gateway itself uses HTTPS, but it interacts with the downstream REST endpoints via HTTP.&lt;/p&gt;
+&lt;h1 id=&quot;Achievement&quot;&gt;&lt;a href=&quot;#Achievement&quot; class=&quot;headerlink&quot; title=&quot;Achievement&quot;&gt;&lt;/a&gt;Achievement&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Refactored the architecture of the online shopping microservice, simplified some components (more features will be added into next version)&lt;/li&gt;
+&lt;li&gt;Enhanced the logic of the entire online shopping process&lt;/li&gt;
+&lt;li&gt;Code refinement and bug fixed&lt;/li&gt;
+&lt;li&gt;Added some tests (some tests are in local and weren’t committed as it requires some local envs)&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
+    
+    
+      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
+    
+      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
+    
+  </entry>
   
   <entry>
     <title>Vert.x Microservice Blueprint | Basic Design</title>
@@ -82,60 +390,6 @@
       <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
     
       <category term="Microservice" scheme="http://www.sczyh30.com/en/tags/Microservice/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>GSoC 2016 | Work Period | Week 11</title>
-    <link href="http://www.sczyh30.com/en/2016/08/01/gsoc-work-period-week-11/"/>
-    <id>http://www.sczyh30.com/en/2016/08/01/gsoc-work-period-week-11/</id>
-    <published>2016-07-31T16:00:00.000Z</published>
-    <updated>2016-08-01T08:04:20.743Z</updated>
-    
-    <content type="html">&lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Architecture enhancement&lt;/li&gt;
-&lt;li&gt;A simple SPA frontend for the microservice blueprint (use Vue.js)&lt;/li&gt;
-&lt;li&gt;Monitor dashboard&lt;/li&gt;
-&lt;li&gt;A simple recommendation component&lt;ul&gt;
-&lt;li&gt;Maybe I should write a individual component providing Neo4j integration with Vert.x&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Run the application with Docker Compose&lt;/li&gt;
-&lt;li&gt;Finish tests&lt;/li&gt;
-&lt;li&gt;Finish documents and tutorials&lt;/li&gt;
-&lt;li&gt;Prepare for next blueprint application (high performance)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
-&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
-</content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;Objectives&quot;&gt;&lt;a href=&quot;#Objectives&quot; class=&quot;headerlink&quot; title=&quot;Objectives&quot;&gt;&lt;/a&gt;Objectives&lt;/h1&gt;&lt;p&gt;In this week, I’m planning to do the following stuff:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Architecture enhancement&lt;/li&gt;
-&lt;li&gt;A simple SPA frontend for the microservice blueprint (use Vue.js)&lt;/li&gt;
-&lt;li&gt;Monitor dashboard&lt;/li&gt;
-&lt;li&gt;A simple recommendation component&lt;ul&gt;
-&lt;li&gt;Maybe I should write a individual component providing Neo4j integration with Vert.x&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Run the application with Docker Compose&lt;/li&gt;
-&lt;li&gt;Finish tests&lt;/li&gt;
-&lt;li&gt;Finish documents and tutorials&lt;/li&gt;
-&lt;li&gt;Prepare for next blueprint application (high performance)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;em&gt;Good luck~ :-)&lt;/em&gt;&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/categories/GSoC-2016/"/>
-    
-    
-      <category term="GSoC 2016" scheme="http://www.sczyh30.com/en/tags/GSoC-2016/"/>
-    
-      <category term="Vert.x" scheme="http://www.sczyh30.com/en/tags/Vert-x/"/>
     
   </entry>
   

@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> GSoC 2016 | Work Period | Week 11 · sczyh30's Metaspace</title><meta name="description" content="GSoC 2016 | Work Period | Week 11 - Eric Zhao"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="http://www.sczyh30.com/en/favicon.png"><link rel="stylesheet" href="/en/css/apollo.css"><link rel="stylesheet" href="http://fonts.useso.com/css?family=Source+Sans+Pro:400,600" type="text/css"></head><body><div class="wrap"><header><a href="/en/" class="logo-link"><img src="http://www.sczyh30.com/en/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="http://www.sczyh30.com/en" target="_blank" class="nav-list-link">BLOG(EN)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com" target="_blank" class="nav-list-link">BLOG(中文)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/archives/" target="_blank" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/about/" target="_blank" class="nav-list-link">ABOUT</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/atom.xml" target="_blank" class="nav-list-link">RSS</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">GSoC 2016 | Work Period | Week 11</h1><div class="post-time">Aug 7, 2016</div><div class="post-content"><h1 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h1><p>In this week, I’m planning to do the following stuff:</p>
+<ul>
+<li>Architecture enhancement</li>
+<li>A simple SPA frontend for the microservice blueprint (use Vue.js)</li>
+<li>Monitor dashboard</li>
+<li>A simple recommendation component<ul>
+<li>Maybe I should write a individual component providing Neo4j integration with Vert.x</li>
+</ul>
+</li>
+<li>Run the application with Docker Compose</li>
+<li>Update tests</li>
+<li>Update documents and tutorials</li>
+</ul>
+<h1 id="Issues"><a href="#Issues" class="headerlink" title="Issues"></a>Issues</h1><h2 id="Solved-Global-auth"><a href="#Solved-Global-auth" class="headerlink" title="Solved: Global auth"></a>Solved: Global auth</h2><p>How to manage global auth in a microservice application. For example, we login in from the login page and our login data is saved in the session. When we visit resources that are protected behind the auth, how we validate the user info (e.g. via session data or use SSO)?</p>
+<p><strong>Solved:</strong> Use OAuth 2 + Keycloak is a good point. The API gateway is responsible for storing authentication principal and validation.</p>
+<p><strong>Thought</strong>: How to integrate well with SPA frontend?</p>
+<h2 id="Solved-Need-a-better-mechanism-for-API-gateway"><a href="#Solved-Need-a-better-mechanism-for-API-gateway" class="headerlink" title="Solved: Need a better mechanism for API gateway"></a>Solved: Need a better mechanism for API gateway</h2><p><strong>Solved:</strong> use HTTP-HTTP pattern. The API Gateway is a individual verticle and is responsible for dispatching requests, managing global authentication, handling failure, health checking and simple load balancing. The API Gateway itself uses HTTPS, but it interacts with the downstream REST endpoints via HTTP.</p>
+<h1 id="Achievement"><a href="#Achievement" class="headerlink" title="Achievement"></a>Achievement</h1><ul>
+<li>Refactored the architecture of the online shopping microservice, simplified some components (more features will be added into next version)</li>
+<li>Enhanced the logic of the entire online shopping process</li>
+<li>Code refinement and bug fixed</li>
+<li>Added some tests (some tests are in local and weren’t committed as it requires some local envs)</li>
+</ul>
+<a id="more"></a>
+</div></article></div></section><footer><div class="paginator"><a href="/en/2016/08/11/vertx-blueprint-microservice-design-refactor-01/" class="prev">PREV</a><a href="/en/2016/08/01/vertx-blueprint-microservice-basic-design/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'sczyh30';
+var disqus_identifier = '2016/08/07/gsoc-work-period-week-11/';
+var disqus_title = 'GSoC 2016 | Work Period | Week 11';
+var disqus_url = 'http://www.sczyh30.com/en/2016/08/07/gsoc-work-period-week-11/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//sczyh30.disqus.com/count.js" async></script><div class="copyright"><p>© 2015 - 2016  <a href="http://www.sczyh30.com/en">Eric Zhao</a> |  sczyh30's Metaspace</p></div></footer></div><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script></body></html>

@@ -1,4 +1,119 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> sczyh30's Metaspace</title><meta name="description" content="sczyh30's blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="http://www.sczyh30.com/en/favicon.png"><link rel="stylesheet" href="/en/css/apollo.css"><link rel="stylesheet" href="http://fonts.useso.com/css?family=Source+Sans+Pro:400,600" type="text/css"></head><body><div class="wrap"><header><a href="/en/" class="logo-link"><img src="http://www.sczyh30.com/en/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="http://www.sczyh30.com/en" target="_blank" class="nav-list-link">BLOG(EN)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com" target="_blank" class="nav-list-link">BLOG(中文)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/archives/" target="_blank" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/about/" target="_blank" class="nav-list-link">ABOUT</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/atom.xml" target="_blank" class="nav-list-link">RSS</a></li></ul></header><section class="container"><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/08/01/vertx-blueprint-microservice-basic-design/" class="post-title-link">Vert.x Microservice Blueprint | Basic Design</a></h2><div class="post-time">Aug 1, 2016</div><div class="post-content"><p>The blueprint is an online shopping microservice application. You can treat it as a very simple C2C market like eBay.</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> sczyh30's Metaspace</title><meta name="description" content="sczyh30's blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="http://www.sczyh30.com/en/favicon.png"><link rel="stylesheet" href="/en/css/apollo.css"><link rel="stylesheet" href="http://fonts.useso.com/css?family=Source+Sans+Pro:400,600" type="text/css"></head><body><div class="wrap"><header><a href="/en/" class="logo-link"><img src="http://www.sczyh30.com/en/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="http://www.sczyh30.com/en" target="_blank" class="nav-list-link">BLOG(EN)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com" target="_blank" class="nav-list-link">BLOG(中文)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/archives/" target="_blank" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/about/" target="_blank" class="nav-list-link">ABOUT</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/atom.xml" target="_blank" class="nav-list-link">RSS</a></li></ul></header><section class="container"><ul class="home post-list"><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/08/19/gsoc-2016-final-evaluation/" class="post-title-link">GSoC 2016 | Vert.x Blueprint Application</a></h2><div class="post-time">Aug 19, 2016</div><div class="post-content"><p><img src="https://developers.google.com/open-source/gsoc/resources/downloads/GSoC-icon-192.png" alt=""></p>
+<p>This blog post is intended to be an illustration of my work for <strong>GSoC Final Evaluation</strong>.</p>
+<h1 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h1><p>Vert.x is a toolkit for the Java Virtual Machine enabling the implementation of reactive, highly concurrent, polyglot applications. The idea of the project is to implement a set of applications using the Vert.x toolkit to illustrate how different classes of applications can be done. This project aims to <strong>provide guidelines to Vert.x users to implement various applications</strong>.</p>
+<p>The blueprint project contains three parts: <strong>Todo Backend</strong>, <strong>Vert.x Kue</strong> and <strong>Online Shopping Microservice</strong>. Both runnable code and very detailed documents and tutorials (both in English and Chinese) are provided.</p>
+<h1 id="Vert-x-Blueprint-Todo-Backend"><a href="#Vert-x-Blueprint-Todo-Backend" class="headerlink" title="Vert.x Blueprint - Todo Backend"></a>Vert.x Blueprint - Todo Backend</h1><p>The project <strong>repository</strong>: <a href="https://github.com/sczyh30/vertx-blueprint-todo-backend">sczyh30/vertx-blueprint-todo-backend</a>.</p>
+<p>This blueprint is a todo-backend implementation using Vert.x and various persistence (e.g. Redis or MySQL). It is intended to be an introduction to basic Vert.x web RESTful service development. From this blueprint, developers could learn:</p>
+<ul>
+<li>What is Vert.x and its basic design</li>
+<li>What is and how to use <code>Verticle</code></li>
+<li>How to develop a REST API using Vert.x Web</li>
+<li>How to make use of <strong>asynchronous development model</strong></li>
+<li>Future-based reactive asynchronous pattern</li>
+<li>How to use persistence such as <em>Redis</em> and <em>MySQL</em> with the help of Vert.x data access components</li>
+</ul>
+<p>The tutorial documents:</p>
+<ul>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-todo-backend/">The tutorial document (English)</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-todo-backend/cn/">The tutorial document (Chinese)</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sczyh30/vertx-blueprint-todo-backend/master/docs/img/vertx-todobackend-ui.png" alt=""></p>
+<h1 id="Vert-x-Blueprint-Vert-x-Kue"><a href="#Vert-x-Blueprint-Vert-x-Kue" class="headerlink" title="Vert.x Blueprint - Vert.x Kue"></a>Vert.x Blueprint - Vert.x Kue</h1><p>The project <strong>repository</strong>: <a href="https://github.com/sczyh30/vertx-blueprint-job-queue">sczyh30/vertx-blueprint-job-queue</a>.</p>
+<p>This blueprint is a priority job queue developed with Vert.x and backed by Redis. It’s a Vert.x implementation version of <a href="https://github.com/Automattic/kue">Automattic/kue</a> that can be used in production.</p>
+<p>Feature document of Vert.x Kue is available here: <a href="https://github.com/sczyh30/vertx-blueprint-job-queue/blob/master/docs/en/vertx-kue-features-en.md">Vert.x Kue Features</a>.</p>
+<p>This blueprint is intended to be an introduction to message-based application development using Vert.x. From this blueprint, developers could learn:</p>
+<ul>
+<li>How to make use of <strong>Vert.x Event Bus</strong> (distributed)</li>
+<li>How to develop message based application with Vert.x</li>
+<li>Event pattern of event bus (Pub/sub, point to point)</li>
+<li>How to design clustered Vert.x applications</li>
+<li>How to design and implement a job queue</li>
+<li>How to use <strong>Vert.x Service Proxy</strong></li>
+<li>More complicated practice about Vert.x Redis</li>
+</ul>
+<p>The tutorial documents:</p>
+<ul>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-job-queue/kue-core/index.html">Vert.x Kue Core Tutorial - English Version</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-job-queue/kue-http/index.html">Vert.x Kue Web Tutorial - English Version</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-job-queue/cn/kue-core/index.html">Vert.x Kue Core Tutorial - Chinese Version</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-job-queue/cn/kue-http/index.html">Vert.x Kue Web Tutorial - Chinese Version</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sczyh30/vertx-blueprint-job-queue/master/docs/images/vertx_kue_ui_1.png" alt=""></p>
+<h1 id="Vert-x-Blueprint-Online-Shopping-Microservice"><a href="#Vert-x-Blueprint-Online-Shopping-Microservice" class="headerlink" title="Vert.x Blueprint - Online Shopping Microservice"></a>Vert.x Blueprint - Online Shopping Microservice</h1><p>The project <strong>repository</strong>: <a href="https://github.com/sczyh30/vertx-blueprint-microservice">sczyh30/vertx-blueprint-microservice</a>.</p>
+<p>This blueprint is an online shopping microservice application developed with Vert.x. It is intended to be an illustration on how to develop microservice applications using Vert.x toolkit. From this blueprint, developers could learn:</p>
+<ul>
+<li>Microservice development with Vert.x</li>
+<li>Asynchronous development model</li>
+<li>Reactive and functional pattern</li>
+<li>Event sourcing pattern</li>
+<li>Asynchronous RPC on the clustered event bus</li>
+<li>Various type of services (e.g. HTTP endpoint, message source, event bus service)</li>
+<li>Vert.x Service Discovery</li>
+<li>Vert.x Circuit Breaker</li>
+<li>Microservice with polyglot persistence</li>
+<li>How to implement an API gateway</li>
+<li>Global authentication (OAuth 2 + Keycloak)</li>
+</ul>
+<p>And many more things…</p>
+<p>The tutorial documents:</p>
+<ul>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-microservice/index.html">Vert.x Microservice Blueprint Tutorial - Development (English Version)</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-microservice/api-gateway.html">Vert.x Microservice Blueprint Tutorial - API Gateway (English Version)</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-microservice/cn/index.html">Vert.x Microservice Blueprint Tutorial - Development (Chinese Version)</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-microservice/cn/api-gateway.html">Vert.x Microservice Blueprint Tutorial - API Gateway (Chinese Version)</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/master/docs/images/shopping-spa-index.png" alt=""></p>
+<p><img src="https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/master/docs/images/monitor-dashboard.png" alt=""></p>
+<h1 id="Final-Summary-amp-amp-Future"><a href="#Final-Summary-amp-amp-Future" class="headerlink" title="Final Summary &amp;&amp; Future"></a>Final Summary &amp;&amp; Future</h1><p>I really enjoy the work! During the work period I’ve learned a lot about Vert.x, various asynchronous development model, distributed systems, microservice architecture and many more things… This motivates me to investigate new technologies, and the infrastructure of Vert.x. This would be an unforgettable experience.</p>
+<p>I’ll keep track of the blueprint project and planning to make some more improvements on the microservice blueprint to illustrate more usage about Vert.x and microservices (e.g. recommendation, Kafka, full-index search). And soon I’d like to contribute to <strong>Vert.x Microservice Toolbox</strong> to add more features and integration with other technologies. As <strong>Vert.x Scala</strong> is nearly technical preview, I’m also willing to contribute to Vert.x Scala version.</p>
+<h1 id="Thanks"><a href="#Thanks" class="headerlink" title="Thanks"></a>Thanks</h1><p>I would like to give my sincere thanks to:</p>
+<ul>
+<li>My mentors, <a href="https://github.com/pmlopes">Paulo Lopes</a> and <a href="https://github.com/cescoffier">Clement Escoffier</a>. They provided me guidance and gave me a lot of help during the work :-)</li>
+<li>The <strong>Vert.x Community</strong>.</li>
+<li>The Google Summer of Code team, for this wonderful experience.</li>
+</ul></div><a href="/en/2016/08/19/gsoc-2016-final-evaluation/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/08/11/vertx-blueprint-microservice-design-refactor-01/" class="post-title-link">Vert.x Microservice Blueprint | Some changes && refactoring</a></h2><div class="post-time">Aug 11, 2016</div><div class="post-content"><h1 id="Simplified-architecture"><a href="#Simplified-architecture" class="headerlink" title="Simplified architecture"></a>Simplified architecture</h1><p>Some of the unecessary components has been removed:</p>
+<ul>
+<li>Payment Microservice: The logic should be refactored in order to fit for real production logic.</li>
+</ul>
+<p>New diagram:</p>
+<p><img src="https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/initial-work/docs/images/entire-architecture.png" alt=""></p>
+<h1 id="API-Gateway"><a href="#API-Gateway" class="headerlink" title="API Gateway"></a>API Gateway</h1><p>As suggested by Clement and Paulo, I use HTTP-HTTP pattern for API Gateway eventually. The API gateway itself is using HTTPS, but it communicates REST endpoints via HTTP.</p>
+<p>So the API Gateway is responsible for:</p>
+<ul>
+<li>Dispatching requests to corresponding endpoint.</li>
+</ul>
+<blockquote>
+<p>How to implement this?<br><strong>My solution</strong>: When publishing endpoints to the service discovery infrasture, every endpoints must provide an <code>api-name</code> to identify the api, then when a request arrives from the gateway, the gateway will get the prefix pattern <code>/api/:name/*</code> and find any corresponding endpoints via discovery, then consume the HTTP endpoint.</p>
+</blockquote>
+<ul>
+<li>Simple load balancing</li>
+<li>Health check</li>
+<li>Failure handling (using Vert.x Circuit Breaker)</li>
+<li>Global auth state storage(in route context and session scope)</li>
+</ul>
+<h1 id="Auth"><a href="#Auth" class="headerlink" title="Auth"></a>Auth</h1><p>It’s convenient to use Keycloak via Vert.x OAuth2.</p></div><a href="/en/2016/08/11/vertx-blueprint-microservice-design-refactor-01/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/08/07/gsoc-work-period-week-11/" class="post-title-link">GSoC 2016 | Work Period | Week 11</a></h2><div class="post-time">Aug 7, 2016</div><div class="post-content"><h1 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h1><p>In this week, I’m planning to do the following stuff:</p>
+<ul>
+<li>Architecture enhancement</li>
+<li>A simple SPA frontend for the microservice blueprint (use Vue.js)</li>
+<li>Monitor dashboard</li>
+<li>A simple recommendation component<ul>
+<li>Maybe I should write a individual component providing Neo4j integration with Vert.x</li>
+</ul>
+</li>
+<li>Run the application with Docker Compose</li>
+<li>Update tests</li>
+<li>Update documents and tutorials</li>
+</ul>
+<h1 id="Issues"><a href="#Issues" class="headerlink" title="Issues"></a>Issues</h1><h2 id="Solved-Global-auth"><a href="#Solved-Global-auth" class="headerlink" title="Solved: Global auth"></a>Solved: Global auth</h2><p>How to manage global auth in a microservice application. For example, we login in from the login page and our login data is saved in the session. When we visit resources that are protected behind the auth, how we validate the user info (e.g. via session data or use SSO)?</p>
+<p><strong>Solved:</strong> Use OAuth 2 + Keycloak is a good point. The API gateway is responsible for storing authentication principal and validation.</p>
+<p><strong>Thought</strong>: How to integrate well with SPA frontend?</p>
+<h2 id="Solved-Need-a-better-mechanism-for-API-gateway"><a href="#Solved-Need-a-better-mechanism-for-API-gateway" class="headerlink" title="Solved: Need a better mechanism for API gateway"></a>Solved: Need a better mechanism for API gateway</h2><p><strong>Solved:</strong> use HTTP-HTTP pattern. The API Gateway is a individual verticle and is responsible for dispatching requests, managing global authentication, handling failure, health checking and simple load balancing. The API Gateway itself uses HTTPS, but it interacts with the downstream REST endpoints via HTTP.</p>
+<h1 id="Achievement"><a href="#Achievement" class="headerlink" title="Achievement"></a>Achievement</h1><ul>
+<li>Refactored the architecture of the online shopping microservice, simplified some components (more features will be added into next version)</li>
+<li>Enhanced the logic of the entire online shopping process</li>
+<li>Code refinement and bug fixed</li>
+<li>Added some tests (some tests are in local and weren’t committed as it requires some local envs)</li>
+</ul></div><a href="/en/2016/08/07/gsoc-work-period-week-11/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/08/01/vertx-blueprint-microservice-basic-design/" class="post-title-link">Vert.x Microservice Blueprint | Basic Design</a></h2><div class="post-time">Aug 1, 2016</div><div class="post-content"><p>The blueprint is an online shopping microservice application. You can treat it as a very simple C2C market like eBay.</p>
 <p>Here is a diagram illustrating the microservice architecture:</p>
 <p><img src="http://7xkkgd.com1.z0.glb.clouddn.com/vertx-msb-initial-structure.png" alt="Basic Design"></p>
 <p>Currently I designed these components:</p>
@@ -19,21 +134,7 @@
 <li><code>monitor-dashboard</code>: Dashboard for performance monitoring and backend metrics data demonstration</li>
 </ul>
 <p>Here is the user workflow: <code>User login and add products to chart -&gt; Checkout -&gt; Go to payment page and pay for the products -&gt; Payment transaction success, order submitted -&gt; (Wait for delivery...)</code></p>
-<p>All events are sent on the event bus.</p></div><a href="/en/2016/08/01/vertx-blueprint-microservice-basic-design/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/08/01/gsoc-work-period-week-11/" class="post-title-link">GSoC 2016 | Work Period | Week 11</a></h2><div class="post-time">Aug 1, 2016</div><div class="post-content"><h1 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h1><p>In this week, I’m planning to do the following stuff:</p>
-<ul>
-<li>Architecture enhancement</li>
-<li>A simple SPA frontend for the microservice blueprint (use Vue.js)</li>
-<li>Monitor dashboard</li>
-<li>A simple recommendation component<ul>
-<li>Maybe I should write a individual component providing Neo4j integration with Vert.x</li>
-</ul>
-</li>
-<li>Run the application with Docker Compose</li>
-<li>Finish tests</li>
-<li>Finish documents and tutorials</li>
-<li>Prepare for next blueprint application (high performance)</li>
-</ul>
-<p><em>Good luck~ :-)</em></p></div><a href="/en/2016/08/01/gsoc-work-period-week-11/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/08/01/gsoc-2016-work-period-week9-10/" class="post-title-link">GSoC 2016 | Work Period | Week 9 - Week 10</a></h2><div class="post-time">Aug 1, 2016</div><div class="post-content"><h1 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h1><p>In this week, I’m planning to do the following stuff:</p>
+<p>All events are sent on the event bus.</p></div><a href="/en/2016/08/01/vertx-blueprint-microservice-basic-design/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/08/01/gsoc-2016-work-period-week9-10/" class="post-title-link">GSoC 2016 | Work Period | Week 9 - Week 10</a></h2><div class="post-time">Aug 1, 2016</div><div class="post-content"><h1 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h1><p>In this week, I’m planning to do the following stuff:</p>
 <ul>
 <li>Initial work for Online Shopping Microservice Blueprint</li>
 <li>Prepare for next blueprint application (high performance)</li>
@@ -163,52 +264,4 @@
 <li>Basic implementation of Vert.x Kue REST API(get job, create job, delete job, get job by range(or state), etc)</li>
 <li>Basic adaption between Vert.x Web and original Kue UI (rendered with <code>vertx-web-templ-jade</code>; still have some problems to solve)</li>
 </ul>
-<h2 id="Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese"><a href="#Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese" class="headerlink" title="Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese"></a>Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese</h2></div><a href="/en/2016/06/12/gsoc-2016-work-period-week3/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/06/06/gsoc-2016-work-period-week2/" class="post-title-link">GSoC 2016 | Work Period | Week 2</a></h2><div class="post-time">Jun 6, 2016</div><div class="post-content"><h1 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h1><p>In this week, I’m planning to do the following stuff:</p>
-<ul>
-<li>Work on the <strong>Vert.x Blueprint - Kue</strong> (Initial implementation)</li>
-<li>Learn more about event-driven and message system</li>
-</ul>
-<h1 id="Knowledge-got"><a href="#Knowledge-got" class="headerlink" title="Knowledge got"></a>Knowledge got</h1><p>This week I’ve learned a lot!</p>
-<ul>
-<li>Clustered Verticles and how to interact with each other</li>
-<li>Vert.x Event Bus (<em>send/recv</em> and <em>pub/sub</em>)</li>
-<li>Vert.x Service Proxy</li>
-<li>More understanding about Redis(sorted set, list, pub/sub, transaction, etc)</li>
-<li>More understanding about asynchronous and reactive pattern(<code>Handler</code> / <code>Future</code>)</li>
-</ul>
-<h1 id="Issues"><a href="#Issues" class="headerlink" title="Issues"></a>Issues</h1><h2 id="How-to-implement-priority"><a href="#How-to-implement-priority" class="headerlink" title="How to implement priority?"></a>How to implement priority?</h2><p>I imitate Kue in Node.js: use <strong>sorted sets</strong> in Redis and mark the priority as the score(weight). Use <code>zadd</code> to add a certain id of job and when necessary, use <code>zpop</code>(implemented with transaction) to get a job with higher priority.</p>
-<h2 id="How-to-emit-and-receive-events"><a href="#How-to-emit-and-receive-events" class="headerlink" title="How to emit and receive events?"></a>How to emit and receive events?</h2><p>In Node.js, we could use <code>EventEmitter</code> to emit and listen to events. And in Vert.x, we could make full use of <code>EventBus</code>, which supports three kinds of pattern. For example, in Node.js we may write this:</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">self.on(<span class="string">'complete'</span>, fn);</span><br><span class="line"><span class="comment">// ......</span></span><br><span class="line">self.emit(<span class="string">'complete'</span>, res);</span><br></pre></td></tr></table></figure>
-<p>And in Vert.x we could write:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// listen to an address</span></span><br><span class="line">eventBus.consumer(Kue.getHandlerAddress(<span class="string">"complete"</span>, <span class="keyword">this</span>.type), message -&gt; &#123;</span><br><span class="line">      completeHandler.handle(<span class="keyword">new</span> Job((JsonObject) message.body()));</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// send message to an address</span></span><br><span class="line">eventBus.send(Kue.getHandlerAddress(<span class="string">"complete"</span>, type), job.toJson());</span><br></pre></td></tr></table></figure>
-<h1 id="Achievement"><a href="#Achievement" class="headerlink" title="Achievement"></a>Achievement</h1><h2 id="Refined-the-design-of-Vert-x-Kue"><a href="#Refined-the-design-of-Vert-x-Kue" class="headerlink" title="Refined the design of Vert.x Kue"></a>Refined the design of Vert.x Kue</h2><ul>
-<li><code>Kue</code>: like the <code>Queue</code> in Kue. We could <code>createJob</code> and <code>process</code> the job</li>
-<li><code>KueVerticle</code>: a verticle where the <code>KueService</code> is registered</li>
-<li><code>KueWorker</code>: a worker verticle that processes the job</li>
-<li><code>KueService</code>: create <code>KueWorker</code> and deploy it</li>
-<li><code>Job</code>: the job entity, contains numerous logic about job</li>
-</ul>
-<p>The backend of Vert.x Kue is <strong>Redis</strong>.</p>
-<p>Basic usage (design) of Vert.x Kue:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// write this and then run with Vert.x Launcher in clustered mode</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleProcessVerticle</span> <span class="keyword">extends</span> <span class="title">AbstractVerticle</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">// must first create kue</span></span><br><span class="line">    Kue kue = Kue.createQueue(vertx, config());</span><br><span class="line"></span><br><span class="line">    Job job0 = kue.createJob(<span class="string">"video"</span>, <span class="keyword">new</span> JsonObject().put(<span class="string">"id"</span>, <span class="number">3001</span>))</span><br><span class="line">      .priority(Priority.HIGH)</span><br><span class="line">      .onComplete(e -&gt; &#123;</span><br><span class="line">        System.out.println(<span class="string">"Video result: "</span> + e.getResult());</span><br><span class="line">        System.out.println(<span class="string">"Haha"</span>);</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">    job0.save();</span><br><span class="line"></span><br><span class="line">    kue.process(<span class="string">"video"</span>, <span class="number">1</span>, r -&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (r.succeeded()) &#123;</span><br><span class="line">        Job job = r.result();</span><br><span class="line">        <span class="comment">// consume 2 seconds</span></span><br><span class="line">        vertx.setTimer(<span class="number">2000</span>, l -&gt; &#123;</span><br><span class="line">          job.progress(<span class="number">100</span>, <span class="number">100</span>);</span><br><span class="line">          System.out.println(<span class="string">"Video id: "</span> + job.getId());</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        r.cause().printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Initial-concept-implementation-of-Vert-x-Kue"><a href="#Initial-concept-implementation-of-Vert-x-Kue" class="headerlink" title="Initial concept implementation of Vert.x Kue"></a>Initial concept implementation of Vert.x Kue</h2><p>See here:  <a href="https://github.com/sczyh30/vertx-blueprint-job-queue/tree/initial-work">sczyh30/vertx-blueprint-job-queue</a></p></div><a href="/en/2016/06/06/gsoc-2016-work-period-week2/" class="read-more">...more</a></article></li><li class="post-list-item"><article class="post-block"><h2 class="post-title"><a href="/en/2016/05/29/gsoc-2016-work-period-week-1/" class="post-title-link">GSoC 2016 | Work Period | Week 1</a></h2><div class="post-time">May 29, 2016</div><div class="post-content"><p><img src="http://vertx.io/assets/logo-sm.png" alt=""></p>
-<p>This is the summary of Google Summer Of Code 2016, Week One.</p>
-<h1 id="Objectives"><a href="#Objectives" class="headerlink" title="Objectives"></a>Objectives</h1><p>In this week, I’m planning to do the following stuff:</p>
-<ul>
-<li>Refine the code and document of <strong>Vert.x Blueprint - Todo Backend</strong></li>
-<li>Work on the Vert.x Blueprint - Kue (Basic Design)</li>
-</ul>
-<h1 id="Issues"><a href="#Issues" class="headerlink" title="Issues"></a>Issues</h1><h2 id="How-to-use-Vert-x-Codegen-with-Gradle"><a href="#How-to-use-Vert-x-Codegen-with-Gradle" class="headerlink" title="How to use Vert.x Codegen with Gradle"></a>How to use Vert.x Codegen with Gradle</h2><p>We need to understand the essence of Vert.x Codegen - an APT(annotation processing tool), so we could write a task to do processing:</p>
-<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">task</span> annotationProcessing(type: JavaCompile, <span class="keyword">group</span>: <span class="string">'build'</span>) &#123;</span><br><span class="line">  <span class="keyword">source</span> = <span class="keyword">sourceSets</span>.main.java</span><br><span class="line">  <span class="keyword">classpath</span> = <span class="keyword">configurations</span>.<span class="keyword">compile</span></span><br><span class="line">  <span class="keyword">destinationDir</span> = <span class="keyword">project</span>.<span class="keyword">file</span>(<span class="string">'src/main/generated'</span>)</span><br><span class="line">  <span class="keyword">options</span>.compilerArgs = [</span><br><span class="line">    <span class="string">"-proc:only"</span>,</span><br><span class="line">    <span class="string">"-processor"</span>, <span class="string">"io.vertx.codegen.CodeGenProcessor"</span>,</span><br><span class="line">    <span class="string">"-AoutputDirectory=$&#123;project.projectDir&#125;/src/main"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>And in <code>compileJava</code> we reference the <code>annotationProcessing</code> task:</p>
-<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">compileJava &#123;</span><br><span class="line">  <span class="keyword">targetCompatibility</span> = <span class="number">1.8</span></span><br><span class="line">  <span class="keyword">sourceCompatibility</span> = <span class="number">1.8</span></span><br><span class="line"></span><br><span class="line">  dependsOn annotationProcessing</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">sourceSets</span> &#123;</span><br><span class="line">  main &#123;</span><br><span class="line">    java &#123;</span><br><span class="line">      srcDirs += <span class="string">'src/main/generated'</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Then we could process the annotations with Gradle~</p>
-<p>The Chinese version is here: <a href="http://www.sczyh30.com/posts/Develop/gradle-annotation-processing-vertx-codegen/">在 Gradle 中使用Annotation Processing Tool | Vert.x Codegen 示例</a></p>
-<h1 id="Achievement"><a href="#Achievement" class="headerlink" title="Achievement"></a>Achievement</h1><p>Because there were many temporary experiments last week, I didn’t work during Friday to Sunday. Here are achievements of this week:</p>
-<h2 id="Finished-the-Vert-x-Blueprint-Todo-Backend-project"><a href="#Finished-the-Vert-x-Blueprint-Todo-Backend-project" class="headerlink" title="Finished the Vert.x Blueprint - Todo Backend project"></a>Finished the <a href="https://github.com/sczyh30/vertx-blueprint-todo-backend">Vert.x Blueprint - Todo Backend</a> project</h2><h2 id="Basic-design-of-Vert-x-Kue"><a href="#Basic-design-of-Vert-x-Kue" class="headerlink" title="Basic design of Vert.x Kue"></a>Basic design of Vert.x Kue</h2><p>In <strong>Kue</strong>(Node.js), we use <code>kue.createQueue()</code> to create a <code>Kue</code> instance and then use <code>create(type, data)</code> to create a job and then save the job to <strong>Redis</strong>. After that, we invoke <code>job.process(type, callback)</code> to process the job.</p>
-<p>And in my design of <strong>Vert.x Kue</strong>, I designed a <code>KueService</code> that provide basic functions and wrapped a class <code>Kue</code> like Queue in Node.js version. I use Vert.x Service Proxy and register it to a <code>KueVerticle</code>. Our user could create a custom verticle(e.g. <code>ExampleVerticle</code>) and create and process jon via <code>Kue</code> class.</p>
-<p>As for processing jobs, I’m planning to use <strong>Worker Verticles</strong> or just use <code>executeBlocking</code> method.</p>
-<h2 id="Learned-something-about-Microservice"><a href="#Learned-something-about-Microservice" class="headerlink" title="Learned something about Microservice"></a>Learned something about Microservice</h2><ul>
-<li>Microservice patterns(Quorum, Circuit Breaker Pattern, Compensating Transaction Pattern, etc.)</li>
-<li>Usage and reactive thoughts of <strong>Netflix Hystrix</strong></li>
-</ul></div><a href="/en/2016/05/29/gsoc-2016-work-period-week-1/" class="read-more">...more</a></article></li></ul></section><footer><div class="paginator"><a href="/en/page/2/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016  <a href="http://www.sczyh30.com/en">Eric Zhao</a> |  sczyh30's Metaspace</p></div></footer></div><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script></body></html>
+<h2 id="Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese"><a href="#Wrote-a-brief-introduction-to-new-features-of-Vert-x-3-3-0-in-Chinese" class="headerlink" title="Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese"></a>Wrote a brief introduction to new features of Vert.x 3.3.0 in Chinese</h2></div><a href="/en/2016/06/12/gsoc-2016-work-period-week3/" class="read-more">...more</a></article></li></ul></section><footer><div class="paginator"><a href="/en/page/2/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2016  <a href="http://www.sczyh30.com/en">Eric Zhao</a> |  sczyh30's Metaspace</p></div></footer></div><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script></body></html>

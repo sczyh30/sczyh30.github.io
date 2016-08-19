@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> GSoC 2016 | Vert.x Blueprint Application · sczyh30's Metaspace</title><meta name="description" content="GSoC 2016 | Vert.x Blueprint Application - Eric Zhao"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="short icon" href="http://www.sczyh30.com/en/favicon.png"><link rel="stylesheet" href="/en/css/apollo.css"><link rel="stylesheet" href="http://fonts.useso.com/css?family=Source+Sans+Pro:400,600" type="text/css"></head><body><div class="wrap"><header><a href="/en/" class="logo-link"><img src="http://www.sczyh30.com/en/favicon.png"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="http://www.sczyh30.com/en" target="_blank" class="nav-list-link">BLOG(EN)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com" target="_blank" class="nav-list-link">BLOG(中文)</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/archives/" target="_blank" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/about/" target="_blank" class="nav-list-link">ABOUT</a></li><li class="nav-list-item"><a href="http://www.sczyh30.com/en/atom.xml" target="_blank" class="nav-list-link">RSS</a></li></ul></header><section class="container"><div class="post"><article class="post-block"><h1 class="post-title">GSoC 2016 | Vert.x Blueprint Application</h1><div class="post-time">Aug 19, 2016</div><div class="post-content"><p><img src="https://developers.google.com/open-source/gsoc/resources/downloads/GSoC-icon-192.png" alt=""></p>
+<p>This blog post is intended to be an illustration of my work for <strong>GSoC Final Evaluation</strong>.</p>
+<h1 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h1><p>Vert.x is a toolkit for the Java Virtual Machine enabling the implementation of reactive, highly concurrent, polyglot applications. The idea of the project is to implement a set of applications using the Vert.x toolkit to illustrate how different classes of applications can be done. This project aims to <strong>provide guidelines to Vert.x users to implement various applications</strong>.</p>
+<p>The blueprint project contains three parts: <strong>Todo Backend</strong>, <strong>Vert.x Kue</strong> and <strong>Online Shopping Microservice</strong>. Both runnable code and very detailed documents and tutorials (both in English and Chinese) are provided.</p>
+<h1 id="Vert-x-Blueprint-Todo-Backend"><a href="#Vert-x-Blueprint-Todo-Backend" class="headerlink" title="Vert.x Blueprint - Todo Backend"></a>Vert.x Blueprint - Todo Backend</h1><p>The project <strong>repository</strong>: <a href="https://github.com/sczyh30/vertx-blueprint-todo-backend" target="_blank" rel="external">sczyh30/vertx-blueprint-todo-backend</a>.</p>
+<p>This blueprint is a todo-backend implementation using Vert.x and various persistence (e.g. Redis or MySQL). It is intended to be an introduction to basic Vert.x web RESTful service development. From this blueprint, developers could learn:</p>
+<ul>
+<li>What is Vert.x and its basic design</li>
+<li>What is and how to use <code>Verticle</code></li>
+<li>How to develop a REST API using Vert.x Web</li>
+<li>How to make use of <strong>asynchronous development model</strong></li>
+<li>Future-based reactive asynchronous pattern</li>
+<li>How to use persistence such as <em>Redis</em> and <em>MySQL</em> with the help of Vert.x data access components</li>
+</ul>
+<p>The tutorial documents:</p>
+<ul>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-todo-backend/" target="_blank" rel="external">The tutorial document (English)</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-todo-backend/cn/" target="_blank" rel="external">The tutorial document (Chinese)</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sczyh30/vertx-blueprint-todo-backend/master/docs/img/vertx-todobackend-ui.png" alt=""></p>
+<h1 id="Vert-x-Blueprint-Vert-x-Kue"><a href="#Vert-x-Blueprint-Vert-x-Kue" class="headerlink" title="Vert.x Blueprint - Vert.x Kue"></a>Vert.x Blueprint - Vert.x Kue</h1><p>The project <strong>repository</strong>: <a href="https://github.com/sczyh30/vertx-blueprint-job-queue" target="_blank" rel="external">sczyh30/vertx-blueprint-job-queue</a>.</p>
+<p>This blueprint is a priority job queue developed with Vert.x and backed by Redis. It’s a Vert.x implementation version of <a href="https://github.com/Automattic/kue" target="_blank" rel="external">Automattic/kue</a> that can be used in production.</p>
+<p>Feature document of Vert.x Kue is available here: <a href="https://github.com/sczyh30/vertx-blueprint-job-queue/blob/master/docs/en/vertx-kue-features-en.md" target="_blank" rel="external">Vert.x Kue Features</a>.</p>
+<p>This blueprint is intended to be an introduction to message-based application development using Vert.x. From this blueprint, developers could learn:</p>
+<ul>
+<li>How to make use of <strong>Vert.x Event Bus</strong> (distributed)</li>
+<li>How to develop message based application with Vert.x</li>
+<li>Event pattern of event bus (Pub/sub, point to point)</li>
+<li>How to design clustered Vert.x applications</li>
+<li>How to design and implement a job queue</li>
+<li>How to use <strong>Vert.x Service Proxy</strong></li>
+<li>More complicated practice about Vert.x Redis</li>
+</ul>
+<p>The tutorial documents:</p>
+<ul>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-job-queue/kue-core/index.html" target="_blank" rel="external">Vert.x Kue Core Tutorial - English Version</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-job-queue/kue-http/index.html" target="_blank" rel="external">Vert.x Kue Web Tutorial - English Version</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-job-queue/cn/kue-core/index.html" target="_blank" rel="external">Vert.x Kue Core Tutorial - Chinese Version</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-job-queue/cn/kue-http/index.html" target="_blank" rel="external">Vert.x Kue Web Tutorial - Chinese Version</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sczyh30/vertx-blueprint-job-queue/master/docs/images/vertx_kue_ui_1.png" alt=""></p>
+<h1 id="Vert-x-Blueprint-Online-Shopping-Microservice"><a href="#Vert-x-Blueprint-Online-Shopping-Microservice" class="headerlink" title="Vert.x Blueprint - Online Shopping Microservice"></a>Vert.x Blueprint - Online Shopping Microservice</h1><p>The project <strong>repository</strong>: <a href="https://github.com/sczyh30/vertx-blueprint-microservice" target="_blank" rel="external">sczyh30/vertx-blueprint-microservice</a>.</p>
+<p>This blueprint is an online shopping microservice application developed with Vert.x. It is intended to be an illustration on how to develop microservice applications using Vert.x toolkit. From this blueprint, developers could learn:</p>
+<ul>
+<li>Microservice development with Vert.x</li>
+<li>Asynchronous development model</li>
+<li>Reactive and functional pattern</li>
+<li>Event sourcing pattern</li>
+<li>Asynchronous RPC on the clustered event bus</li>
+<li>Various type of services (e.g. HTTP endpoint, message source, event bus service)</li>
+<li>Vert.x Service Discovery</li>
+<li>Vert.x Circuit Breaker</li>
+<li>Microservice with polyglot persistence</li>
+<li>How to implement an API gateway</li>
+<li>Global authentication (OAuth 2 + Keycloak)</li>
+</ul>
+<p>And many more things…</p>
+<p>The tutorial documents:</p>
+<ul>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-microservice/index.html" target="_blank" rel="external">Vert.x Microservice Blueprint Tutorial - Development (English Version)</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-microservice/api-gateway.html" target="_blank" rel="external">Vert.x Microservice Blueprint Tutorial - API Gateway (English Version)</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-microservice/cn/index.html" target="_blank" rel="external">Vert.x Microservice Blueprint Tutorial - Development (Chinese Version)</a></li>
+<li><a href="http://sczyh30.github.io/vertx-blueprint-microservice/cn/api-gateway.html" target="_blank" rel="external">Vert.x Microservice Blueprint Tutorial - API Gateway (Chinese Version)</a></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/master/docs/images/shopping-spa-index.png" alt=""></p>
+<p><img src="https://raw.githubusercontent.com/sczyh30/vertx-blueprint-microservice/master/docs/images/monitor-dashboard.png" alt=""></p>
+<h1 id="Final-Summary-amp-amp-Future"><a href="#Final-Summary-amp-amp-Future" class="headerlink" title="Final Summary &amp;&amp; Future"></a>Final Summary &amp;&amp; Future</h1><p>I really enjoy the work! During the work period I’ve learned a lot about Vert.x, various asynchronous development model, distributed systems, microservice architecture and many more things… This motivates me to investigate new technologies, and the infrastructure of Vert.x. This would be an unforgettable experience.</p>
+<p>I’ll keep track of the blueprint project and planning to make some more improvements on the microservice blueprint to illustrate more usage about Vert.x and microservices (e.g. recommendation, Kafka, full-index search). And soon I’d like to contribute to <strong>Vert.x Microservice Toolbox</strong> to add more features and integration with other technologies. As <strong>Vert.x Scala</strong> is nearly technical preview, I’m also willing to contribute to Vert.x Scala version.</p>
+<h1 id="Thanks"><a href="#Thanks" class="headerlink" title="Thanks"></a>Thanks</h1><p>I would like to give my sincere thanks to:</p>
+<ul>
+<li>My mentors, <a href="https://github.com/pmlopes" target="_blank" rel="external">Paulo Lopes</a> and <a href="https://github.com/cescoffier" target="_blank" rel="external">Clement Escoffier</a>. They provided me guidance and gave me a lot of help during the work :-)</li>
+<li>The <strong>Vert.x Community</strong>.</li>
+<li>The Google Summer of Code team, for this wonderful experience.</li>
+</ul>
+<a id="more"></a>
+</div></article></div></section><footer><div class="paginator"><a href="/en/2016/08/11/vertx-blueprint-microservice-design-refactor-01/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'sczyh30';
+var disqus_identifier = '2016/08/19/gsoc-2016-final-evaluation/';
+var disqus_title = 'GSoC 2016 | Vert.x Blueprint Application';
+var disqus_url = 'http://www.sczyh30.com/en/2016/08/19/gsoc-2016-final-evaluation/';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//sczyh30.disqus.com/count.js" async></script><div class="copyright"><p>© 2015 - 2016  <a href="http://www.sczyh30.com/en">Eric Zhao</a> |  sczyh30's Metaspace</p></div></footer></div><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script></body></html>
