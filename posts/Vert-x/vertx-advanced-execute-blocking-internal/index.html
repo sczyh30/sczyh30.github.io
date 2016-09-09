@@ -3,35 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>对Android应用性能优化的一些总结（1） —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
+  <title>Vert.x 技术内幕 | executeBlocking 实现原理 —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <!--<meta name="keywords" content="sczyh30, blog"/>-->
-  <meta name="description" content="在移动端内存非常宝贵，我们要尽可能地去优化内存以达到最佳性能，并努力地去避免OOM问题。这篇文章总结一些最常见的Android性能优化的一些事项~
-
-图片加载在移动端，图片的加载往往是最消耗内存的，OOM也经常会发生在加载图片时。以下是加载图片的几个注意事项：
-
-按需要的大小加载。缩略图加载成原图的精细度并不会提升视觉上的效果，但会额外占用不少内存。
-图片的缓存使用LruCache，并且合理地设置">
+  <meta name="description" content="引入大家都知道，Vert.x中的executeBlocking方法用于执行阻塞任务，并且有两种模式：有序执行和无序执行。下面我们来看两段代码：
+1234567891011121314151617181920212223vertx.setPeriodic(1000, t -&amp;gt; &amp;#123;  vertx.executeBlocking(future -&amp;gt; &amp;#123;    try &amp;#">
 <meta property="og:type" content="article">
-<meta property="og:title" content="对Android应用性能优化的一些总结（1）">
-<meta property="og:url" content="http://www.sczyh30.com/posts/Develop/android-performance-1/index.html">
+<meta property="og:title" content="Vert.x 技术内幕 | executeBlocking 实现原理">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-execute-blocking-internal/index.html">
 <meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
-<meta property="og:description" content="在移动端内存非常宝贵，我们要尽可能地去优化内存以达到最佳性能，并努力地去避免OOM问题。这篇文章总结一些最常见的Android性能优化的一些事项~
-
-图片加载在移动端，图片的加载往往是最消耗内存的，OOM也经常会发生在加载图片时。以下是加载图片的几个注意事项：
-
-按需要的大小加载。缩略图加载成原图的精细度并不会提升视觉上的效果，但会额外占用不少内存。
-图片的缓存使用LruCache，并且合理地设置">
-<meta property="og:image" content="http://img.blog.csdn.net/20151023172047218">
-<meta property="og:updated_time" content="2016-03-12T08:14:36.062Z">
+<meta property="og:description" content="引入大家都知道，Vert.x中的executeBlocking方法用于执行阻塞任务，并且有两种模式：有序执行和无序执行。下面我们来看两段代码：
+1234567891011121314151617181920212223vertx.setPeriodic(1000, t -&amp;gt; &amp;#123;  vertx.executeBlocking(future -&amp;gt; &amp;#123;    try &amp;#">
+<meta property="og:updated_time" content="2016-09-09T01:58:38.029Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="对Android应用性能优化的一些总结（1）">
-<meta name="twitter:description" content="在移动端内存非常宝贵，我们要尽可能地去优化内存以达到最佳性能，并努力地去避免OOM问题。这篇文章总结一些最常见的Android性能优化的一些事项~
-
-图片加载在移动端，图片的加载往往是最消耗内存的，OOM也经常会发生在加载图片时。以下是加载图片的几个注意事项：
-
-按需要的大小加载。缩略图加载成原图的精细度并不会提升视觉上的效果，但会额外占用不少内存。
-图片的缓存使用LruCache，并且合理地设置">
+<meta name="twitter:title" content="Vert.x 技术内幕 | executeBlocking 实现原理">
+<meta name="twitter:description" content="引入大家都知道，Vert.x中的executeBlocking方法用于执行阻塞任务，并且有两种模式：有序执行和无序执行。下面我们来看两段代码：
+1234567891011121314151617181920212223vertx.setPeriodic(1000, t -&amp;gt; &amp;#123;  vertx.executeBlocking(future -&amp;gt; &amp;#123;    try &amp;#">
   
     <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
   
@@ -242,11 +229,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-android-performance-1" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-vertx-advanced-execute-blocking-internal" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/posts/Develop/android-performance-1/" class="article-date">
-      <time datetime="2015-10-23T10:36:00.000Z" itemprop="datePublished">2015-10-23</time>
+      <a href="/posts/Vert-x/vertx-advanced-execute-blocking-internal/" class="article-date">
+      <time datetime="2016-09-08T16:00:00.000Z" itemprop="datePublished">2016-09-09</time>
 </a>
     </div>
   
@@ -259,7 +246,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      对Android应用性能优化的一些总结（1）
+      Vert.x 技术内幕 | executeBlocking 实现原理
     </h1>
   
 
@@ -268,13 +255,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Develop/">Develop</a>
+    <a class="article-category-link" href="/categories/Vert-x/">Vert.x</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发/">开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能优化/">性能优化</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vert-x/">Vert.x</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/并发/">并发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/异步编程/">异步编程</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码分析/">源码分析</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -284,45 +271,45 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p>在移动端内存非常宝贵，我们要尽可能地去优化内存以达到最佳性能，并努力地去避免OOM问题。这篇文章总结一些最常见的Android性能优化的一些事项~</p>
-<hr>
-<h2 id="图片加载">图片加载</h2><p>在移动端，图片的加载往往是最消耗内存的，OOM也经常会发生在加载图片时。以下是加载图片的几个注意事项：</p>
-<ul>
-<li>按需要的大小加载。缩略图加载成原图的精细度并不会提升视觉上的效果，但会额外占用不少内存。</li>
-<li>图片的缓存使用<strong>LruCache</strong>，并且合理地设置缓存大小（有关LRU Cache的原理见<a href="http://www.sczyh30.com/posts/Algorithm/algorithm-cache/">这里</a>)</li>
-<li>可以用一些高效的图片加载库，比如Facebook的Fresco</li>
-</ul>
-<h2 id="注意一些额外的内存消耗">注意一些额外的内存消耗</h2><ul>
-<li>应特别注意HashMap这个数据结构，必要的时候可以用<strong>SparseArray</strong>等等的数据结构代替以节省内存</li>
-<li>需要频繁修改字符串的地方考虑用<strong>StringBuilder</strong>代替String</li>
-<li>避免创建无用的实例</li>
-</ul>
-<h2 id="有限度地使用Service">有限度地使用Service</h2><p>当我们启动一个Service时，系统会倾向于将这个Service所依赖的进程进行保留，这样就会导致这个进程变得非常消耗内存。并且，系统可以在LRU cache当中缓存的进程数量也会减少，导致切换应用程序的时候耗费更多性能。严重的话，甚至有可能会导致崩溃，因为系统在内存非常吃紧的时候可能已无法维护所有正在运行的Service所依赖的进程了。</p>
-<p>因此，控制好Service的生命周期是很重要的。切忌一个无用的Service跑在后台，这会非常影响性能。如果一个逻辑只需要进行一次，那么可以用<strong>IntentService</strong>代替。</p>
-<h2 id="有限度地使用依赖注入框架">有限度地使用依赖注入框架</h2><p>根据需要使用依赖注入框架，它在简化开发的同时，也会带来额外的性能损耗。</p>
-<p>在Web开发中，为了良好的架构以及各模块更松层次的耦合，我们一般都会使用IoC框架（如Spring），它根据XML配置文件或注解，通过反射来动态地创建对象或调用目标方法，这种基于反射的机制会额外消耗一部分内存，但在服务器端看来这些消耗还是可以接受的。</p>
-<p>但是，在App开发中，内存是非常宝贵的。假设我们用了一些UI注入框架（如ButterKnife），那么运行期间框架就要去搜索注解配置，并加载大量的对象到内存，其中很多可能都是用不到，并且短时间之内不能被回收的。这样在内存紧张的时候，也可能导致OOM或卡顿等现象。因此，根据需要使用依赖注入框架。（我就比较喜欢用。。。因为很方便。。。）</p>
-<p><img src="http://img.blog.csdn.net/20151023172047218" alt="ButterKnife 基于注解的UI配置"></p>
-<h2 id="Handler必须为静态内部类">Handler必须为静态内部类</h2><p>首先复习一下Java几种内部类的语言规范，Java中的<strong>inner class</strong>（内部类）定义在一个类的内部，它有一个<strong>指向外部类的引用</strong>。这就有可能导致一个问题，其外部类的生命周期已经结束，而由于inner class持有外部类的引用，并且inner class与其它对象还有引用关联，因此GC进行可达性分析时发现内部类与外部类仍有引用关系，因此不会cause GC，从而导致内存泄露。<br>而<strong>static nested class</strong>（静态内部类）虽定义在类的内部，但是它<strong>不持有外部类的引用</strong>，只能访问外部类的静态实例和方法。</p>
-<p>在安卓开发中，一个典型的例子是Handler的使用，它会有这样的问题：</p>
-<blockquote>
-<p>In Android, Handler classes should be static or leaks might occur. Messages enqueued on the application thread’s MessageQueue also retain their target Handler. If the Handler is an inner class, its outer class will be retained as well. To avoid leaking the outer class, declare the Handler as a static nested class with a WeakReference to its outer class.</p>
-</blockquote>
-<p>这句话的主旨就是，Handler类必须声明为静态（内部）类（static nested class），否则可能会发生内存泄露。因为，进入MessageQueue的Message会持有它们目标Handler的引用；这就可能出现一种情况，一个消息还在排队，而此时目标Handler类所对应的外部类的生命周期已到onDestroy，即将被GC，但由于目标Handler类仍持有其外部类的引用，使得外部类不能被回收，从而导致内存泄露。这一点说明了<strong>Handler类型的对象，生命周期是未知的</strong>。</p>
-<p>然而如果声明为static，又会有许多不方便的地方，比如很多逻辑需要访问外部类的非静态变量和非静态方法。此时，我们应该使用外部类的<strong>弱引用</strong>（WeakReference），举例表示：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> WeakReference&lt;DeviceUserFragment&gt; mFragment;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MyHandler</span><span class="params">(DeviceUserFragment fragment)</span> </span>&#123;</span><br><span class="line">            mFragment = <span class="keyword">new</span> WeakReference&lt;&gt;(fragment);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="annotation">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>.handleMessage(msg);</span><br><span class="line">            Object object = msg.obj;</span><br><span class="line">            <span class="keyword">switch</span> (msg.what) &#123;</span><br><span class="line">                <span class="keyword">case</span> HWServiceConfig.GET_DEVICE_USER_INFO:</span><br><span class="line">                    mFragment.get().mInfo = (DataUserInfo)object;</span><br><span class="line">                    mFragment.get().isInfoOK = <span class="keyword">true</span>;</span><br><span class="line">                    mFragment.get().updateUI();</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>这里顺便复习一下JVM中的四种引用的知识吧（直接扒的以前自己的文章）：</p>
-<ul>
-<li><strong>StrongReference</strong>（强引用）是最普通的引用类型，只要强引用存在，GC就不会进行垃圾回收。</li>
-<li><strong>SoftReference</strong>（软引用）用来描述一些有用但是非必需的对象。如果一个对象只具有软引用，则内存空间足够，垃圾回收器就不会回收它；<strong>如果内存空间不足了，就会回收这些对象的内存</strong>。只要垃圾回收器没有回收它，该对象就可以被程序使用。软引用可以和一个引用队列（ReferenceQueue）联合使用，如果软引用所引用的对象被垃圾回收器回收，JVM就会把这个软引用加入到与之关联的引用队列中。软引用可用来实现内存敏感的高速缓存。</li>
-<li><strong>WeakReference</strong>（弱引用）是一种生命周期比软引用更短的引用。当GC扫描启动时，只要扫描到只具有弱引用的对象，<strong>无论内存是否够用都会执行GC</strong>；但由于GC线程优先级很低，因此并不一定能迅速发现这些弱引用对象。弱引用也可以和一个引用队列联合使用。</li>
-<li><strong>PhantomReference</strong>（虚引用）不同于其余三种引用，虚引用不会影响对象的生命周期，也无法通过虚引用获得对象的一个实例；如果一个对象仅持有虚引用，那么它就和没有任何引用一样，在任何时候都可能被垃圾回收器回收。虚引用主要用来跟踪对象被垃圾回收器回收的活动，它必须和引用队列联合使用。</li>
-</ul>
-<p>明白了弱引用的生命周期，此处想必就很好理解了。构造一个外部类的弱引用，然后通过<code>get</code>方法获得其实例进行操作即可，既避免了内存泄露，又可以自由地调用外部类的方法。<br><strong>WeakReference</strong>和<strong>SoftReference</strong>在其他很多地方也都有运用，以后再补充~</p>
-<hr>
-<h1 id="参考文章">参考文章</h1><ul>
-<li><a href="http://blog.csdn.net/guolin_blog/article/details/42238627" target="_blank" rel="external">Android最佳性能实践 - 郭霖的专栏</a></li>
-</ul>
+        <h1 id="引入">引入</h1><p>大家都知道，Vert.x中的<code>executeBlocking</code>方法用于执行阻塞任务，并且有两种模式：有序执行和无序执行。下面我们来看两段代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">vertx.setPeriodic(<span class="number">1000</span>, t -&gt; &#123;</span><br><span class="line">  vertx.executeBlocking(future -&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      Thread.sleep(<span class="number">200</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(Thread.currentThread().getName());</span><br><span class="line">    future.complete();</span><br><span class="line">  &#125;, r -&gt; &#123;&#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">vertx.setPeriodic(<span class="number">1000</span>, t -&gt; &#123;</span><br><span class="line">  vertx.executeBlocking(future -&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(Thread.currentThread().getName());</span><br><span class="line">    future.complete();</span><br><span class="line">  &#125;, r -&gt; &#123;&#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>我们思考一下，每段代码每次执行的时候使用的线程相同么？正常情况下大家都知道<code>executeBlocking</code>底层使用了Worker线程池，因此貌似两种情况没什么区别，都是轮询Worker线程池，每次可能用不同的Worker线程。但是我们测一下：</p>
+<p>第一段代码：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vert<span class="class">.x-worker-thread-0</span></span><br><span class="line">vert<span class="class">.x-worker-thread-1</span></span><br><span class="line">vert<span class="class">.x-worker-thread-2</span></span><br><span class="line">vert<span class="class">.x-worker-thread-3</span></span><br><span class="line">vert.x-worker-thread-<span class="number">4</span></span><br></pre></td></tr></table></figure>
+<p>第二段代码：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vert<span class="class">.x-worker-thread-0</span></span><br><span class="line">vert<span class="class">.x-worker-thread-0</span></span><br><span class="line">vert<span class="class">.x-worker-thread-0</span></span><br><span class="line">vert<span class="class">.x-worker-thread-0</span></span><br><span class="line">vert.x-worker-thread-<span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>额。。。两段代码每次执行的线程居然有差异？第二次为什么每次都用相同的Worker线程？其实，大家可能忽略了一点：<code>executeBlocking</code>方法默认<strong>顺序执行</strong>提交的阻塞任务。今天我们就来探究一下<code>executeBlocking</code>内部的实现。</p>
+<h1 id="Worker线程池">Worker线程池</h1><p>我们来回顾一下Vert.x底层的Worker线程池，它在创建<code>VertxImpl</code>实例的时候进行初始化：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ExecutorService workerExec = Executors.newFixedThreadPool(options.getWorkerPoolSize(),</span><br><span class="line">    <span class="keyword">new</span> VertxThreadFactory(<span class="string">"vert.x-worker-thread-"</span>, checker, <span class="keyword">true</span>, options.getMaxWorkerExecuteTime()));</span><br><span class="line">PoolMetrics workerPoolMetrics = isMetricsEnabled() ? metrics.createMetrics(workerExec, <span class="string">"worker"</span>, <span class="string">"vert.x-worker-thread"</span>, options.getWorkerPoolSize()) : <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">workerPool = <span class="keyword">new</span> WorkerPool(workerExec, workerPoolMetrics);</span><br></pre></td></tr></table></figure>
+<p>可以看到底层的Worker线程池本质上是一种<code>FixedThreadPool</code>，里面的线程由<code>VertxThreadFactory</code>控制生成，对应的线程类型为<code>VertxThread</code>。Vert.x内部用<code>WorkerPool</code>类对线程池以及线程池相关的Metrics类进行了封装。</p>
+<h1 id="阻塞任务在哪里执行？">阻塞任务在哪里执行？</h1><p>有了Worker线程池的基础，我们来看一下<code>Vertx</code>实例中的<code>executeBlocking</code>方法，它的过程很简单：获取当前的Vert.x Context（没有就创建），然后委托调用<code>Context</code>里的<code>executeBlocking</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">executeBlocking</span><span class="params">(Handler&lt;Future&lt;T&gt;&gt; blockingCodeHandler, <span class="keyword">boolean</span> ordered,</span><br><span class="line">                                Handler&lt;AsyncResult&lt;T&gt;&gt; asyncResultHandler)</span> </span>&#123;</span><br><span class="line">  ContextImpl context = getOrCreateContext();</span><br><span class="line">  context.executeBlocking(blockingCodeHandler, ordered, asyncResultHandler);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">executeBlocking</span><span class="params">(Handler&lt;Future&lt;T&gt;&gt; blockingCodeHandler,</span><br><span class="line">                                Handler&lt;AsyncResult&lt;T&gt;&gt; asyncResultHandler)</span> </span>&#123;</span><br><span class="line">  executeBlocking(blockingCodeHandler, <span class="keyword">true</span>, asyncResultHandler);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在此方法中可以看到，<code>ordered</code>标志位默认为<code>true</code>，即默认按提交的次序执行阻塞任务。</p>
+<p>我们再来看一下<code>ContextImpl</code>类中的<code>executeBlocking</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">executeBlocking</span><span class="params">(Handler&lt;Future&lt;T&gt;&gt; blockingCodeHandler, <span class="keyword">boolean</span> ordered, Handler&lt;AsyncResult&lt;T&gt;&gt; resultHandler)</span> </span>&#123;</span><br><span class="line">  executeBlocking(<span class="keyword">null</span>, blockingCodeHandler, resultHandler, ordered ? workerExec : workerPool.executor(), workerPool.metrics());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">executeBlocking</span><span class="params">(Action&lt;T&gt; action, Handler&lt;Future&lt;T&gt;&gt; blockingCodeHandler,</span><br><span class="line">    Handler&lt;AsyncResult&lt;T&gt;&gt; resultHandler,</span><br><span class="line">    Executor exec, PoolMetrics metrics)</span> </span>&#123;</span><br><span class="line">  Object queueMetric = metrics != <span class="keyword">null</span> ? metrics.submitted() : <span class="keyword">null</span>;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    exec.execute(() -&gt; &#123;</span><br><span class="line">      Object execMetric = <span class="keyword">null</span>;</span><br><span class="line">      <span class="keyword">if</span> (metrics != <span class="keyword">null</span>) &#123;</span><br><span class="line">        execMetric = metrics.begin(queueMetric);</span><br><span class="line">      &#125;</span><br><span class="line">      Future&lt;T&gt; res = Future.future();</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (blockingCodeHandler != <span class="keyword">null</span>) &#123;</span><br><span class="line">          ContextImpl.setContext(<span class="keyword">this</span>);</span><br><span class="line">          blockingCodeHandler.handle(res);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          T result = action.perform();</span><br><span class="line">          res.complete(result);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">        res.fail(e);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (metrics != <span class="keyword">null</span>) &#123;</span><br><span class="line">        metrics.end(execMetric, res.succeeded());</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (resultHandler != <span class="keyword">null</span>) &#123;</span><br><span class="line">        runOnContext(v -&gt; res.setHandler(resultHandler));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (RejectedExecutionException ignore) &#123;</span><br><span class="line">    <span class="comment">// Pool is already shut down</span></span><br><span class="line">    <span class="keyword">if</span> (metrics != <span class="keyword">null</span>) &#123;</span><br><span class="line">      metrics.rejected(queueMetric);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它调用了另一个具体版本的<code>executeBlocking</code>方法，其中第四个参数即为要执行阻塞任务的线程池。如果要有序执行(<code>ordered</code>为true)，底层就使用<code>context</code>实例里的<code>workerExec</code>线程池；如果无序执行，就调用<code>workerPool</code>的<code>executor</code>方法获取另一种线程池。</p>
+<p>看到这里，我们大致已经想到了，有序执行和无序执行两种模式使用不同的线程池，因此底层实现肯定有差异。我们来看一下前面提到的两个线程池，它们都是<code>ContextImpl</code>类的成员变量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> WorkerPool workerPool;</span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> Executor workerExec;</span><br></pre></td></tr></table></figure>
+<p>在通过<code>Vertx</code>实例创建<code>Context</code>的时候，这几个变量会被初始化，其来源就是之前我们看过的<code>VertxImpl</code>实例中的Worker线程池。看一下<code>ContextImpl</code>类的构造函数就一目了然了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.workerPool = workerPool;</span><br><span class="line"><span class="keyword">this</span>.workerExec = workerPool.createOrderedExecutor();</span><br></pre></td></tr></table></figure>
+<p>嗯。。。有序执行对应的线程池通过<code>workerPool</code>的<code>createOrderedExecutor</code>方法获得，而无序执行对应的线程池通过<code>workerPool</code>的<code>executor</code>方法获得。因此，<code>WorkerPool</code>类是一个关键点，我们稍后就看一下其实现。</p>
+<p>注意Vert.x规定,<code>blockingCodeHandler</code>中的逻辑（即阻塞任务）在Worker线程内执行，而<code>resultHandler</code>内的逻辑（结果处理）需要在Vert.x Conext中执行，因此前面需要预先设置当前使用的Worker线程的<code>Context</code>为<code>this</code>以便后面调用<code>runOnContext</code>方法执行结果处理逻辑。</p>
+<p>下面就来看一下有序执行和无序执行这两种线程池的具体区别。</p>
+<h1 id="无序执行">无序执行</h1><p>我们看一下<code>WorkerPool</code>类的源码中获取无序执行线程池的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ExecutorService <span class="title">executor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> pool;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>executor</code>方法直接返回了内部的<code>pool</code>线程池，而<code>pool</code>线程池其实就是<code>VertxImpl</code>中的<code>workerExec</code>线程池：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">workerPool = <span class="keyword">new</span> WorkerPool(workerExec, workerPoolMetrics);</span><br></pre></td></tr></table></figure>
+<p>OK！如果大家熟悉并发的话，大家应该对无序执行对应的线程池 —— Worker线程池的行为非常清楚了。它属于一种<code>FixedThreadPool</code>，底层通过阻塞队列<code>LinkedBlockingQueue</code>实现。底层通过轮询算法获取Worker线程执行任务。</p>
+<h1 id="有序执行">有序执行</h1><p>下面是时候看有序执行对应的逻辑了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> OrderedExecutorFactory orderedFact;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ExecutorService pool;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> PoolMetrics metrics;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WorkerPool</span><span class="params">(ExecutorService pool, PoolMetrics metrics)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.orderedFact = <span class="keyword">new</span> OrderedExecutorFactory(pool);</span><br><span class="line">  <span class="keyword">this</span>.pool = pool;</span><br><span class="line">  <span class="keyword">this</span>.metrics = metrics;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Executor <span class="title">createOrderedExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> orderedFact.getExecutor();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到有序执行对应的线程池是通过<code>OrderedExecutorFactory</code>创建的。其实，<code>OrderedExecutorFactory</code>类会生成真正的有序执行线程池<code>OrderedExecutor</code>，它其实是对Worker线程池<code>pool</code>的一个简单包装，仅仅添加了有序执行相关的逻辑，最后还是委托Worker线程池进行任务处理。</p>
+<p>那么<code>OrderedExecutor</code>是如何实现顺序执行的呢？<code>OrderedExecutor</code>内部维护着一个任务队列。每当调用<code>executeBlocking</code>方法执行阻塞过程的时候，Vert.x会将阻塞过程包装成<code>Runnable</code>然后置入<code>OrderedExecutor</code>中的任务队列中；同时如果<code>OrderedExecutor</code>没有开始执行任务，就委托内部的Worker线程池执行任务：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span> (tasks) &#123;</span><br><span class="line">    tasks.add(command);</span><br><span class="line">    <span class="keyword">if</span> (!running) &#123;</span><br><span class="line">      running = <span class="keyword">true</span>;</span><br><span class="line">      parent.execute(runner);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从代码中可以看出，最后委托Worker线程池执行的线程其实是又包装了一层的<code>runner</code>线程。<code>runner</code>的逻辑不难想：不断地从任务队列中取出队首的<code>Runnable</code>然后调用其<code>run</code>方法执行（相当于执行了此任务，只不过在runner对应的线程中）；如果没有任务了就结束本线程。</p>
+<p>这里就出现了一种情况：大批量提交阻塞任务的时候，线程池的状态<code>running</code>一直为<code>true</code>，此时所有的任务都积压到任务队列中，而执行所有任务的线程只有一个 —— <code>runner</code>对应的线程。这种情况其实很好想，因为要保证有序执行，就只能让它一个接一个地在同个线程中执行。如果在不同线程中依次执行则不好调度，如果直接并行执行则不能保证有序性。</p>
+<p>所以，根据<code>OrderedExecutor</code>线程池的内部实现，只要提交任务的间隔时间小于任务执行的时间，底层其实就仅执行了一次<code>runner</code>，也就是说所有提交的阻塞任务都只在一个线程下跑（running标志位控制）。</p>
+<p>这样就可以很好地解释我们一开始提出的问题了。当<code>sleep(200), setPeriodic(1000)</code>的时候，提交任务的间隔时间大于任务执行的时间，这样每次的<code>runner</code>就可以在下一个任务提交之前执行完，因此每次所用的线程会不同（轮询策略）；而<code>sleep(2000), setPeriodic(1000)</code>的时候，提交任务的间隔时间小于任务执行的时间，底层最后都归结到一个<code>runner</code>中执行了，因此所有过程都是在同一个Worker线程执行的。</p>
+<p>当然，如果不想有序执行，可以用<code>void executeBlocking(Handler&lt;Future&lt;T&gt;&gt; blockingCodeHandler, boolean ordered, Handler&lt;AsyncResult&lt;T&gt;&gt; asyncResultHandler)</code>这个版本的<code>executeBlocking</code>方法，并将<code>ordered</code>标志位设为<code>false</code>。根据上面的源码，底层会直接使用Worker线程池而不是<code>OrderedExecutor</code>线程池，这样就不会有上面<code>OrderedExecutor</code>的情况了。</p>
 
       
     </div>
@@ -331,13 +318,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/posts/Develop/android-performance-1/">对Android应用性能优化的一些总结（1）</a></p>
+        <p><span>本文标题:</span><a href="/posts/Vert-x/vertx-advanced-execute-blocking-internal/">Vert.x 技术内幕 | executeBlocking 实现原理</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 sczyh30 的个人博客">sczyh30</a></p>
-        <p><span>发布时间:</span>2015年10月23日</p>
-        <!--<p><span>最后更新:</span>2016年03月12日 - 16时14分</p>-->
+        <p><span>发布时间:</span>2016年09月09日</p>
+        <!--<p><span>最后更新:</span>2016年09月09日 - 09时58分</p>-->
         <p>
-            <span>原始链接:</span><a class="post-url" href="/posts/Develop/android-performance-1/" title="对Android应用性能优化的一些总结（1）">http://www.sczyh30.com/posts/Develop/android-performance-1/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Develop/android-performance-1/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/posts/Vert-x/vertx-advanced-execute-blocking-internal/" title="Vert.x 技术内幕 | executeBlocking 实现原理">http://www.sczyh30.com/posts/Vert-x/vertx-advanced-execute-blocking-internal/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Vert-x/vertx-advanced-execute-blocking-internal/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -350,16 +337,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/posts/C-C/cpp-stl-hashmap/">
-                    C++ STL之哈希表 | unordered_map
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/posts/Develop/android-aysnc-message/">
-                    Android异步消息处理机制总结
+                <a href="/posts/Vert-x/vertx-advanced-async-rpc/">
+                    Vert.x 技术内幕 | 异步RPC实现原理
                 </a>
             </div>
         
@@ -370,7 +351,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#图片加载"><span class="toc-number">1.</span> <span class="toc-text">图片加载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注意一些额外的内存消耗"><span class="toc-number">2.</span> <span class="toc-text">注意一些额外的内存消耗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有限度地使用Service"><span class="toc-number">3.</span> <span class="toc-text">有限度地使用Service</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有限度地使用依赖注入框架"><span class="toc-number">4.</span> <span class="toc-text">有限度地使用依赖注入框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Handler必须为静态内部类"><span class="toc-number">5.</span> <span class="toc-text">Handler必须为静态内部类</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考文章"><span class="toc-number"></span> <span class="toc-text">参考文章</span></a>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#引入"><span class="toc-number">1.</span> <span class="toc-text">引入</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Worker线程池"><span class="toc-number">2.</span> <span class="toc-text">Worker线程池</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#阻塞任务在哪里执行？"><span class="toc-number">3.</span> <span class="toc-text">阻塞任务在哪里执行？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#无序执行"><span class="toc-number">4.</span> <span class="toc-text">无序执行</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#有序执行"><span class="toc-number">5.</span> <span class="toc-text">有序执行</span></a></li></ol>
 </div>
 <style>
     .left-col .switch-btn {
@@ -434,7 +415,7 @@
     
       <div class="duoshuo" id="comments">
     <!-- duoshuo comment start -->
-    <div class="ds-thread" data-thread-key="posts/Develop/android-performance-1/" data-title="对Android应用性能优化的一些总结（1）" data-url="http://www.sczyh30.com/posts/Develop/android-performance-1/"></div>
+    <div class="ds-thread" data-thread-key="posts/Vert-x/vertx-advanced-execute-blocking-internal/" data-title="Vert.x 技术内幕 | executeBlocking 实现原理" data-url="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-execute-blocking-internal/"></div>
     <!-- duoshuo comment end -->
     <!-- duoshuo public js start -->
     <script type="text/javascript">
@@ -459,15 +440,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/posts/C-C/cpp-stl-hashmap/" title="上一篇: C++ STL之哈希表 | unordered_map">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/posts/Develop/android-aysnc-message/" title="下一篇: Android异步消息处理机制总结">
+            <a href="/posts/Vert-x/vertx-advanced-async-rpc/" title="下一篇: Vert.x 技术内幕 | 异步RPC实现原理">
                 <i class="fa fa-angle-right"></i>
             </a>
         
