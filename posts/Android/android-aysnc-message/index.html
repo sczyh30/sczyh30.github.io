@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="sczyh30" />
+
+
+
+<meta name="description" content="本次项目完成，对安卓的异步消息处理机制有了更深的了解，在这里总结一下。
+Prolouge先来回顾一下基础，Android中的异步消息处理主要由Message, Handler, MessageQueue和Looper四部分组成。
+MessageMessage主要作为线程之间传递的信息，它可以携带一些数据。它的what字段（一般用来表示消息类型）、arg0、arg1字段可以携带一些整型数据，obj字">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android异步消息处理机制总结">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Android/android-aysnc-message/index.html">
+<meta property="og:site_name" content="「浮生若梦」 - sczyh30's blog">
+<meta property="og:description" content="本次项目完成，对安卓的异步消息处理机制有了更深的了解，在这里总结一下。
+Prolouge先来回顾一下基础，Android中的异步消息处理主要由Message, Handler, MessageQueue和Looper四部分组成。
+MessageMessage主要作为线程之间传递的信息，它可以携带一些数据。它的what字段（一般用来表示消息类型）、arg0、arg1字段可以携带一些整型数据，obj字">
+<meta property="og:image" content="http://img.blog.csdn.net/20151023143204457">
+<meta property="og:updated_time" content="2016-12-11T14:45:40.503Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android异步消息处理机制总结">
+<meta name="twitter:description" content="本次项目完成，对安卓的异步消息处理机制有了更深的了解，在这里总结一下。
+Prolouge先来回顾一下基础，Android中的异步消息处理主要由Message, Handler, MessageQueue和Looper四部分组成。
+MessageMessage主要作为线程之间传递的信息，它可以携带一些数据。它的what字段（一般用来表示消息类型）、arg0、arg1字段可以携带一些整型数据，obj字">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20151023143204457">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="「浮生若梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Android异步消息处理机制总结 | 「浮生若梦」 - sczyh30&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                            <li><a href="/en/">Blog(EN)</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="/about" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/sczyh30" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" href="http://weibo.com/sczyh30" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Google" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="https://twitter.com/sczyh30" title="Twitter"></a>
+                            
+                                <a class="fa Medium" href="https://medium.com/@sczyh30" title="Medium"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AMQP/">AMQP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/APT/">APT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Akka/">Akka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-14/">C++ 14</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CAP/">CAP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CE3/">CE3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CPS/">CPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cache/">Cache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Category-Theory/">Category Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chemistry/">Chemistry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Continuation/">Continuation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DI/">DI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Engine/">Engine</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Euterpea/">Euterpea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Loop/">Event Loop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GC/">GC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GDB/">GDB</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Game/">Game</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gradle/">Gradle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HotSpot/">HotSpot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JUC/">JUC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klass-oop/">Klass-oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lambda-Calculus/">Lambda Calculus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkedList/">LinkedList</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIDI/">MIDI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mathematical-Logic/">Mathematical Logic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metaspace/">Metaspace</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Netflix-Hystrix/">Netflix Hystrix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Network/">Network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Object-Model/">Object Model</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PLT/">PLT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paper/">Paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Play-Framework/">Play Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quorum/">Quorum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RPC/">RPC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Reflection/">Reflection</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL/">SQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/STL/">STL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scala/">Scala</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scheme/">Scheme</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Slick/">Slick</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sort/">Sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Summary/">Summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Class/">Type Class</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Lambda/">Type Lambda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-System/">Type System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Theory/">Type Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UE4/">UE4</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity/">Unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vert-x/">Vert.x</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/View/">View</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web/">Web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web开发/">Web开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/中间件/">中间件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/云服务/">云服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存区域/">内存区域</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式系统/">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式计算/">分布式计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端/">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础/">基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异步编程/">异步编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/微服务/">微服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息系统/">消息系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码分析/">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/线程安全/">线程安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Distributed System/Deep Learning/PLT</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                    <li><a href="/en/">Blog(EN)</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="/about" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a>
+                            
+                                <a class="fa Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-android-aysnc-message" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Android/android-aysnc-message/" class="article-date">
+      <time datetime="2015-10-22T07:35:00.000Z" itemprop="datePublished">2015-10-22</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Android异步消息处理机制总结
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Android/">Android</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发/">开发</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>本次项目完成，对安卓的异步消息处理机制有了更深的了解，在这里总结一下。</p>
+<h1 id="Prolouge">Prolouge</h1><p>先来回顾一下基础，Android中的异步消息处理主要由<code>Message</code>, <code>Handler</code>, <code>MessageQueue</code>和<code>Looper</code>四部分组成。</p>
+<h2 id="Message">Message</h2><p><code>Message</code>主要作为线程之间传递的信息，它可以携带一些数据。它的<code>what</code>字段（一般用来表示消息类型）、<code>arg0</code>、<code>arg1</code>字段可以携带一些整型数据，<code>obj</code>字段可以携带一个对象，并且可以用<code>setData</code>方法传输一个<code>Bundle</code>对象。</p>
+<p><code>Message</code>的创建方法有两种：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Message msg0 = <span class="keyword">new</span> Message(); <span class="comment">//调用Message的构造方法</span></div><div class="line">Message msg1 = Message.obtain(); <span class="comment">//从消息池中获取</span></div><div class="line">Message message = mHandler.obtainMessage(); <span class="comment">//或者这样从消息池中获取</span></div></pre></td></tr></table></figure>
+<p>其中，<code>Handler</code>的<code>obtainMessage</code>方法也是调用了<code>obtain</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">     * Returns a new &#123;<span class="doctag">@link</span> android.os.Message Message&#125; from the global message pool. More efficient than</div><div class="line">     * creating and allocating new instances. The retrieved message has its handler set to this instance (Message.target == this).</div><div class="line">     *  If you don't want that facility, just call Message.obtain() instead.</div><div class="line">     */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Message <span class="title">obtainMessage</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> Message.obtain(<span class="keyword">this</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这两种方法的本质区别是，<code>obtain</code>方法直接从消息池中获取<code>Message</code>对象，这样很多时候可以避免创建新对象，减少内存开销，从<code>obtain</code>方法的源码中就能看出这一点：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">     * Return a new Message instance from the global pool. Allows us to</div><div class="line">     * avoid allocating new objects in many cases.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Message <span class="title">obtain</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">synchronized</span> (sPoolSync) &#123;</div><div class="line">            <span class="keyword">if</span> (sPool != <span class="keyword">null</span>) &#123;</div><div class="line">                Message m = sPool;</div><div class="line">                sPool = m.next;</div><div class="line">                m.next = <span class="keyword">null</span>;</div><div class="line">                m.flags = <span class="number">0</span>; <span class="comment">// clear in-use flag</span></div><div class="line">                sPoolSize--;</div><div class="line">                <span class="keyword">return</span> m;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Message();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>因此，获取<code>Message</code>时尽量使用<code>obtain</code>方法。</p>
+<h2 id="Handler">Handler</h2><p><code>Handler</code>用于发送和处理信息，相当于生产者和消费者。<code>Handler</code>通过<code>sendMessage</code>方法将Message传入<code>MessageQueue</code>消息队列，经<code>Looper</code>轮询后将<code>Message</code>传递至<code>handleMessage</code>方法中。</p>
+<p>最常见的一个应用就是需要在子线程中处理UI，这时候就需要借助<code>Handler</code>实现。</p>
+<h2 id="MessageQueue">MessageQueue</h2><p><code>MessageQueue</code>，顾名思义就是消息队列，它用来存放<code>Handler</code>发送的消息，直到消息被处理。每个线程中只能有一个消息队列。</p>
+<h2 id="Looper">Looper</h2><p><code>Looper</code>相当于<code>MessageQueue</code>的监视器。首先调用<code>Looper.loop()</code>方法进入无限循环状态，每当一个新的<code>Message</code>进入<code>MessageQueue</code>，<code>Looper</code>就会轮询，将此<code>Message</code>传递给<code>handleMessage</code>方法。每个线程中只能有一个<code>Looper</code>对象。</p>
+<h1 id="底层实现">底层实现</h1><p>一个标准的异步处理流程应该是这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">LooperThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</div><div class="line">      <span class="keyword">public</span> Handler mHandler;</div><div class="line"></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">          Looper.prepare();</div><div class="line"></div><div class="line">          mHandler = <span class="keyword">new</span> Handler() &#123;</div><div class="line">              <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">                  <span class="comment">// process incoming messages here</span></div><div class="line">              &#125;</div><div class="line">          &#125;;</div><div class="line"></div><div class="line">          Looper.loop();</div><div class="line">      &#125;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>我们从<code>Handler</code>的构造函数开始分析：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>(<span class="keyword">null</span>, <span class="keyword">false</span>);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">(Callback callback, <span class="keyword">boolean</span> async)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (FIND_POTENTIAL_LEAKS) &#123;</div><div class="line">        <span class="keyword">final</span> Class&lt;? extends Handler&gt; klass = getClass();</div><div class="line">        <span class="keyword">if</span> ((klass.isAnonymousClass() || klass.isMemberClass() || klass.isLocalClass()) &amp;&amp;</div><div class="line">                (klass.getModifiers() &amp; Modifier.STATIC) == <span class="number">0</span>) &#123;</div><div class="line">            Log.w(TAG, <span class="string">"The following Handler class should be static or leaks might occur: "</span> +</div><div class="line">                klass.getCanonicalName());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    mLooper = Looper.myLooper();</div><div class="line">    <span class="keyword">if</span> (mLooper == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</div><div class="line">            <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>);</div><div class="line">    &#125;</div><div class="line">    mQueue = mLooper.mQueue;</div><div class="line">    mCallback = callback;</div><div class="line">    mAsynchronous = async;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果我们直接在子线程中创建<code>Handler</code>，会抛出异常，提示 “Can’t create handler inside thread that has not called Looper.prepare()”，也就是要调用<code>Looper.prepare()</code>方法。根据源码，这是因为子线程的Looper为空所致，而观察<code>prepare</code>方法的源码可知，此方法的作用就是创建一个<code>Looper</code>对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> </span>&#123;</div><div class="line">    prepare(<span class="keyword">true</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (sThreadLocal.get() != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);</div><div class="line">    &#125;</div><div class="line">    sThreadLocal.set(<span class="keyword">new</span> Looper(quitAllowed));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而主线程也没有调用<code>Looper.prepare()</code>，为什么没有崩溃呢？显然是系统自动地帮我们调用了这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        SamplingProfilerIntegration.start();</div><div class="line"></div><div class="line">        <span class="comment">// CloseGuard defaults to true and can be quite spammy.  We</span></div><div class="line">        <span class="comment">// disable it here, but selectively enable it later (via</span></div><div class="line">        <span class="comment">// StrictMode) on debug builds, but using DropBox, not logs.</span></div><div class="line">        CloseGuard.setEnabled(<span class="keyword">false</span>);</div><div class="line"></div><div class="line">        Environment.initForCurrentUser();</div><div class="line"></div><div class="line">        <span class="comment">// Set the reporter for event logging in libcore</span></div><div class="line">        EventLogger.setReporter(<span class="keyword">new</span> EventLoggingReporter());</div><div class="line"></div><div class="line">        Security.addProvider(<span class="keyword">new</span> AndroidKeyStoreProvider());</div><div class="line"></div><div class="line">        <span class="comment">// Make sure TrustedCertificateStore looks in the right place for CA certificates</span></div><div class="line">        <span class="keyword">final</span> File configDir = Environment.getUserConfigDirectory(UserHandle.myUserId());</div><div class="line">        TrustedCertificateStore.setDefaultUserDirectory(configDir);</div><div class="line"></div><div class="line">        Process.setArgV0(<span class="string">"&lt;pre-initialized&gt;"</span>);</div><div class="line"></div><div class="line">        Looper.prepareMainLooper();</div><div class="line"></div><div class="line">        ActivityThread thread = <span class="keyword">new</span> ActivityThread();</div><div class="line">        thread.attach(<span class="keyword">false</span>);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (sMainThreadHandler == <span class="keyword">null</span>) &#123;</div><div class="line">            sMainThreadHandler = thread.getHandler();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">false</span>) &#123;</div><div class="line">            Looper.myLooper().setMessageLogging(<span class="keyword">new</span></div><div class="line">                    LogPrinter(Log.DEBUG, <span class="string">"ActivityThread"</span>));</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        Looper.loop();</div><div class="line"></div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Main thread loop unexpectedly exited"</span>);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>其中的<code>Looper.prepareMainLooper()</code>方法最后调用了<code>Looper.prepare()</code>方法，创建了主线程的Looper。而子线程则不会主动创建Looper，必须自己调用方法创建。</p>
+<p>创建完了Handler，下一步就是创建Message然后<code>sendMessage</code>了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">sendMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> sendMessageDelayed(msg, <span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">sendMessageDelayed</span><span class="params">(Message msg, <span class="keyword">long</span> delayMillis)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (delayMillis &lt; <span class="number">0</span>) &#123;</div><div class="line">            delayMillis = <span class="number">0</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> sendMessageAtTime(msg, SystemClock.uptimeMillis() + delayMillis);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">sendMessageAtTime</span><span class="params">(Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">        MessageQueue queue = mQueue;</div><div class="line">        <span class="keyword">if</span> (queue == <span class="keyword">null</span>) &#123;</div><div class="line">            RuntimeException e = <span class="keyword">new</span> RuntimeException(</div><div class="line">                    <span class="keyword">this</span> + <span class="string">" sendMessageAtTime() called with no mQueue"</span>);</div><div class="line">            Log.w(<span class="string">"Looper"</span>, e.getMessage(), e);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> enqueueMessage(queue, msg, uptimeMillis);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p><code>sendMessage</code>的结果是将此Message入队。注意到MessageQueue中只保存了当前待处理的一个对象，而不是一个集合；出队则是由<code>Looper.loop()</code>进行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">final</span> Looper me = myLooper();</div><div class="line">        <span class="keyword">if</span> (me == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"No Looper; Looper.prepare() wasn't called on this thread."</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">final</span> MessageQueue queue = me.mQueue;</div><div class="line"></div><div class="line">        <span class="comment">// Make sure the identity of this thread is that of the local process,</span></div><div class="line">        <span class="comment">// and keep track of what that identity token actually is.</span></div><div class="line">        Binder.clearCallingIdentity();</div><div class="line">        <span class="keyword">final</span> <span class="keyword">long</span> ident = Binder.clearCallingIdentity();</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (;;) &#123;</div><div class="line">            Message msg = queue.next(); <span class="comment">// might block</span></div><div class="line">            <span class="keyword">if</span> (msg == <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="comment">// No message indicates that the message queue is quitting.</span></div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// This must be in a local variable, in case a UI event sets the logger</span></div><div class="line">            Printer logging = me.mLogging;</div><div class="line">            <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</div><div class="line">                logging.println(<span class="string">"&gt;&gt;&gt;&gt;&gt; Dispatching to "</span> + msg.target + <span class="string">" "</span> +</div><div class="line">                        msg.callback + <span class="string">": "</span> + msg.what);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            msg.target.dispatchMessage(msg);</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</div><div class="line">                logging.println(<span class="string">"&lt;&lt;&lt;&lt;&lt; Finished to "</span> + msg.target + <span class="string">" "</span> + msg.callback);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// Make sure that during the course of dispatching the</span></div><div class="line">            <span class="comment">// identity of the thread wasn't corrupted.</span></div><div class="line">            <span class="keyword">final</span> <span class="keyword">long</span> newIdent = Binder.clearCallingIdentity();</div><div class="line">            <span class="keyword">if</span> (ident != newIdent) &#123;</div><div class="line">                Log.wtf(TAG, <span class="string">"Thread identity changed from 0x"</span></div><div class="line">                        + Long.toHexString(ident) + <span class="string">" to 0x"</span></div><div class="line">                        + Long.toHexString(newIdent) + <span class="string">" while dispatching to "</span></div><div class="line">                        + msg.target.getClass().getName() + <span class="string">" "</span></div><div class="line">                        + msg.callback + <span class="string">" what="</span> + msg.what);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            msg.recycleUnchecked();</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>出队的逻辑为<code>queue.next()</code>，其逻辑为：如果MessageQueue的待处理消息对象不为空，那么就出队并让下一个消息入队，否则阻塞。消息出队后经由<code>dispatchMessage</code>方法回调，以便在<code>handleMessage</code>中接收到Message并进行处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispatchMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (msg.callback != <span class="keyword">null</span>) &#123;</div><div class="line">            handleCallback(msg);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123;</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            handleMessage(msg);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>这就是一个完整的异步消息处理机制，用网上的一幅图总结：</p>
+<p><img src="http://img.blog.csdn.net/20151023143204457" alt="消息处理机制（图片来自网络）"></p>
+<h1 id="AsyncTask">AsyncTask</h1><p>当然从Android 1.5开始，谷歌就引入了一个更方便使用的<code>AsyncTask</code>类用于处理异步任务，非常轻量级，通过实现其回调函数来实现相应逻辑。比如我写了一个异步读取缓存的Task：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">CacheTask</span> <span class="keyword">extends</span> <span class="title">AsyncTask</span>&lt;<span class="title">String</span>, <span class="title">Void</span>, <span class="title">User</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">final</span> WeakReference&lt;Context&gt; mContext;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">private</span> <span class="title">CacheTask</span><span class="params">(Context context)</span> </span>&#123;</div><div class="line">            mContext = <span class="keyword">new</span> WeakReference&lt;&gt;(context);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">protected</span> User <span class="title">doInBackground</span><span class="params">(String... params)</span> </span>&#123;</div><div class="line">            Serializable object = XmlCacheManager.readObject(mContext.get(), <span class="string">"user"</span>);</div><div class="line">            <span class="keyword">if</span> (object == <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">return</span> (User) object;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(User info)</span> </span>&#123;</div><div class="line">            <span class="keyword">super</span>.onPostExecute(info);</div><div class="line">            <span class="keyword">if</span> (info != <span class="keyword">null</span>) &#123;</div><div class="line">                mContext.get().mInfo = info;</div><div class="line">                mContext.get().mErrorLayout.setType(AppConstant.HIDE_ERROR_LAYOUT);</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                mContext.get().mErrorLayout.setType(AppConstant.NETWORK_ERROR_LAYOUT);</div><div class="line">            &#125;</div><div class="line">            mContext.get().updateUI();</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>在此逻辑中，<code>doInBackground</code>方法用于执行具体的缓存读取，而<code>onPostExecute</code>方法用于通知UI更新任务的结果（即更新UI）。其实AsyncTask底层也是利用上边的异步消息机制实现的，只不过它封装地非常好，免去了开发者自己写Message和Handler的环节，减少编码量。</p>
+<p>粗略看了一下AsyncTask的源码，发现其的底层实现用了各种JUC的东西，以后有时间再研究研究它的源码。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Android/android-aysnc-message/">Android异步消息处理机制总结</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">sczyh30</a></p>
+        <p><span>发布时间:</span>2015年10月22日</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Android/android-aysnc-message/" title="Android异步消息处理机制总结">http://www.sczyh30.com/posts/Android/android-aysnc-message/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Android/android-aysnc-message/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"知识共享-保持署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Android/android-performance-1/">
+                    Android应用性能优化总结
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Summary/struct_sizeof/">
+                    C/C++结构体字节对齐
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Prolouge"><span class="toc-number">1.</span> <span class="toc-text">Prolouge</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Message"><span class="toc-number">1.1.</span> <span class="toc-text">Message</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Handler"><span class="toc-number">1.2.</span> <span class="toc-text">Handler</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MessageQueue"><span class="toc-number">1.3.</span> <span class="toc-text">MessageQueue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Looper"><span class="toc-number">1.4.</span> <span class="toc-text">Looper</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#底层实现"><span class="toc-number">2.</span> <span class="toc-text">底层实现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AsyncTask"><span class="toc-number">3.</span> <span class="toc-text">AsyncTask</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Android异步消息处理机制总结　| 「浮生若梦」 - sczyh30's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="posts/Android/android-aysnc-message/" data-title="Android异步消息处理机制总结" data-url="http://www.sczyh30.com/posts/Android/android-aysnc-message/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"sczyh30"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = 'http://www.sczyh30.com/assets/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Android/android-performance-1/" title="上一篇: Android应用性能优化总结">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Summary/struct_sizeof/" title="下一篇: C/C++结构体字节对齐">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/call-with-current-continuation/">call/cc总结 | Scheme</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-computing-system-gc-osdi16-yak/">分布式计算系统中的GC问题 | Yak(OSDI 2016) 学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/spark-rdd-paper-summary/">Distributed System | Spark RDD 论文总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-demystifying-thread-model/">Vert.x 技术内幕 | 解道Vert.x线程模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-execute-blocking-internal/">Vert.x 技术内幕 | executeBlocking 实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-async-rpc/">Vert.x 技术内幕 | 异步RPC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-rpc-design/">Distributed System | RPC模块设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (集群模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-local-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (Local模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/busy-enough-2016-08/">最近真忙～</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/">Vert.x Blueprint 系列教程(三) | Micro Shop 微服务实战</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/">Vert.x Blueprint 系列教程(二) | Vert.x Kue 教程（Web部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/">Vert.x Blueprint 系列教程(二) | 开发基于消息的应用 - Vert.x Kue 教程（Core部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/">Vert.x Blueprint 系列教程(一) | 待办事项服务开发教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/quorum-based-voting-for-replica-control/">基于Quorum投票机制的Replica Control算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/netflix-hystrix-how-it-works-summary/">Netflix Hystrix | 工作流程浅析 && HystrixCircuitBreaker源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Concurrency/concurrency-treiber-stack/">并发编程算法 | Treiber Stack实现lock-free stack</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-base/">分布式系统基础总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/service-with-docker-compose/">使用 Docker Compose 编排容器集群</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gradle-annotation-processing-vertx-codegen/">在Gradle中使用Annotation Processing Tool | Vert.x Codegen 示例</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/circuit-breaker-pattern/">微服务设计模式 | Circuit Breaker Pattern</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-existential-types-scala-java/">类型系统 | Existential Type | Scala ++ Java ++ Haskell</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-refinement-types/">类型系统 | Refinement Type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-web-summary/">Play Framework 2.5 | Web开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/scala-type-lambda/">Scala | Type Lambda</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/akka-actor-sender-enclosing/">Akka Actor | 注意sender的闭包范围</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Miscellaneous/play-music-on-linux/">在Linux环境下玩转MIDI</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-type-system-query-prolouge/">探索万恶的Slick 3 类型系统 | Prologue</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-summary-functional-relational-mapping/">Slick 3总结 | Functional Relational Mapping</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-dependency-injection-di/">Play Framework 2.5 | Dependency Injection总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/functional-programming-type-and-kind/">FP :: Type Theory | Type, Type Constructor 与 Kind</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/typeclass-scala-haskell/">Scala | Haskell | Type Class总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-for-comprehensions-detail/">Scala | for-comprehension底层转换 | withFilter解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">POSIX I/O模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model 学习笔记(III)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional 标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">Modern C++ | 移动语义与完美转发 | Universal Reference</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model 学习笔记(I)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/rabbitmq-summary/">消息队列中间件 | RabbitMQ 总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/y-combinator/">不动点组合子 | Y Combinator</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/haskell-category-basic/">Haskell学习笔记 | 范畴论与Haskell（基础篇）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-event-dispatcher/">Android 事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-notes/">Android View 视图绘制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表 | unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-performance-1/">Android应用性能优化总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结 (性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-leetcode/">LeetCode | 链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏引擎把玩总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2017 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30 <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 7;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

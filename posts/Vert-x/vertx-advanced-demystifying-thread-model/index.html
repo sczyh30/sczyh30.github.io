@@ -1,55 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hans">
 <head>
-  <meta charset="utf-8">
-  
-  <title>Vert.x 技术内幕 | 解道Vert.x线程模型 —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <!--<meta name="keywords" content="sczyh30, blog"/>-->
-  <meta name="description" content="线程模型概述Vert.x的线程模型设计的非常巧妙。总的来说，Vert.x中主要有两种线程：Event Loop线程 和 Worker线程。其中，Event Loop线程结合了Netty的EventLoop，用于处理事件。每一个EventLoop都与唯一的线程相绑定，这个线程就叫Event Loop线程。Event Loop线程不能被阻塞，否则事件将无法被处理。
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="sczyh30" />
+
+
+
+<meta name="description" content="线程模型概述Vert.x的线程模型设计的非常巧妙。总的来说，Vert.x中主要有两种线程：Event Loop线程 和 Worker线程。其中，Event Loop线程结合了Netty的EventLoop，用于处理事件。每一个EventLoop都与唯一的线程相绑定，这个线程就叫Event Loop线程。Event Loop线程不能被阻塞，否则事件将无法被处理。
 Worker线程用于执行阻塞任务，这">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Vert.x 技术内幕 | 解道Vert.x线程模型">
 <meta property="og:url" content="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-demystifying-thread-model/index.html">
-<meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:site_name" content="「浮生若梦」 - sczyh30's blog">
 <meta property="og:description" content="线程模型概述Vert.x的线程模型设计的非常巧妙。总的来说，Vert.x中主要有两种线程：Event Loop线程 和 Worker线程。其中，Event Loop线程结合了Netty的EventLoop，用于处理事件。每一个EventLoop都与唯一的线程相绑定，这个线程就叫Event Loop线程。Event Loop线程不能被阻塞，否则事件将无法被处理。
 Worker线程用于执行阻塞任务，这">
 <meta property="og:image" content="http://7xkkgd.com1.z0.glb.clouddn.com/vertx-event-loop-xx.png">
-<meta property="og:updated_time" content="2016-09-26T11:41:45.264Z">
+<meta property="og:updated_time" content="2016-11-24T06:07:29.845Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vert.x 技术内幕 | 解道Vert.x线程模型">
 <meta name="twitter:description" content="线程模型概述Vert.x的线程模型设计的非常巧妙。总的来说，Vert.x中主要有两种线程：Event Loop线程 和 Worker线程。其中，Event Loop线程结合了Netty的EventLoop，用于处理事件。每一个EventLoop都与唯一的线程相绑定，这个线程就叫Event Loop线程。Event Loop线程不能被阻塞，否则事件将无法被处理。
 Worker线程用于执行阻塞任务，这">
-  
-    <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.ico">
-  
-  
-      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
-  
-  
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
-  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  
-  
-      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  
-  <script>
-      var yiliaConfig = {
-          fancybox: true,
-          animate: true,
-          isHome: false,
-          isPost: true,
-          isArchive: false,
-          isTag: false,
-          isCategory: false,
-          open_in_new: true
-      }
-  </script>
-  
+<meta name="twitter:image" content="http://7xkkgd.com1.z0.glb.clouddn.com/vertx-event-loop-xx.png">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="「浮生若梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Vert.x 技术内幕 | 解道Vert.x线程模型 | 「浮生若梦」 - sczyh30&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
 </head>
 <body>
   <div id="container">
@@ -58,11 +101,8 @@ Worker线程用于执行阻塞任务，这">
 <div class="intrude-less">
     <header id="header" class="inner">
         <a href="/" class="profilepic">
-            
-            <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
-            
+            <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
         </a>
-
         <hgroup>
           <h1 class="header-author"><a href="/">sczyh30</a></h1>
         </hgroup>
@@ -70,7 +110,15 @@ Worker线程用于执行阻塞任务，这">
         
         <p class="header-subtitle">踏歌长行，梦想永在。</p>
         
-                
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
 
 
         
@@ -129,21 +177,19 @@ Worker线程用于执行阻塞任务，这">
                     <nav class="header-nav">
                         <ul class="social">
                             
-                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                                <a class="fa Email" href="/about" title="Email"></a>
                             
-                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                                <a class="fa GitHub" href="https://github.com/sczyh30" title="GitHub"></a>
                             
-                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a></li>
+                                <a class="fa 新浪微博" href="http://weibo.com/sczyh30" title="新浪微博"></a>
                             
-                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
                             
-                                <li id="SegmentFault"><a class="SegmentFault" target="_blank" href="https://segmentfault.com/u/sczyh30" title="SegmentFault"></a></li>
+                                <a class="fa Google" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
                             
-                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                                <a class="fa Twitter" href="https://twitter.com/sczyh30" title="Twitter"></a>
                             
-                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
-                            
-                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                                <a class="fa Medium" href="https://medium.com/@sczyh30" title="Medium"></a>
                             
                         </ul>
                     </nav>
@@ -152,7 +198,7 @@ Worker线程用于执行阻塞任务，这">
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/AIO/" style="font-size: 10px;">AIO</a> <a href="/tags/AMQP/" style="font-size: 10px;">AMQP</a> <a href="/tags/APT/" style="font-size: 10px;">APT</a> <a href="/tags/Akka-Actor/" style="font-size: 10px;">Akka Actor</a> <a href="/tags/Algorithm/" style="font-size: 13px;">Algorithm</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/C/" style="font-size: 16px;">C++</a> <a href="/tags/C-11/" style="font-size: 10px;">C++ 11</a> <a href="/tags/CE3/" style="font-size: 10px;">CE3</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Category-Theory/" style="font-size: 10px;">Category Theory</a> <a href="/tags/Chemistry/" style="font-size: 11px;">Chemistry</a> <a href="/tags/Compiler/" style="font-size: 10px;">Compiler</a> <a href="/tags/DI/" style="font-size: 10px;">DI</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Docker/" style="font-size: 11px;">Docker</a> <a href="/tags/Engine/" style="font-size: 10px;">Engine</a> <a href="/tags/Euterpea/" style="font-size: 10px;">Euterpea</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/FRP/" style="font-size: 10px;">FRP</a> <a href="/tags/Functional-Programming/" style="font-size: 18px;">Functional Programming</a> <a href="/tags/G1/" style="font-size: 10px;">G1</a> <a href="/tags/GC/" style="font-size: 13px;">GC</a> <a href="/tags/GDB/" style="font-size: 10px;">GDB</a> <a href="/tags/Game/" style="font-size: 11px;">Game</a> <a href="/tags/Gradle/" style="font-size: 10px;">Gradle</a> <a href="/tags/HashMap/" style="font-size: 11px;">HashMap</a> <a href="/tags/Haskell/" style="font-size: 14px;">Haskell</a> <a href="/tags/HotSpot/" style="font-size: 12px;">HotSpot</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 19px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Klass-oop/" style="font-size: 10px;">Klass-oop</a> <a href="/tags/LinkedList/" style="font-size: 10px;">LinkedList</a> <a href="/tags/Linux/" style="font-size: 12px;">Linux</a> <a href="/tags/MIDI/" style="font-size: 10px;">MIDI</a> <a href="/tags/Mathematical-Logic/" style="font-size: 10px;">Mathematical Logic</a> <a href="/tags/Metaspace/" style="font-size: 10px;">Metaspace</a> <a href="/tags/Netflix-Hystrix/" style="font-size: 10px;">Netflix Hystrix</a> <a href="/tags/Network/" style="font-size: 16px;">Network</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Object-Model/" style="font-size: 12px;">Object Model</a> <a href="/tags/Play-Framework/" style="font-size: 11px;">Play Framework</a> <a href="/tags/Quorum/" style="font-size: 10px;">Quorum</a> <a href="/tags/RabbitMQ/" style="font-size: 10px;">RabbitMQ</a> <a href="/tags/Reflection/" style="font-size: 11px;">Reflection</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/STL/" style="font-size: 11px;">STL</a> <a href="/tags/Scala/" style="font-size: 19px;">Scala</a> <a href="/tags/Slick/" style="font-size: 11px;">Slick</a> <a href="/tags/Sort/" style="font-size: 10px;">Sort</a> <a href="/tags/Struct/" style="font-size: 10px;">Struct</a> <a href="/tags/Summary/" style="font-size: 12px;">Summary</a> <a href="/tags/TCP/" style="font-size: 15px;">TCP</a> <a href="/tags/Type-Lambda/" style="font-size: 10px;">Type Lambda</a> <a href="/tags/Type-System/" style="font-size: 10px;">Type System</a> <a href="/tags/Type-Theory/" style="font-size: 12px;">Type Theory</a> <a href="/tags/UE4/" style="font-size: 10px;">UE4</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a> <a href="/tags/Vert-x/" style="font-size: 19px;">Vert.x</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/Web/" style="font-size: 12px;">Web</a> <a href="/tags/Web开发/" style="font-size: 12px;">Web开发</a> <a href="/tags/event/" style="font-size: 10px;">event</a> <a href="/tags/functional/" style="font-size: 10px;">functional</a> <a href="/tags/中间件/" style="font-size: 10px;">中间件</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/云服务/" style="font-size: 12px;">云服务</a> <a href="/tags/内存区域/" style="font-size: 10px;">内存区域</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/分布式系统/" style="font-size: 12px;">分布式系统</a> <a href="/tags/前端/" style="font-size: 12px;">前端</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/多线程/" style="font-size: 11px;">多线程</a> <a href="/tags/容器/" style="font-size: 10px;">容器</a> <a href="/tags/并发/" style="font-size: 15px;">并发</a> <a href="/tags/开发/" style="font-size: 17px;">开发</a> <a href="/tags/异步/" style="font-size: 13px;">异步</a> <a href="/tags/异步编程/" style="font-size: 18px;">异步编程</a> <a href="/tags/微服务/" style="font-size: 13px;">微服务</a> <a href="/tags/性能/" style="font-size: 10px;">性能</a> <a href="/tags/性能优化/" style="font-size: 10px;">性能优化</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 11px;">数据库</a> <a href="/tags/架构/" style="font-size: 11px;">架构</a> <a href="/tags/消息系统/" style="font-size: 10px;">消息系统</a> <a href="/tags/源码分析/" style="font-size: 14px;">源码分析</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a> <a href="/tags/线程安全/" style="font-size: 10px;">线程安全</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a>
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AMQP/">AMQP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/APT/">APT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Akka/">Akka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-14/">C++ 14</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CAP/">CAP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CE3/">CE3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CPS/">CPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cache/">Cache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Category-Theory/">Category Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chemistry/">Chemistry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Continuation/">Continuation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DI/">DI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Engine/">Engine</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Euterpea/">Euterpea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Loop/">Event Loop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GC/">GC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GDB/">GDB</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Game/">Game</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gradle/">Gradle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HotSpot/">HotSpot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JUC/">JUC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klass-oop/">Klass-oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lambda-Calculus/">Lambda Calculus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkedList/">LinkedList</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIDI/">MIDI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mathematical-Logic/">Mathematical Logic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metaspace/">Metaspace</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Netflix-Hystrix/">Netflix Hystrix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Network/">Network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Object-Model/">Object Model</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PLT/">PLT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paper/">Paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Play-Framework/">Play Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quorum/">Quorum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RPC/">RPC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Reflection/">Reflection</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL/">SQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/STL/">STL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scala/">Scala</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scheme/">Scheme</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Slick/">Slick</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sort/">Sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Summary/">Summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Class/">Type Class</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Lambda/">Type Lambda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-System/">Type System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Theory/">Type Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UE4/">UE4</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity/">Unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vert-x/">Vert.x</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/View/">View</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web/">Web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web开发/">Web开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/中间件/">中间件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/云服务/">云服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存区域/">内存区域</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式系统/">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式计算/">分布式计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端/">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础/">基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异步编程/">异步编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/微服务/">微服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息系统/">消息系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码分析/">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/线程安全/">线程安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li></ul>
                     </div>
                 </section>
                 
@@ -163,7 +209,7 @@ Worker线程用于执行阻塞任务，这">
                 
                 <section class="switch-part switch-part3">
                 
-                    <div id="js-aboutme">Fighting</div>
+                    <div id="js-aboutme">Distributed System/Deep Learning/PLT</div>
                 </section>
                 
             </div>
@@ -180,9 +226,7 @@ Worker线程用于执行阻塞任务，这">
     <div class="intrude-less">
         <header id="header" class="inner">
             <a href="/" class="profilepic">
-                
-                    <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
-                
+                <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
             </a>
             <hgroup>
               <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
@@ -209,26 +253,25 @@ Worker线程用于执行阻塞任务，这">
             <nav class="header-nav">
                         <ul class="social">
                             
-                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                                <a class="fa Email" target="_blank" href="/about" title="Email"></a>
                             
-                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                                <a class="fa GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a>
                             
-                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a></li>
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a>
                             
-                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
                             
-                                <li id="SegmentFault"><a class="SegmentFault" target="_blank" href="https://segmentfault.com/u/sczyh30" title="SegmentFault"></a></li>
+                                <a class="fa Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
                             
-                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a>
                             
-                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
-                            
-                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                                <a class="fa Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a>
                             
                         </ul>
             </nav>
         </header>                
     </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
       <div class="body-wrap"><article id="post-vertx-advanced-demystifying-thread-model" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -236,6 +279,8 @@ Worker线程用于执行阻塞任务，这">
       <a href="/posts/Vert-x/vertx-advanced-demystifying-thread-model/" class="article-date">
       <time datetime="2016-09-24T16:00:00.000Z" itemprop="datePublished">2016-09-25</time>
 </a>
+
+
     </div>
   
   <div class="article-inner">
@@ -281,7 +326,7 @@ Worker线程用于执行阻塞任务，这">
 <p>Vert.x线程模型中最重要的一点就是：<strong>永远不要阻塞Event Loop线程</strong>。因为一旦处理事件的线程被阻塞了，事件就会一直积压着不能被处理，整个应用也就不能正常工作了。</p>
 <p>Vert.x中内置一种用于检测Event Loop是否阻塞的线程：<code>vertx-blocked-thread-checker</code>。一旦Event Loop处理某个事件的时间超过一定阈值（默认为2000ms）就会警告，如果阻塞的时间过长就会抛出异常。Block Checker的实现原理比较简单，底层借助了JUC的<code>TimerTask</code>，定时计算每个Event Loop线程的处理事件消耗的时间，如果超时就进行相应的警告。</p>
 <h1 id="Vert-x_Thread">Vert.x Thread</h1><p>Vert.x中的Event Loop线程及Worker线程都用<code>VertxThread</code>类表示，并通过<code>VertxThreadFactory</code>线程工厂来创建。<code>VertxThreadFactory</code>创建Vert.x线程的过程非常简单：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable runnable)</span> </span>&#123;</span><br><span class="line">  VertxThread t = <span class="keyword">new</span> VertxThread(runnable, prefix + threadCount.getAndIncrement(), worker, maxExecTime);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (checker != <span class="keyword">null</span>) &#123;</span><br><span class="line">    checker.registerThread(t);</span><br><span class="line">  &#125;</span><br><span class="line">  addToMap(t);</span><br><span class="line"></span><br><span class="line">  t.setDaemon(<span class="keyword">false</span>);</span><br><span class="line">  <span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable runnable)</span> </span>&#123;</div><div class="line">  VertxThread t = <span class="keyword">new</span> VertxThread(runnable, prefix + threadCount.getAndIncrement(), worker, maxExecTime);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (checker != <span class="keyword">null</span>) &#123;</div><div class="line">    checker.registerThread(t);</div><div class="line">  &#125;</div><div class="line">  addToMap(t);</div><div class="line"></div><div class="line">  t.setDaemon(<span class="keyword">false</span>);</div><div class="line">  <span class="keyword">return</span> t;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>除了创建<code>VertxThread</code>线程之外，<code>VertxThreadFactory</code>还会将此线程注册至Block Checker线程中以监视线程的阻塞情况，并且将此线程添加至内部的<code>weakMap</code>中。这个<code>weakMap</code>作用只有一个，就是在注销对应的Verticle的时候可以将每个<code>VertxThread</code>中的<code>Context</code>实例清除(unset)。为了保证资源不被一直占用，这里使用了<code>WeakHashMap</code>来存储每一个<code>VertxThread</code>。当里面的<code>VertxThread</code>的引用不被其他实例持有的时候，它就会被标记为可清除的对象，等待GC。</p>
 <p>至于<code>VertxThread</code>，它其实就是在普通线程的基础上存储了额外的数据（如对应的Vert.x Context，最大执行时长，当前执行时间，是否为Worker线程等），这里就不多讲了。</p>
 <h1 id="Vert-x_Context">Vert.x Context</h1><p>Vert.x底层中一个重要的概念就是<code>Context</code>，每个<code>Context</code>都会绑定着一个Event Loop线程（而一个Event Loop线程可以对应多个<code>Context</code>）。我们可以把<code>Context</code>看作是控制一系列的<code>Handler</code>的执行作用域及顺序的上下文对象。</p>
@@ -297,42 +342,42 @@ Worker线程用于执行阻塞任务，这">
 <li><code>MultiThreadedWorkerContext</code></li>
 </ul>
 <h2 id="Event_loop_context">Event loop context</h2><p>每个Event Loop Context都会对应着唯一的一个<code>EventLoop</code>，即一个Event Loop Context只会在同一个Event Loop线程上执行任务。在创建<code>Context</code>的时候，Vert.x会自动根据轮询策略选择对应的<code>EventLoop</code>:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="title">ContextImpl</span><span class="params">(VertxInternal vertx, WorkerPool internalBlockingPool, WorkerPool workerPool, String deploymentID, JsonObject config,</span><br><span class="line">                        ClassLoader tccl)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    EventLoopGroup group = vertx.getEventLoopGroup();</span><br><span class="line">    <span class="keyword">if</span> (group != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>.eventLoop = group.next();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.eventLoop = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> <span class="title">ContextImpl</span><span class="params">(VertxInternal vertx, WorkerPool internalBlockingPool, WorkerPool workerPool, String deploymentID, JsonObject config,</span></span></div><div class="line">                        ClassLoader tccl) &#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">    EventLoopGroup group = vertx.getEventLoopGroup();</div><div class="line">    <span class="keyword">if</span> (group != <span class="keyword">null</span>) &#123;</div><div class="line">      <span class="keyword">this</span>.eventLoop = group.next();</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      <span class="keyword">this</span>.eventLoop = <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">  &#125;</div></pre></td></tr></table></figure>
 <p>在Netty中，<code>EventLoopGroup</code>代表一组<code>EventLoop</code>，而从中获取<code>EventLoop</code>的方法则是<code>next</code>方法。<code>EventLoopGroup</code>中<code>EventLoop</code>的数量由CPU内核数目所确定。Vert.x这里使用了Netty NIO对应的<code>NioEventLoop</code>：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">eventLoopGroup = <span class="keyword">new</span> NioEventLoopGroup(options.getEventLoopPoolSize(), eventLoopThreadFactory);</span><br><span class="line">eventLoopGroup.setIoRatio(NETTY_IO_RATIO);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">eventLoopGroup = <span class="keyword">new</span> NioEventLoopGroup(options.getEventLoopPoolSize(), eventLoopThreadFactory);</div><div class="line">eventLoopGroup.setIoRatio(NETTY_IO_RATIO);</div></pre></td></tr></table></figure>
 <p>对应的轮询算法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> EventExecutorChooser <span class="title">newChooser</span><span class="params">(EventExecutor[] executors)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isPowerOfTwo(executors.length)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> PowerOfTowEventExecutorChooser(executors);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> GenericEventExecutorChooser(executors);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> EventExecutorChooser <span class="title">newChooser</span><span class="params">(EventExecutor[] executors)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (isPowerOfTwo(executors.length)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> PowerOfTowEventExecutorChooser(executors);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> GenericEventExecutorChooser(executors);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>可以看到，正常情况下Netty会用轮询策略选择<code>EventLoop</code>。特别地，如果<code>EventLoop</code>的个数是2的倍数的话，选择的会快一些：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericEventExecutorChooser</span> <span class="keyword">implements</span> <span class="title">EventExecutorChooser</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> EventExecutor <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> executors[Math.abs(idx.getAndIncrement() % executors.length)];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">PowerOfTowEventExecutorChooser</span> <span class="keyword">implements</span> <span class="title">EventExecutorChooser</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> EventExecutor <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> executors[idx.getAndIncrement() &amp; executors.length - <span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericEventExecutorChooser</span> <span class="keyword">implements</span> <span class="title">EventExecutorChooser</span> </span>&#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> EventExecutor <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> executors[Math.abs(idx.getAndIncrement() % executors.length)];</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">PowerOfTowEventExecutorChooser</span> <span class="keyword">implements</span> <span class="title">EventExecutorChooser</span> </span>&#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> EventExecutor <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> executors[idx.getAndIncrement() &amp; executors.length - <span class="number">1</span>];</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>我们可以在Embedded模式下测试一下Event Loop线程的分配：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(Thread.currentThread());</span><br><span class="line">Vertx vertx = Vertx.vertx();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;</span><br><span class="line">  <span class="keyword">int</span> index = i;</span><br><span class="line">  vertx.setTimer(<span class="number">1</span>, t -&gt; &#123;</span><br><span class="line">    System.out.println(index + <span class="string">":"</span> + Thread.currentThread());</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">System.out.println(Thread.currentThread());</div><div class="line">Vertx vertx = Vertx.vertx();</div><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;</div><div class="line">  <span class="keyword">int</span> index = i;</div><div class="line">  vertx.setTimer(<span class="number">1</span>, t -&gt; &#123;</div><div class="line">    System.out.println(index + <span class="string">":"</span> + Thread.currentThread());</div><div class="line">  &#125;);</div></pre></td></tr></table></figure>
 <p>运行结果（不同机器运行顺序、Event Loop线程数可能不同）：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Thread[main,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">0</span>:Thread[vert.x-eventloop-thread-<span class="number">0</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">1</span>:Thread[vert.x-eventloop-thread-<span class="number">1</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">2</span>:Thread[vert.x-eventloop-thread-<span class="number">2</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">3</span>:Thread[vert.x-eventloop-thread-<span class="number">3</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">5</span>:Thread[vert.x-eventloop-thread-<span class="number">5</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">6</span>:Thread[vert.x-eventloop-thread-<span class="number">6</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">8</span>:Thread[vert.x-eventloop-thread-<span class="number">8</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">7</span>:Thread[vert.x-eventloop-thread-<span class="number">7</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">10</span>:Thread[vert.x-eventloop-thread-<span class="number">10</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">9</span>:Thread[vert.x-eventloop-thread-<span class="number">9</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">4</span>:Thread[vert.x-eventloop-thread-<span class="number">4</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">11</span>:Thread[vert.x-eventloop-thread-<span class="number">11</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">12</span>:Thread[vert.x-eventloop-thread-<span class="number">12</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">13</span>:Thread[vert.x-eventloop-thread-<span class="number">13</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">14</span>:Thread[vert.x-eventloop-thread-<span class="number">14</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">16</span>:Thread[vert.x-eventloop-thread-<span class="number">0</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">17</span>:Thread[vert.x-eventloop-thread-<span class="number">1</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">15</span>:Thread[vert.x-eventloop-thread-<span class="number">15</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">18</span>:Thread[vert.x-eventloop-thread-<span class="number">2</span>,<span class="number">5</span>,main]</span><br><span class="line"><span class="number">19</span>:Thread[vert.x-eventloop-thread-<span class="number">3</span>,<span class="number">5</span>,main]</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">Thread[main,<span class="number">5</span>,main]</div><div class="line"><span class="number">0</span>:Thread[vert.x-eventloop-thread-<span class="number">0</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">1</span>:Thread[vert.x-eventloop-thread-<span class="number">1</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">2</span>:Thread[vert.x-eventloop-thread-<span class="number">2</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">3</span>:Thread[vert.x-eventloop-thread-<span class="number">3</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">5</span>:Thread[vert.x-eventloop-thread-<span class="number">5</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">6</span>:Thread[vert.x-eventloop-thread-<span class="number">6</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">8</span>:Thread[vert.x-eventloop-thread-<span class="number">8</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">7</span>:Thread[vert.x-eventloop-thread-<span class="number">7</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">10</span>:Thread[vert.x-eventloop-thread-<span class="number">10</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">9</span>:Thread[vert.x-eventloop-thread-<span class="number">9</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">4</span>:Thread[vert.x-eventloop-thread-<span class="number">4</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">11</span>:Thread[vert.x-eventloop-thread-<span class="number">11</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">12</span>:Thread[vert.x-eventloop-thread-<span class="number">12</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">13</span>:Thread[vert.x-eventloop-thread-<span class="number">13</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">14</span>:Thread[vert.x-eventloop-thread-<span class="number">14</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">16</span>:Thread[vert.x-eventloop-thread-<span class="number">0</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">17</span>:Thread[vert.x-eventloop-thread-<span class="number">1</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">15</span>:Thread[vert.x-eventloop-thread-<span class="number">15</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">18</span>:Thread[vert.x-eventloop-thread-<span class="number">2</span>,<span class="number">5</span>,main]</div><div class="line"><span class="number">19</span>:Thread[vert.x-eventloop-thread-<span class="number">3</span>,<span class="number">5</span>,main]</div></pre></td></tr></table></figure>
 <p>可以看到尽管每个<code>Context</code>对应唯一的Event Loop线程，而每个Event Loop线程却可能对应多个<code>Context</code>。</p>
 <p>Event Loop Context会在对应的<code>EventLoop</code>中执行<code>Handler</code>进行事件的处理（IO事件，非阻塞）。Vert.x会保证同一个<code>Handler</code>会一直在同一个Event Loop线程中执行，这样可以简化线程模型，让开发者在写<code>Handler</code>的时候不需要考虑并发的问题，非常方便。</p>
 <p>我们来粗略地看一下<code>Handler</code>是如何在<code>EventLoop</code>上执行的。<code>EventLoopContext</code>中实现了<code>executeAsync</code>方法用于包装<code>Handler</code>中事件处理的逻辑并将其提交至对应的<code>EventLoop</code>中进行执行：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">executeAsync</span><span class="params">(Handler&lt;Void&gt; task)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// No metrics, we are on the event loop.</span></span><br><span class="line">  nettyEventLoop().execute(wrapTask(<span class="keyword">null</span>, task, <span class="keyword">true</span>, <span class="keyword">null</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">executeAsync</span><span class="params">(Handler&lt;Void&gt; task)</span> </span>&#123;</div><div class="line">  <span class="comment">// No metrics, we are on the event loop.</span></div><div class="line">  nettyEventLoop().execute(wrapTask(<span class="keyword">null</span>, task, <span class="keyword">true</span>, <span class="keyword">null</span>));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>这里Vert.x使用了<code>wrapTask</code>方法将<code>Handler</code>封装成了一个<code>Runnable</code>用于向<code>EventLoop</code>中提交。代码比较直观，大致就是检查当前线程是否为Vert.x线程，然后记录事件处理开始的时间，给当前的Vert.x线程设置<code>Context</code>，并且调用<code>Handler</code>里面的事件处理方法。具体请参考源码，这里就不贴出来了。</p>
 <p>那么把封装好的task提交到<code>EventLoop</code>以后，<code>EventLoop</code>是怎么处理的呢？这就需要更多的Netty相关的知识了。根据Netty的模型，Event Loop线程需要处理IO事件，普通事件（即我们的<code>Handler</code>）以及定时事件（比如Vert.x的<code>setTimer</code>）。Vert.x会提供一个<code>NETTY_IO_RATIO</code>给Netty代表<code>EventLoop</code>处理IO事件时间占用的百分比（默认为50，即IO事件时间占用:非IO事件时间占用=1:1）。当<code>EventLoop</code>启动的时候，它会不断轮询IO时间及其它事件并进行处理：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">switch</span> (selectStrategy.calculateStrategy(selectNowSupplier, hasTasks())) &#123;</span><br><span class="line">                <span class="keyword">case</span> SelectStrategy.CONTINUE:</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                <span class="keyword">case</span> SelectStrategy.SELECT:</span><br><span class="line">                    select(wakenUp.getAndSet(<span class="keyword">false</span>));</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (wakenUp.get()) &#123;</span><br><span class="line">                        selector.wakeup();</span><br><span class="line">                    &#125;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    <span class="comment">// fallthrough</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            cancelledKeys = <span class="number">0</span>;</span><br><span class="line">            needsToSelectAgain = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">int</span> ioRatio = <span class="keyword">this</span>.ioRatio;</span><br><span class="line">            <span class="keyword">if</span> (ioRatio == <span class="number">100</span>) &#123;</span><br><span class="line">                processSelectedKeys();</span><br><span class="line">                runAllTasks();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">long</span> ioStartTime = System.nanoTime();</span><br><span class="line"></span><br><span class="line">                processSelectedKeys();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">long</span> ioTime = System.nanoTime() - ioStartTime;</span><br><span class="line">                runAllTasks(ioTime * (<span class="number">100</span> - ioRatio) / ioRatio);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (isShuttingDown()) &#123;</span><br><span class="line">                closeAll();</span><br><span class="line">                <span class="keyword">if</span> (confirmShutdown()) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            <span class="comment">// process the error</span></span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">switch</span> (selectStrategy.calculateStrategy(selectNowSupplier, hasTasks())) &#123;</div><div class="line">                <span class="keyword">case</span> SelectStrategy.CONTINUE:</div><div class="line">                    <span class="keyword">continue</span>;</div><div class="line">                <span class="keyword">case</span> SelectStrategy.SELECT:</div><div class="line">                    select(wakenUp.getAndSet(<span class="keyword">false</span>));</div><div class="line"></div><div class="line">                    <span class="keyword">if</span> (wakenUp.get()) &#123;</div><div class="line">                        selector.wakeup();</div><div class="line">                    &#125;</div><div class="line">                <span class="keyword">default</span>:</div><div class="line">                    <span class="comment">// fallthrough</span></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            cancelledKeys = <span class="number">0</span>;</div><div class="line">            needsToSelectAgain = <span class="keyword">false</span>;</div><div class="line">            <span class="keyword">final</span> <span class="keyword">int</span> ioRatio = <span class="keyword">this</span>.ioRatio;</div><div class="line">            <span class="keyword">if</span> (ioRatio == <span class="number">100</span>) &#123;</div><div class="line">                processSelectedKeys();</div><div class="line">                runAllTasks();</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">final</span> <span class="keyword">long</span> ioStartTime = System.nanoTime();</div><div class="line"></div><div class="line">                processSelectedKeys();</div><div class="line"></div><div class="line">                <span class="keyword">final</span> <span class="keyword">long</span> ioTime = System.nanoTime() - ioStartTime;</div><div class="line">                runAllTasks(ioTime * (<span class="number">100</span> - ioRatio) / ioRatio);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (isShuttingDown()) &#123;</div><div class="line">                closeAll();</div><div class="line">                <span class="keyword">if</span> (confirmShutdown()) &#123;</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</div><div class="line">            <span class="comment">// process the error</span></div><div class="line">            <span class="comment">// ...</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>这里面Netty会调用<code>processSelectedKeys</code>方法进行IO事件的处理，并且会计算出处理IO时间所用的事件然后计算出给非IO事件处理分配的时间，然后调用<code>runAllTasks</code>方法执行所有的非IO任务（这里面就有我们的各个<code>Handler</code>）。</p>
 <p><code>runAllTasks</code>会按顺序从内部的任务队列中取出任务(<code>Runnable</code>)然后进行安全执行。而我们刚才调用的<code>NioEventLoop</code>的<code>execute</code>方法其实就是将包装好的<code>Handler</code>置入<code>NioEventLoop</code>内部的任务队列中等待执行。</p>
 <h2 id="Worker_context">Worker context</h2><p>顾名思义，Worker Context用于跑阻塞任务。与Event Loop Context相似，每一个<code>Handler</code>都只会跑在固定的Worker线程下。</p>
 <p>Vert.x还提供一种Multi-threaded worker context可以在多个Worker线程下并发执行任务，这样就会出现并发问题，需要开发者自行解决并发问题。因此一般情况下我们用不到Multi-threaded worker context。</p>
 <h1 id="Verticle">Verticle</h1><p>我们再来讨论一下<code>Verticle</code>中的<code>Context</code>。在部署<code>Verticle</code>的时候，Vert.x会根据配置来创建<code>Context</code>并绑定到Verticle上，此后此Verticle上所有绑定的<code>Handler</code>都会在此<code>Context</code>上执行。相关实现位于<code>doDeploy</code>方法，这里摘取核心部分：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (Verticle verticle: verticles) &#123;</span><br><span class="line">  WorkerExecutorImpl workerExec = poolName != <span class="keyword">null</span> ? vertx.createSharedWorkerExecutor(poolName, options.getWorkerPoolSize()) : <span class="keyword">null</span>;</span><br><span class="line">  WorkerPool pool = workerExec != <span class="keyword">null</span> ? workerExec.getPool() : <span class="keyword">null</span>;</span><br><span class="line">  <span class="comment">// 根据配置创建Context</span></span><br><span class="line">  ContextImpl context = options.isWorker() ? vertx.createWorkerContext(options.isMultiThreaded(), deploymentID, pool, conf, tccl) :</span><br><span class="line">    vertx.createEventLoopContext(deploymentID, pool, conf, tccl);</span><br><span class="line">  <span class="keyword">if</span> (workerExec != <span class="keyword">null</span>) &#123;</span><br><span class="line">    context.addCloseHook(workerExec);</span><br><span class="line">  &#125;</span><br><span class="line">  context.setDeployment(deployment);</span><br><span class="line">  deployment.addVerticle(<span class="keyword">new</span> VerticleHolder(verticle, context));</span><br><span class="line">  <span class="comment">// 此Verticle上的Handler都会在创建的context作用域内执行</span></span><br><span class="line">  context.runOnContext(v -&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      verticle.init(vertx, context);</span><br><span class="line">      Future&lt;Void&gt; startFuture = Future.future();</span><br><span class="line">      <span class="comment">// 大家熟悉的start方法的执行点</span></span><br><span class="line">      verticle.start(startFuture);</span><br><span class="line">      startFuture.setHandler(ar -&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (ar.succeeded()) &#123;</span><br><span class="line">          <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">            parent.addChild(deployment);</span><br><span class="line">            deployment.child = <span class="keyword">true</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          vertx.metricsSPI().verticleDeployed(verticle);</span><br><span class="line">          deployments.put(deploymentID, deployment);</span><br><span class="line">          <span class="keyword">if</span> (deployCount.incrementAndGet() == verticles.length) &#123;</span><br><span class="line">            reportSuccess(deploymentID, callingContext, completionHandler);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!failureReported.get()) &#123;</span><br><span class="line">          reportFailure(ar.cause(), callingContext, completionHandler);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">      reportFailure(t, callingContext, completionHandler);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (Verticle verticle: verticles) &#123;</div><div class="line">  WorkerExecutorImpl workerExec = poolName != <span class="keyword">null</span> ? vertx.createSharedWorkerExecutor(poolName, options.getWorkerPoolSize()) : <span class="keyword">null</span>;</div><div class="line">  WorkerPool pool = workerExec != <span class="keyword">null</span> ? workerExec.getPool() : <span class="keyword">null</span>;</div><div class="line">  <span class="comment">// 根据配置创建Context</span></div><div class="line">  ContextImpl context = options.isWorker() ? vertx.createWorkerContext(options.isMultiThreaded(), deploymentID, pool, conf, tccl) :</div><div class="line">    vertx.createEventLoopContext(deploymentID, pool, conf, tccl);</div><div class="line">  <span class="keyword">if</span> (workerExec != <span class="keyword">null</span>) &#123;</div><div class="line">    context.addCloseHook(workerExec);</div><div class="line">  &#125;</div><div class="line">  context.setDeployment(deployment);</div><div class="line">  deployment.addVerticle(<span class="keyword">new</span> VerticleHolder(verticle, context));</div><div class="line">  <span class="comment">// 此Verticle上的Handler都会在创建的context作用域内执行</span></div><div class="line">  context.runOnContext(v -&gt; &#123;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      verticle.init(vertx, context);</div><div class="line">      Future&lt;Void&gt; startFuture = Future.future();</div><div class="line">      <span class="comment">// 大家熟悉的start方法的执行点</span></div><div class="line">      verticle.start(startFuture);</div><div class="line">      startFuture.setHandler(ar -&gt; &#123;</div><div class="line">        <span class="keyword">if</span> (ar.succeeded()) &#123;</div><div class="line">          <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</div><div class="line">            parent.addChild(deployment);</div><div class="line">            deployment.child = <span class="keyword">true</span>;</div><div class="line">          &#125;</div><div class="line">          vertx.metricsSPI().verticleDeployed(verticle);</div><div class="line">          deployments.put(deploymentID, deployment);</div><div class="line">          <span class="keyword">if</span> (deployCount.incrementAndGet() == verticles.length) &#123;</div><div class="line">            reportSuccess(deploymentID, callingContext, completionHandler);</div><div class="line">          &#125;</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!failureReported.get()) &#123;</div><div class="line">          reportFailure(ar.cause(), callingContext, completionHandler);</div><div class="line">        &#125;</div><div class="line">      &#125;);</div><div class="line">    &#125; <span class="keyword">catch</span> (Throwable t) &#123;</div><div class="line">      reportFailure(t, callingContext, completionHandler);</div><div class="line">    &#125;</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>通过这样一种方式，Vert.x保证了<code>Verticle</code>的线程安全 —— 即某个<code>Verticle</code>上的所有<code>Handler</code>都会在同一个Vert.x线程上执行，这样也保证了<code>Verticle</code>内部成员的安全（没有race condition问题）。比如下面Verticle中处理IO及事件的处理都一直是在同一个Vert.x线程下执行的，每次打印出的线程名称应该是一样的：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpClientVerticle</span> <span class="keyword">extends</span> <span class="title">AbstractVerticle</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">  <span class="annotation">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    vertx.createNetClient().connect(<span class="number">6666</span>, <span class="string">"localhost"</span>, ar -&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (ar.succeeded()) &#123;</span><br><span class="line">        NetSocket socket = ar.result();</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        socket.handler(buffer -&gt; &#123;</span><br><span class="line">          i++;</span><br><span class="line">          System.out.println(Thread.currentThread().getName());</span><br><span class="line">          System.out.println(<span class="string">"Net client receiving: "</span> + buffer.toString(<span class="string">"UTF-8"</span>));</span><br><span class="line">        &#125;);</span><br><span class="line">        socket.write(<span class="string">"+1s\n"</span>);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        ar.cause().printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TcpClientVerticle</span> <span class="keyword">extends</span> <span class="title">AbstractVerticle</span> </span>&#123;</div><div class="line">  <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">  <span class="meta">@Override</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">    vertx.createNetClient().connect(<span class="number">6666</span>, <span class="string">"localhost"</span>, ar -&gt; &#123;</div><div class="line">      <span class="keyword">if</span> (ar.succeeded()) &#123;</div><div class="line">        NetSocket socket = ar.result();</div><div class="line">        System.out.println(Thread.currentThread().getName());</div><div class="line">        socket.handler(buffer -&gt; &#123;</div><div class="line">          i++;</div><div class="line">          System.out.println(Thread.currentThread().getName());</div><div class="line">          System.out.println(<span class="string">"Net client receiving: "</span> + buffer.toString(<span class="string">"UTF-8"</span>));</div><div class="line">        &#125;);</div><div class="line">        socket.write(<span class="string">"+1s\n"</span>);</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        ar.cause().printStackTrace();</div><div class="line">      &#125;</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h1 id="线程池">线程池</h1><h2 id="Event_Loop线程池">Event Loop线程池</h2><p>之前我们已经提到过，Event Loop线程池的类型为Netty中的<code>NioEventLoopGroup</code>，里面的线程通过Vert.x自己的线程工厂<code>VertxThreadFactory</code>进行创建：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eventLoopThreadFactory = <span class="keyword">new</span> VertxThreadFactory(<span class="string">"vert.x-eventloop-thread-"</span>, checker, <span class="keyword">false</span>, options.getMaxEventLoopExecuteTime());</span><br><span class="line">eventLoopGroup = <span class="keyword">new</span> NioEventLoopGroup(options.getEventLoopPoolSize(), eventLoopThreadFactory);</span><br><span class="line">eventLoopGroup.setIoRatio(NETTY_IO_RATIO);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">eventLoopThreadFactory = <span class="keyword">new</span> VertxThreadFactory(<span class="string">"vert.x-eventloop-thread-"</span>, checker, <span class="keyword">false</span>, options.getMaxEventLoopExecuteTime());</div><div class="line">eventLoopGroup = <span class="keyword">new</span> NioEventLoopGroup(options.getEventLoopPoolSize(), eventLoopThreadFactory);</div><div class="line">eventLoopGroup.setIoRatio(NETTY_IO_RATIO);</div></pre></td></tr></table></figure>
 <p>其中Event Loop线程的数目可以在配置中指定。</p>
 <h2 id="Worker线程池">Worker线程池</h2><p>在之前讲<code>executeBlocking</code>底层实现的文章中我们已经提到过Worker线程池，它其实就是一种Fixed Thread Pool:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ExecutorService workerExec = Executors.newFixedThreadPool(options.getWorkerPoolSize(),</span><br><span class="line">    <span class="keyword">new</span> VertxThreadFactory(<span class="string">"vert.x-worker-thread-"</span>, checker, <span class="keyword">true</span>, options.getMaxWorkerExecuteTime()));</span><br><span class="line">PoolMetrics workerPoolMetrics = isMetricsEnabled() ? metrics.createMetrics(workerExec, <span class="string">"worker"</span>, <span class="string">"vert.x-worker-thread"</span>, options.getWorkerPoolSize()) : <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">workerPool = <span class="keyword">new</span> WorkerPool(workerExec, workerPoolMetrics);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ExecutorService workerExec = Executors.newFixedThreadPool(options.getWorkerPoolSize(),</div><div class="line">    <span class="keyword">new</span> VertxThreadFactory(<span class="string">"vert.x-worker-thread-"</span>, checker, <span class="keyword">true</span>, options.getMaxWorkerExecuteTime()));</div><div class="line">PoolMetrics workerPoolMetrics = isMetricsEnabled() ? metrics.createMetrics(workerExec, <span class="string">"worker"</span>, <span class="string">"vert.x-worker-thread"</span>, options.getWorkerPoolSize()) : <span class="keyword">null</span>;</div><div class="line"></div><div class="line">workerPool = <span class="keyword">new</span> WorkerPool(workerExec, workerPoolMetrics);</div></pre></td></tr></table></figure>
 <p>Worker线程同样由<code>VertxThreadFactory</code>构造，类型为<code>VertxThread</code>，用于执行阻塞任务。我们同样可以在配置中指定其数目。</p>
-<h2 id="内部阻塞线程池">内部阻塞线程池</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ExecutorService internalBlockingExec = Executors.newFixedThreadPool(options.getInternalBlockingPoolSize(),</span><br><span class="line">    <span class="keyword">new</span> VertxThreadFactory(<span class="string">"vert.x-internal-blocking-"</span>, checker, <span class="keyword">true</span>, options.getMaxWorkerExecuteTime()));</span><br><span class="line">PoolMetrics internalBlockingPoolMetrics = isMetricsEnabled() ? metrics.createMetrics(internalBlockingExec, <span class="string">"worker"</span>, <span class="string">"vert.x-internal-blocking"</span>, options.getInternalBlockingPoolSize()) : <span class="keyword">null</span>;</span><br><span class="line">internalBlockingPool = <span class="keyword">new</span> WorkerPool(internalBlockingExec, internalBlockingPoolMetrics);</span><br></pre></td></tr></table></figure>
+<h2 id="内部阻塞线程池">内部阻塞线程池</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ExecutorService internalBlockingExec = Executors.newFixedThreadPool(options.getInternalBlockingPoolSize(),</div><div class="line">    <span class="keyword">new</span> VertxThreadFactory(<span class="string">"vert.x-internal-blocking-"</span>, checker, <span class="keyword">true</span>, options.getMaxWorkerExecuteTime()));</div><div class="line">PoolMetrics internalBlockingPoolMetrics = isMetricsEnabled() ? metrics.createMetrics(internalBlockingExec, <span class="string">"worker"</span>, <span class="string">"vert.x-internal-blocking"</span>, options.getInternalBlockingPoolSize()) : <span class="keyword">null</span>;</div><div class="line">internalBlockingPool = <span class="keyword">new</span> WorkerPool(internalBlockingExec, internalBlockingPoolMetrics);</div></pre></td></tr></table></figure>
 <p>Internal Blocking Pool可能设计用于内部使用，在<code>executeBlocking(Action&lt;T&gt; action, Handler&lt;AsyncResult&lt;T&gt;&gt; resultHandler)</code>这个版本的方法中就使用了它。</p>
 <h2 id="Acceptor_Event_Loop线程池">Acceptor Event Loop线程池</h2><p>大家可能会发现<code>VertxImpl</code>类中还有一个<code>acceptorEventLoopGroup</code>。顾名思义，它是Netty中的Acceptor线程池，负责处理客户端的连接请求：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">acceptorEventLoopGroup = <span class="keyword">new</span> NioEventLoopGroup(<span class="number">1</span>, acceptorEventLoopThreadFactory);</span><br><span class="line">acceptorEventLoopGroup.setIoRatio(<span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">acceptorEventLoopGroup = <span class="keyword">new</span> NioEventLoopGroup(<span class="number">1</span>, acceptorEventLoopThreadFactory);</div><div class="line">acceptorEventLoopGroup.setIoRatio(<span class="number">100</span>);</div></pre></td></tr></table></figure>
 <p>由于系统只有一个服务端端口需要监听，因此这里只需要一个线程。</p>
 <p>Vert.x中的<code>HttpServer</code>就利用了<code>acceptorEventLoopGroup</code>处理客户端的连接请求，具体的实现后边会另起一篇介绍。</p>
 
@@ -344,23 +389,27 @@ Worker线程用于执行阻塞任务，这">
     
     <div class="copyright">
         <p><span>本文标题:</span><a href="/posts/Vert-x/vertx-advanced-demystifying-thread-model/">Vert.x 技术内幕 | 解道Vert.x线程模型</a></p>
-        <p><span>文章作者:</span><a href="/" title="访问 sczyh30 的个人博客">sczyh30</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">sczyh30</a></p>
         <p><span>发布时间:</span>2016年09月25日</p>
-        <!--<p><span>最后更新:</span>2016年09月26日 - 19时41分</p>-->
         <p>
             <span>原始链接:</span><a class="post-url" href="/posts/Vert-x/vertx-advanced-demystifying-thread-model/" title="Vert.x 技术内幕 | 解道Vert.x线程模型">http://www.sczyh30.com/posts/Vert-x/vertx-advanced-demystifying-thread-model/</a>
             <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Vert-x/vertx-advanced-demystifying-thread-model/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
-            <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
         <p>
-            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0" target = "_blank">知识共享-保持署名-非商用-相同方式共享 4.0 (CC BY-NC-SA 4.0)</a><br/>转载请保留原文链接及作者。
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"知识共享-保持署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
         </p>
     </div>
 
 
 
     <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Distributed-System/spark-rdd-paper-summary/">
+                    Distributed System | Spark RDD 论文总结
+                </a>
+            </div>
         
         
             <div id="article-nav-older" class="article-nav-title">
@@ -371,93 +420,81 @@ Worker线程用于执行阻塞任务，这">
         
     </nav>
 
+
   
 </article>
 
     <div id="toc" class="toc-article">
-    <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#线程模型概述"><span class="toc-number">1.</span> <span class="toc-text">线程模型概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Event_Loop线程"><span class="toc-number">2.</span> <span class="toc-text">Event Loop线程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Vert-x_Thread"><span class="toc-number">3.</span> <span class="toc-text">Vert.x Thread</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Vert-x_Context"><span class="toc-number">4.</span> <span class="toc-text">Vert.x Context</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Event_loop_context"><span class="toc-number">4.1.</span> <span class="toc-text">Event loop context</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Worker_context"><span class="toc-number">4.2.</span> <span class="toc-text">Worker context</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Verticle"><span class="toc-number">5.</span> <span class="toc-text">Verticle</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池"><span class="toc-number">6.</span> <span class="toc-text">线程池</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Event_Loop线程池"><span class="toc-number">6.1.</span> <span class="toc-text">Event Loop线程池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Worker线程池"><span class="toc-number">6.2.</span> <span class="toc-text">Worker线程池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#内部阻塞线程池"><span class="toc-number">6.3.</span> <span class="toc-text">内部阻塞线程池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Acceptor_Event_Loop线程池"><span class="toc-number">6.4.</span> <span class="toc-text">Acceptor Event Loop线程池</span></a></li></ol></li></ol>
-</div>
-<style>
-    .left-col .switch-btn {
-        display: none;
-    }
-    .left-col .switch-area {
-        display: none;
-    }
-</style>
-
-<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
-
-<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
-<script>
-    var valueHide = "隐藏目录";
-    var valueShow = "显示目录";
-
-    if ($(".left-col").is(":hidden")) {
-        $("#tocButton").attr("value", valueShow);
-    }
-
-    $("#tocButton").click(function() {
-        if ($("#toc").is(":hidden")) {
-            $("#tocButton").attr("value", valueHide);
-            $("#toc").slideDown(320);
-            $(".switch-btn, .switch-area").fadeOut(300);
-        }
-        else {
-            $("#tocButton").attr("value", valueShow);
-            $("#toc").slideUp(350);
-            $(".switch-btn, .switch-area").fadeIn(500);
-        }
-    })
-
-    if ($(".toc").length < 1) {
-        $("#toc, #tocButton").hide();
-        $(".switch-btn, .switch-area").show();
-    }
-</script>
-
-
-
-
-    <div class="share">
-    <div class="bdsharebuttonbox">
-    <a href="#" class="bds_more" data-cmd="more"></a>
-    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
-    <a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
-    <a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a>
-    <a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a>
-    <a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#线程模型概述"><span class="toc-number">1.</span> <span class="toc-text">线程模型概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Event_Loop线程"><span class="toc-number">2.</span> <span class="toc-text">Event Loop线程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Vert-x_Thread"><span class="toc-number">3.</span> <span class="toc-text">Vert.x Thread</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Vert-x_Context"><span class="toc-number">4.</span> <span class="toc-text">Vert.x Context</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Event_loop_context"><span class="toc-number">4.1.</span> <span class="toc-text">Event loop context</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Worker_context"><span class="toc-number">4.2.</span> <span class="toc-text">Worker context</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Verticle"><span class="toc-number">5.</span> <span class="toc-text">Verticle</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#线程池"><span class="toc-number">6.</span> <span class="toc-text">线程池</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Event_Loop线程池"><span class="toc-number">6.1.</span> <span class="toc-text">Event Loop线程池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Worker线程池"><span class="toc-number">6.2.</span> <span class="toc-text">Worker线程池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#内部阻塞线程池"><span class="toc-number">6.3.</span> <span class="toc-text">内部阻塞线程池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Acceptor_Event_Loop线程池"><span class="toc-number">6.4.</span> <span class="toc-text">Acceptor Event Loop线程池</span></a></li></ol></li></ol>
+        
     </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
     <script>
-        window._bd_share_config={
-            "common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
     </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Vert.x 技术内幕 | 解道Vert.x线程模型　| 「浮生若梦」 - sczyh30's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
 </div>
+
+
+
+
 
 
 
     
       <div class="duoshuo" id="comments">
-    <!-- duoshuo comment start -->
-    <div class="ds-thread" data-thread-key="posts/Vert-x/vertx-advanced-demystifying-thread-model/" data-title="Vert.x 技术内幕 | 解道Vert.x线程模型" data-url="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-demystifying-thread-model/"></div>
-    <!-- duoshuo comment end -->
-    <!-- duoshuo public js start -->
-    <script type="text/javascript">
-    var duoshuoQuery = {short_name: 'sczyh30'};
-    (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        /*ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';*/
-        ds.src = 'http://www.sczyh30.com/assets/embed.js'
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0] 
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-    </script>
-    <!-- duoshuo public js end -->
-</div>
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="posts/Vert-x/vertx-advanced-demystifying-thread-model/" data-title="Vert.x 技术内幕 | 解道Vert.x线程模型" data-url="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-demystifying-thread-model/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"sczyh30"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = 'http://www.sczyh30.com/assets/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
 
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
     
 
 
@@ -465,7 +502,9 @@ Worker线程用于执行阻塞任务，这">
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+            <a href="/posts/Distributed-System/spark-rdd-paper-summary/" title="上一篇: Distributed System | Spark RDD 论文总结">
+                <i class="fa fa-angle-left"></i>
+            </a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
@@ -477,27 +516,7 @@ Worker线程用于执行阻塞任务，这">
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-demystifying-thread-model/">Vert.x 技术内幕 | 解道Vert.x线程模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-execute-blocking-internal/">Vert.x 技术内幕 | executeBlocking 实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-async-rpc/">Vert.x 技术内幕 | 异步RPC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (集群模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-local-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (Local模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/busy-enough-2016-08/">最近真忙～</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/">Vert.x Blueprint 系列教程(三) | Micro Shop 微服务实战</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/">Vert.x Blueprint 系列教程(二) | Vert.x Kue 教程（Web部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/">Vert.x Blueprint 系列教程(二) | 开发基于消息的应用 - Vert.x Kue 教程（Core部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/">Vert.x Blueprint 系列教程(一) | 待办事项服务开发教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/quorum-based-voting-for-replica-control/">基于Quorum投票机制的Replica Control算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/netflix-hystrix-how-it-works-summary/">Netflix Hystrix | 工作流程浅析 && HystrixCircuitBreaker源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Concurrency/concurrency-treiber-stack/">并发编程算法 | Treiber Stack实现lock-free stack</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/service-with-docker-compose/">使用 Docker Compose 编排容器集群</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gradle-annotation-processing-vertx-codegen/">在Gradle中使用Annotation Processing Tool | Vert.x Codegen 示例</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/circuit-breaker-pattern/">微服务设计模式 | Circuit Breaker Pattern</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-existential-types-scala-java/">类型系统 | Existential Type | Scala ++ Java ++ Haskell</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-instance-internal-and-create/">Vert.x 异步编程 | Vertx实例的创建流程及内部实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-summary-1/">Play Framework 2.5 | Web开发总结(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-refinement-types/">类型系统 | Refinement Type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/scala-type-lambda/">Scala | 神奇的Type Lambda</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/akka-actor-sender-enclosing/">Akka Actor | 注意sender的闭包范围</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Miscellaneous/play-music-on-linux/">在Linux环境下玩转MIDI</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-type-system-query-prolouge/">探索万恶的Slick 3 类型系统 | Prologue</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-summary-functional-relational-mapping/">Slick 3总结 | Functional Relational Mapping</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-dependency-injection-di/">Play Framework 2.5 | Dependency Injection总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/functional-programming-type-and-kind/">FP :: Type Theory | Type, Type Constructor 与 Kind</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/scala-fp-for-expression-detail/">Scala | for表达式的底层转换</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">IO模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model Summary III</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional 标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">C++ 11 Move Sementics/Perfect Forwarding</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model Summary I</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/amqp-rabbitmq/">消息队列中间件 | RabbitMQ 总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/haskell-category-basic/">Haskell学习笔记 | 范畴论与Haskell</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-event-dispatcher/">Android事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-01/">Android View视图绘制总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表 | unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-performance-1/">对Android应用性能优化的一些总结（1）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android_summary_2/">安卓开发中的一些总结（2）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-copyArray/">arrayCopy方法底层探究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/os-learning-1/">操作系统相关知识杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结 (性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-cycle-join/">链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-plan/">Web开发笔记 - 前端总结计划</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/database-transaction-lock/">数据库事务中的隔离级别和锁</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/compiler-a01/">编译原理相关 | C++编译器总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
-    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
-    <script>
-        $(".post-list").addClass("toc-article");
-        $(".post-list-item a").attr("target","_blank");
-        $("#post-nav-button > a:nth-child(2)").click(function() {
-            $(".fa-bars, .fa-times").toggle();
-            $(".post-list").toggle(300);
-            if ($(".toc").length > 0) {
-                $("#toc, #tocButton").toggle(200, function() {
-                    if ($(".switch-area").is(":visible")) {
-                        $("#toc, .switch-btn, .switch-area").toggle();
-                        $("#tocButton").attr("value", valueHide);
-                        }
-                    })
-            }
-            else {
-                $(".switch-btn, .switch-area").fadeToggle(300);
-            }
-        })
-    </script>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/call-with-current-continuation/">call/cc总结 | Scheme</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-computing-system-gc-osdi16-yak/">分布式计算系统中的GC问题 | Yak(OSDI 2016) 学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/spark-rdd-paper-summary/">Distributed System | Spark RDD 论文总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-demystifying-thread-model/">Vert.x 技术内幕 | 解道Vert.x线程模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-execute-blocking-internal/">Vert.x 技术内幕 | executeBlocking 实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-async-rpc/">Vert.x 技术内幕 | 异步RPC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-rpc-design/">Distributed System | RPC模块设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (集群模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-local-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (Local模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/busy-enough-2016-08/">最近真忙～</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/">Vert.x Blueprint 系列教程(三) | Micro Shop 微服务实战</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/">Vert.x Blueprint 系列教程(二) | Vert.x Kue 教程（Web部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/">Vert.x Blueprint 系列教程(二) | 开发基于消息的应用 - Vert.x Kue 教程（Core部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/">Vert.x Blueprint 系列教程(一) | 待办事项服务开发教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/quorum-based-voting-for-replica-control/">基于Quorum投票机制的Replica Control算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/netflix-hystrix-how-it-works-summary/">Netflix Hystrix | 工作流程浅析 && HystrixCircuitBreaker源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Concurrency/concurrency-treiber-stack/">并发编程算法 | Treiber Stack实现lock-free stack</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-base/">分布式系统基础总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/service-with-docker-compose/">使用 Docker Compose 编排容器集群</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gradle-annotation-processing-vertx-codegen/">在Gradle中使用Annotation Processing Tool | Vert.x Codegen 示例</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/circuit-breaker-pattern/">微服务设计模式 | Circuit Breaker Pattern</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-existential-types-scala-java/">类型系统 | Existential Type | Scala ++ Java ++ Haskell</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-refinement-types/">类型系统 | Refinement Type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-web-summary/">Play Framework 2.5 | Web开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/scala-type-lambda/">Scala | Type Lambda</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/akka-actor-sender-enclosing/">Akka Actor | 注意sender的闭包范围</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Miscellaneous/play-music-on-linux/">在Linux环境下玩转MIDI</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-type-system-query-prolouge/">探索万恶的Slick 3 类型系统 | Prologue</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-summary-functional-relational-mapping/">Slick 3总结 | Functional Relational Mapping</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-dependency-injection-di/">Play Framework 2.5 | Dependency Injection总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/functional-programming-type-and-kind/">FP :: Type Theory | Type, Type Constructor 与 Kind</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/typeclass-scala-haskell/">Scala | Haskell | Type Class总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-for-comprehensions-detail/">Scala | for-comprehension底层转换 | withFilter解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">POSIX I/O模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model 学习笔记(III)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional 标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">Modern C++ | 移动语义与完美转发 | Universal Reference</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model 学习笔记(I)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/rabbitmq-summary/">消息队列中间件 | RabbitMQ 总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/y-combinator/">不动点组合子 | Y Combinator</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/haskell-category-basic/">Haskell学习笔记 | 范畴论与Haskell（基础篇）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-event-dispatcher/">Android 事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-notes/">Android View 视图绘制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表 | unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-performance-1/">Android应用性能优化总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结 (性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-leetcode/">LeetCode | 链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏引擎把玩总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
 
 
 
@@ -510,12 +529,12 @@ Worker线程用于执行阻塞任务，这">
     <div class="outer">
         <div id="footer-info">
             <div class="footer-left">
-                &copy; 2015 - 2016 sczyh30's blog
+                &copy; 2015 - 2017 sczyh30's blog
             </div>
             <div class="footer-right">
                 <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
                 </script>
-                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30.
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30 <i class="fa fa-heart animated infinite pulse"></i>
             </div>
         </div>
         
@@ -523,8 +542,7 @@ Worker线程用于执行阻塞任务，这">
 </footer>
     </div>
     
-<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
-<script src="/js/main.js" type="text/javascript"></script>
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -535,7 +553,7 @@ Worker线程用于执行阻塞任务，这">
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 7;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }
@@ -545,20 +563,54 @@ Worker线程用于执行阻塞任务，这">
 
 
 
-<div class="scroll" id="scroll">
-    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
-    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
-    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
-</div>
 
-<script>
-    $(document).ready(function() {
-        if ($("#comments").length < 1) {
-            $("#scroll > a:nth-child(2)").hide();
-        };
-    })
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
 </script>
 
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
 
 <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
 </script>

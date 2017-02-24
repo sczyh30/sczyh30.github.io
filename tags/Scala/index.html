@@ -1,50 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hans">
 <head>
-  <meta charset="utf-8">
-  
-  <title>Tag: Scala —— 「千载弦歌，芳华如梦」 - sczyh30&#39;s blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <!--<meta name="keywords" content="sczyh30, blog"/>-->
-  <meta name="description" content="sczyh30&apos;s blog">
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="sczyh30" />
+
+
+
+<meta name="description" content="sczyh30&apos;s blog">
 <meta property="og:type" content="website">
-<meta property="og:title" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:title" content="「浮生若梦」 - sczyh30's blog">
 <meta property="og:url" content="http://www.sczyh30.com/tags/Scala/index.html">
-<meta property="og:site_name" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta property="og:site_name" content="「浮生若梦」 - sczyh30's blog">
 <meta property="og:description" content="sczyh30&apos;s blog">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="「千载弦歌，芳华如梦」 - sczyh30's blog">
+<meta name="twitter:title" content="「浮生若梦」 - sczyh30's blog">
 <meta name="twitter:description" content="sczyh30&apos;s blog">
-  
-    <link rel="alternative" href="/atom.xml" title="「千载弦歌，芳华如梦」 - sczyh30&#39;s blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.ico">
-  
-  
-      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css" type="text/css">
-  
-  
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
-  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  
-  
-      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  
-  <script>
-      var yiliaConfig = {
-          fancybox: true,
-          animate: true,
-          isHome: false,
-          isPost: false,
-          isArchive: false,
-          isTag: true,
-          isCategory: false,
-          open_in_new: true
-      }
-  </script>
-  
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="「浮生若梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Tag: Scala | 「浮生若梦」 - sczyh30&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: false,
+        isArchive: false,
+        isTag: true,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
 </head>
 <body>
   <div id="container">
@@ -53,11 +95,8 @@
 <div class="intrude-less">
     <header id="header" class="inner">
         <a href="/" class="profilepic">
-            
-            <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
-            
+            <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
         </a>
-
         <hgroup>
           <h1 class="header-author"><a href="/">sczyh30</a></h1>
         </hgroup>
@@ -65,7 +104,15 @@
         
         <p class="header-subtitle">踏歌长行，梦想永在。</p>
         
-                
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
 
 
         
@@ -124,21 +171,19 @@
                     <nav class="header-nav">
                         <ul class="social">
                             
-                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                                <a class="fa Email" href="/about" title="Email"></a>
                             
-                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                                <a class="fa GitHub" href="https://github.com/sczyh30" title="GitHub"></a>
                             
-                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a></li>
+                                <a class="fa 新浪微博" href="http://weibo.com/sczyh30" title="新浪微博"></a>
                             
-                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
                             
-                                <li id="SegmentFault"><a class="SegmentFault" target="_blank" href="https://segmentfault.com/u/sczyh30" title="SegmentFault"></a></li>
+                                <a class="fa Google" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
                             
-                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                                <a class="fa Twitter" href="https://twitter.com/sczyh30" title="Twitter"></a>
                             
-                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
-                            
-                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                                <a class="fa Medium" href="https://medium.com/@sczyh30" title="Medium"></a>
                             
                         </ul>
                     </nav>
@@ -147,7 +192,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/AIO/" style="font-size: 10px;">AIO</a> <a href="/tags/AMQP/" style="font-size: 10px;">AMQP</a> <a href="/tags/APT/" style="font-size: 10px;">APT</a> <a href="/tags/Akka-Actor/" style="font-size: 10px;">Akka Actor</a> <a href="/tags/Algorithm/" style="font-size: 13px;">Algorithm</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/C/" style="font-size: 16px;">C++</a> <a href="/tags/C-11/" style="font-size: 10px;">C++ 11</a> <a href="/tags/CE3/" style="font-size: 10px;">CE3</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Category-Theory/" style="font-size: 10px;">Category Theory</a> <a href="/tags/Chemistry/" style="font-size: 11px;">Chemistry</a> <a href="/tags/Compiler/" style="font-size: 10px;">Compiler</a> <a href="/tags/DI/" style="font-size: 10px;">DI</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Docker/" style="font-size: 11px;">Docker</a> <a href="/tags/Engine/" style="font-size: 10px;">Engine</a> <a href="/tags/Euterpea/" style="font-size: 10px;">Euterpea</a> <a href="/tags/Event-Loop/" style="font-size: 10px;">Event Loop</a> <a href="/tags/FRP/" style="font-size: 10px;">FRP</a> <a href="/tags/Functional-Programming/" style="font-size: 18px;">Functional Programming</a> <a href="/tags/G1/" style="font-size: 10px;">G1</a> <a href="/tags/GC/" style="font-size: 13px;">GC</a> <a href="/tags/GDB/" style="font-size: 10px;">GDB</a> <a href="/tags/Game/" style="font-size: 11px;">Game</a> <a href="/tags/Gradle/" style="font-size: 10px;">Gradle</a> <a href="/tags/HashMap/" style="font-size: 11px;">HashMap</a> <a href="/tags/Haskell/" style="font-size: 14px;">Haskell</a> <a href="/tags/HotSpot/" style="font-size: 12px;">HotSpot</a> <a href="/tags/IO/" style="font-size: 10px;">IO</a> <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 19px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/Klass-oop/" style="font-size: 10px;">Klass-oop</a> <a href="/tags/LinkedList/" style="font-size: 10px;">LinkedList</a> <a href="/tags/Linux/" style="font-size: 12px;">Linux</a> <a href="/tags/MIDI/" style="font-size: 10px;">MIDI</a> <a href="/tags/Mathematical-Logic/" style="font-size: 10px;">Mathematical Logic</a> <a href="/tags/Metaspace/" style="font-size: 10px;">Metaspace</a> <a href="/tags/Netflix-Hystrix/" style="font-size: 10px;">Netflix Hystrix</a> <a href="/tags/Network/" style="font-size: 16px;">Network</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Object-Model/" style="font-size: 12px;">Object Model</a> <a href="/tags/Play-Framework/" style="font-size: 11px;">Play Framework</a> <a href="/tags/Quorum/" style="font-size: 10px;">Quorum</a> <a href="/tags/RabbitMQ/" style="font-size: 10px;">RabbitMQ</a> <a href="/tags/Reflection/" style="font-size: 11px;">Reflection</a> <a href="/tags/SQL/" style="font-size: 10px;">SQL</a> <a href="/tags/STL/" style="font-size: 11px;">STL</a> <a href="/tags/Scala/" style="font-size: 19px;">Scala</a> <a href="/tags/Slick/" style="font-size: 11px;">Slick</a> <a href="/tags/Sort/" style="font-size: 10px;">Sort</a> <a href="/tags/Struct/" style="font-size: 10px;">Struct</a> <a href="/tags/Summary/" style="font-size: 12px;">Summary</a> <a href="/tags/TCP/" style="font-size: 15px;">TCP</a> <a href="/tags/Type-Lambda/" style="font-size: 10px;">Type Lambda</a> <a href="/tags/Type-System/" style="font-size: 10px;">Type System</a> <a href="/tags/Type-Theory/" style="font-size: 12px;">Type Theory</a> <a href="/tags/UE4/" style="font-size: 10px;">UE4</a> <a href="/tags/Unity/" style="font-size: 10px;">Unity</a> <a href="/tags/Vert-x/" style="font-size: 19px;">Vert.x</a> <a href="/tags/View/" style="font-size: 10px;">View</a> <a href="/tags/Web/" style="font-size: 12px;">Web</a> <a href="/tags/Web开发/" style="font-size: 12px;">Web开发</a> <a href="/tags/event/" style="font-size: 10px;">event</a> <a href="/tags/functional/" style="font-size: 10px;">functional</a> <a href="/tags/中间件/" style="font-size: 10px;">中间件</a> <a href="/tags/事务/" style="font-size: 10px;">事务</a> <a href="/tags/云服务/" style="font-size: 12px;">云服务</a> <a href="/tags/内存区域/" style="font-size: 10px;">内存区域</a> <a href="/tags/分布式/" style="font-size: 10px;">分布式</a> <a href="/tags/分布式系统/" style="font-size: 12px;">分布式系统</a> <a href="/tags/前端/" style="font-size: 12px;">前端</a> <a href="/tags/基础/" style="font-size: 10px;">基础</a> <a href="/tags/多线程/" style="font-size: 11px;">多线程</a> <a href="/tags/容器/" style="font-size: 10px;">容器</a> <a href="/tags/并发/" style="font-size: 15px;">并发</a> <a href="/tags/开发/" style="font-size: 17px;">开发</a> <a href="/tags/异步/" style="font-size: 13px;">异步</a> <a href="/tags/异步编程/" style="font-size: 18px;">异步编程</a> <a href="/tags/微服务/" style="font-size: 13px;">微服务</a> <a href="/tags/性能/" style="font-size: 10px;">性能</a> <a href="/tags/性能优化/" style="font-size: 10px;">性能优化</a> <a href="/tags/操作系统/" style="font-size: 10px;">操作系统</a> <a href="/tags/数据库/" style="font-size: 11px;">数据库</a> <a href="/tags/架构/" style="font-size: 11px;">架构</a> <a href="/tags/消息系统/" style="font-size: 10px;">消息系统</a> <a href="/tags/源码分析/" style="font-size: 14px;">源码分析</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a> <a href="/tags/线程安全/" style="font-size: 10px;">线程安全</a> <a href="/tags/编译原理/" style="font-size: 10px;">编译原理</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a>
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AMQP/">AMQP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/APT/">APT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Akka/">Akka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-14/">C++ 14</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CAP/">CAP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CE3/">CE3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CPS/">CPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cache/">Cache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Category-Theory/">Category Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chemistry/">Chemistry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Continuation/">Continuation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DI/">DI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Engine/">Engine</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Euterpea/">Euterpea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Loop/">Event Loop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GC/">GC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GDB/">GDB</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Game/">Game</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gradle/">Gradle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HotSpot/">HotSpot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JUC/">JUC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klass-oop/">Klass-oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lambda-Calculus/">Lambda Calculus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkedList/">LinkedList</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIDI/">MIDI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mathematical-Logic/">Mathematical Logic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metaspace/">Metaspace</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Netflix-Hystrix/">Netflix Hystrix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Network/">Network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Object-Model/">Object Model</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PLT/">PLT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paper/">Paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Play-Framework/">Play Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quorum/">Quorum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RPC/">RPC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Reflection/">Reflection</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL/">SQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/STL/">STL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scala/">Scala</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scheme/">Scheme</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Slick/">Slick</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sort/">Sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Summary/">Summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Class/">Type Class</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Lambda/">Type Lambda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-System/">Type System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Theory/">Type Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UE4/">UE4</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity/">Unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vert-x/">Vert.x</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/View/">View</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web/">Web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web开发/">Web开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/中间件/">中间件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/云服务/">云服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存区域/">内存区域</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式系统/">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式计算/">分布式计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端/">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础/">基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异步编程/">异步编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/微服务/">微服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息系统/">消息系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码分析/">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/线程安全/">线程安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li></ul>
                     </div>
                 </section>
                 
@@ -158,7 +203,7 @@
                 
                 <section class="switch-part switch-part3">
                 
-                    <div id="js-aboutme">Fighting</div>
+                    <div id="js-aboutme">Distributed System/Deep Learning/PLT</div>
                 </section>
                 
             </div>
@@ -175,9 +220,7 @@
     <div class="intrude-less">
         <header id="header" class="inner">
             <a href="/" class="profilepic">
-                
-                    <img lazy-src="http://7xkkgd.com1.z0.glb.clouddn.com/blog_default_avatar.jpg" class="js-avatar">
-                
+                <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
             </a>
             <hgroup>
               <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
@@ -204,26 +247,25 @@
             <nav class="header-nav">
                         <ul class="social">
                             
-                                <li id="Email"><a class="Email" target="_blank" href="mailto:sczyh16@gmail.com" title="Email"></a></li>
+                                <a class="fa Email" target="_blank" href="/about" title="Email"></a>
                             
-                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a></li>
+                                <a class="fa GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a>
                             
-                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a></li>
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a>
                             
-                                <li id="RSS"><a class="RSS" target="_blank" href="/atom.xml" title="RSS"></a></li>
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
                             
-                                <li id="SegmentFault"><a class="SegmentFault" target="_blank" href="https://segmentfault.com/u/sczyh30" title="SegmentFault"></a></li>
+                                <a class="fa Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
                             
-                                <li id="Google"><a class="Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a></li>
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a>
                             
-                                <li id="Twitter"><a class="Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a></li>
-                            
-                                <li id="Medium"><a class="Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a></li>
+                                <a class="fa Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a>
                             
                         </ul>
             </nav>
         </header>                
     </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
 </nav>
       <div class="body-wrap">
   
@@ -245,6 +287,8 @@
               <a href="/posts/Functional-Programming/type-system-existential-types-scala-java/" class="archive-article-date">
       <time datetime="2016-04-25T16:00:00.000Z" itemprop="datePublished">04-26</time>
 </a>
+
+
         </div>
          
   
@@ -277,14 +321,16 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
-              <a href="/posts/Scala/play-framework-2-5-summary-1/" class="archive-article-date">
+              <a href="/posts/Scala/play-framework-2-5-web-summary/" class="archive-article-date">
       <time datetime="2016-04-16T16:00:00.000Z" itemprop="datePublished">04-17</time>
 </a>
+
+
         </div>
          
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/posts/Scala/play-framework-2-5-summary-1/">Play Framework 2.5 | Web开发总结(1)</a>
+      <a class="archive-article-title" href="/posts/Scala/play-framework-2-5-web-summary/">Play Framework 2.5 | Web开发总结</a>
     </h1>
   
 
@@ -315,6 +361,8 @@
               <a href="/posts/Functional-Programming/type-system-refinement-types/" class="archive-article-date">
       <time datetime="2016-04-16T16:00:00.000Z" itemprop="datePublished">04-17</time>
 </a>
+
+
         </div>
          
   
@@ -350,11 +398,13 @@
               <a href="/posts/Functional-Programming/scala-type-lambda/" class="archive-article-date">
       <time datetime="2016-04-12T16:00:00.000Z" itemprop="datePublished">04-13</time>
 </a>
+
+
         </div>
          
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/posts/Functional-Programming/scala-type-lambda/">Scala | 神奇的Type Lambda</a>
+      <a class="archive-article-title" href="/posts/Functional-Programming/scala-type-lambda/">Scala | Type Lambda</a>
     </h1>
   
 
@@ -385,6 +435,8 @@
               <a href="/posts/Scala/akka-actor-sender-enclosing/" class="archive-article-date">
       <time datetime="2016-04-10T16:00:00.000Z" itemprop="datePublished">04-11</time>
 </a>
+
+
         </div>
          
   
@@ -402,7 +454,7 @@
 
           
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Akka-Actor/">Akka Actor</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/并发/">并发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/异步/">异步</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Akka/">Akka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/并发/">并发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/异步编程/">异步编程</a></li></ul>
     </div>
 
         </div>
@@ -420,6 +472,8 @@
               <a href="/posts/Scala/slick-3-type-system-query-prolouge/" class="archive-article-date">
       <time datetime="2016-04-06T16:00:00.000Z" itemprop="datePublished">04-07</time>
 </a>
+
+
         </div>
          
   
@@ -455,6 +509,8 @@
               <a href="/posts/Scala/slick-3-summary-functional-relational-mapping/" class="archive-article-date">
       <time datetime="2016-04-01T16:00:00.000Z" itemprop="datePublished">04-02</time>
 </a>
+
+
         </div>
          
   
@@ -472,7 +528,7 @@
 
           
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SQL/">SQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Slick/">Slick</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/异步/">异步</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库/">数据库</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SQL/">SQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Slick/">Slick</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/异步编程/">异步编程</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库/">数据库</a></li></ul>
     </div>
 
         </div>
@@ -490,6 +546,8 @@
               <a href="/posts/Scala/play-framework-2-5-dependency-injection-di/" class="archive-article-date">
       <time datetime="2016-03-28T16:00:00.000Z" itemprop="datePublished">03-29</time>
 </a>
+
+
         </div>
          
   
@@ -525,6 +583,8 @@
               <a href="/posts/Functional-Programming/functional-programming-type-and-kind/" class="archive-article-date">
       <time datetime="2016-03-15T16:00:00.000Z" itemprop="datePublished">03-16</time>
 </a>
+
+
         </div>
          
   
@@ -557,27 +617,29 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
-              <a href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/" class="archive-article-date">
-      <time datetime="2016-02-25T16:00:00.000Z" itemprop="datePublished">02-26</time>
+              <a href="/posts/Functional-Programming/typeclass-scala-haskell/" class="archive-article-date">
+      <time datetime="2016-03-06T16:00:00.000Z" itemprop="datePublished">03-07</time>
 </a>
+
+
         </div>
          
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a>
+      <a class="archive-article-title" href="/posts/Functional-Programming/typeclass-scala-haskell/">Scala | Haskell | Type Class总结</a>
     </h1>
   
 
         <div class="article-info info-on-archive">
           
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Scala/">Scala</a>
+    <a class="article-category-link" href="/categories/Functional-Programming/">Functional Programming</a>
     </div>
 
 
           
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mathematical-Logic/">Mathematical Logic</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Type-Class/">Type Class</a></li></ul>
     </div>
 
         </div>
@@ -601,12 +663,12 @@
     <div class="outer">
         <div id="footer-info">
             <div class="footer-left">
-                &copy; 2015 - 2016 sczyh30's blog
+                &copy; 2015 - 2017 sczyh30's blog
             </div>
             <div class="footer-right">
                 <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
                 </script>
-                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30.
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30 <i class="fa fa-heart animated infinite pulse"></i>
             </div>
         </div>
         
@@ -614,8 +676,7 @@
 </footer>
     </div>
     
-<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
-<script src="/js/main.js" type="text/javascript"></script>
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -626,7 +687,7 @@
                 $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
             }
             else {
-                var backgroundnum = 5;
+                var backgroundnum = 7;
                 var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
                 $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
             }
@@ -636,31 +697,54 @@
 
 
 
-<div class="scroll" id="scroll">
-    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
-    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
-    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
-</div>
 
-<script>
-    $(document).ready(function() {
-        if ($("#comments").length < 1) {
-            $("#scroll > a:nth-child(2)").hide();
-        };
-    })
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
 </script>
 
-    <button class="hide-labels">TAG 开关</button>
-    <script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js">
-    </script>
-    <script>
-        $(document).ready(function() {
-            $("button").click(function() {
-                $(".article-info").toggle(200);
-            });
-        });
-    </script>
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
 
 <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
 </script>

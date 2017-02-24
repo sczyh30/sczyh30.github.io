@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="sczyh30" />
+
+
+
+<meta name="description" content="在移动端内存非常宝贵，我们要尽可能地去优化内存以达到最佳性能，并努力地去避免OOM问题。这篇文章总结一些最常见的Android性能优化的一些事项~
+
+图片加载在移动端，图片的加载往往是最消耗内存的，OOM也经常会发生在加载图片时。以下是加载图片的几个注意事项：
+
+按需要的大小加载。缩略图加载成原图的精细度并不会提升视觉上的效果，但会额外占用不少内存。
+图片的缓存使用LruCache，并且合理地设置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android应用性能优化总结">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Android/android-performance-1/index.html">
+<meta property="og:site_name" content="「浮生若梦」 - sczyh30's blog">
+<meta property="og:description" content="在移动端内存非常宝贵，我们要尽可能地去优化内存以达到最佳性能，并努力地去避免OOM问题。这篇文章总结一些最常见的Android性能优化的一些事项~
+
+图片加载在移动端，图片的加载往往是最消耗内存的，OOM也经常会发生在加载图片时。以下是加载图片的几个注意事项：
+
+按需要的大小加载。缩略图加载成原图的精细度并不会提升视觉上的效果，但会额外占用不少内存。
+图片的缓存使用LruCache，并且合理地设置">
+<meta property="og:updated_time" content="2017-02-21T12:28:05.836Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android应用性能优化总结">
+<meta name="twitter:description" content="在移动端内存非常宝贵，我们要尽可能地去优化内存以达到最佳性能，并努力地去避免OOM问题。这篇文章总结一些最常见的Android性能优化的一些事项~
+
+图片加载在移动端，图片的加载往往是最消耗内存的，OOM也经常会发生在加载图片时。以下是加载图片的几个注意事项：
+
+按需要的大小加载。缩略图加载成原图的精细度并不会提升视觉上的效果，但会额外占用不少内存。
+图片的缓存使用LruCache，并且合理地设置">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="「浮生若梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Android应用性能优化总结 | 「浮生若梦」 - sczyh30&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                            <li><a href="/en/">Blog(EN)</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="/about" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/sczyh30" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" href="http://weibo.com/sczyh30" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Google" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="https://twitter.com/sczyh30" title="Twitter"></a>
+                            
+                                <a class="fa Medium" href="https://medium.com/@sczyh30" title="Medium"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AMQP/">AMQP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/APT/">APT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Akka/">Akka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-14/">C++ 14</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CAP/">CAP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CE3/">CE3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CPS/">CPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cache/">Cache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Category-Theory/">Category Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chemistry/">Chemistry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Continuation/">Continuation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DI/">DI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Engine/">Engine</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Euterpea/">Euterpea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Loop/">Event Loop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GC/">GC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GDB/">GDB</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Game/">Game</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gradle/">Gradle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HotSpot/">HotSpot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JUC/">JUC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klass-oop/">Klass-oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lambda-Calculus/">Lambda Calculus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkedList/">LinkedList</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIDI/">MIDI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mathematical-Logic/">Mathematical Logic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metaspace/">Metaspace</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Netflix-Hystrix/">Netflix Hystrix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Network/">Network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Object-Model/">Object Model</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PLT/">PLT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paper/">Paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Play-Framework/">Play Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quorum/">Quorum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RPC/">RPC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Reflection/">Reflection</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL/">SQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/STL/">STL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scala/">Scala</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scheme/">Scheme</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Slick/">Slick</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sort/">Sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Summary/">Summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Class/">Type Class</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Lambda/">Type Lambda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-System/">Type System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Theory/">Type Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UE4/">UE4</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity/">Unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vert-x/">Vert.x</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/View/">View</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web/">Web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web开发/">Web开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/中间件/">中间件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/云服务/">云服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存区域/">内存区域</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式系统/">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式计算/">分布式计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端/">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础/">基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异步编程/">异步编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/微服务/">微服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息系统/">消息系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码分析/">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/线程安全/">线程安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Distributed System/Deep Learning/PLT</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                    <li><a href="/en/">Blog(EN)</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="/about" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a>
+                            
+                                <a class="fa Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-android-performance-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Android/android-performance-1/" class="article-date">
+      <time datetime="2015-10-23T10:36:00.000Z" itemprop="datePublished">2015-10-23</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Android应用性能优化总结
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Android/">Android</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发/">开发</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/性能优化/">性能优化</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>在移动端内存非常宝贵，我们要尽可能地去优化内存以达到最佳性能，并努力地去避免OOM问题。这篇文章总结一些最常见的Android性能优化的一些事项~</p>
+<hr>
+<h1 id="图片加载">图片加载</h1><p>在移动端，图片的加载往往是最消耗内存的，OOM也经常会发生在加载图片时。以下是加载图片的几个注意事项：</p>
+<ul>
+<li>按需要的大小加载。缩略图加载成原图的精细度并不会提升视觉上的效果，但会额外占用不少内存。</li>
+<li>图片的缓存使用<code>LruCache</code>，并且合理地设置缓存大小</li>
+<li>可以用一些高效的图片加载库，比如Facebook的Fresco</li>
+</ul>
+<h1 id="注意一些额外的内存消耗">注意一些额外的内存消耗</h1><ul>
+<li>应特别注意HashMap这个数据结构，必要的时候可以用<code>SparseArray</code>等等的数据结构代替以节省内存</li>
+<li>需要频繁修改字符串的地方考虑用<code>StringBuilder</code>代替<code>String</code></li>
+<li>避免创建无用的实例</li>
+</ul>
+<h1 id="有限度地使用Service">有限度地使用Service</h1><p>当我们启动一个<code>Service</code>时，系统会倾向于将这个Service所依赖的进程进行保留，这样就会导致这个进程变得非常消耗内存。并且，系统可以在LRU cache当中缓存的进程数量也会减少，导致切换应用程序的时候耗费更多性能。严重的话，甚至有可能会导致崩溃，因为系统在内存非常吃紧的时候可能已无法维护所有正在运行的Service所依赖的进程了。</p>
+<p>因此，控制好Service的生命周期是很重要的。切忌一个无用的Service跑在后台，这会非常影响性能。如果一个逻辑只需要进行一次，那么可以用<code>IntentService</code>代替。</p>
+<h1 id="Handler必须为静态内部类">Handler必须为静态内部类</h1><p>首先复习一下Java几种内部类的语言规范，Java中的<strong>inner class</strong>（内部类）定义在一个类的内部，它有一个<strong>指向外部类的引用</strong>。这就有可能导致一个问题，其外部类的生命周期已经结束，而由于inner class持有外部类的引用，并且inner class与其它对象还有引用关联，因此GC进行可达性分析时发现内部类与外部类仍有引用关系，因此不会cause GC，从而导致内存泄露。<br>而<strong>static nested class</strong>（静态内部类）虽定义在类的内部，但是它<strong>不持有外部类的引用</strong>，只能访问外部类的静态实例和方法。</p>
+<p>在安卓开发中，一个典型的例子是<code>Handler</code>的使用，它会有这样的问题：</p>
+<blockquote>
+<p>In Android, Handler classes should be static or leaks might occur. Messages enqueued on the application thread’s MessageQueue also retain their target Handler. If the Handler is an inner class, its outer class will be retained as well. To avoid leaking the outer class, declare the Handler as a static nested class with a WeakReference to its outer class.</p>
+</blockquote>
+<p>这句话的主旨就是，<code>Handler</code>类必须声明为静态（内部）类（static nested class），否则可能会发生内存泄露。因为，进入<code>MessageQueue</code>的<code>Message</code>会持有它们目标<code>Handler</code>的引用；这就可能出现一种情况，一个消息还在排队，而此时目标<code>Handler</code>类所对应的外部类的生命周期已到<code>onDestroy</code>，即将被GC，但由于目标<code>Handler</code>类仍持有其外部类的引用，使得外部类不能被回收，从而导致内存泄露。这一点说明了<strong>Handler类型的对象，生命周期是未知的</strong>。</p>
+<p>然而如果声明为static，又会有许多不方便的地方，比如很多逻辑需要访问外部类的非静态变量和非静态方法。此时，我们应该使用外部类的<strong>弱引用</strong>（WeakReference），举例表示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">final</span> WeakReference&lt;DeviceUserFragment&gt; mFragment;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MyHandler</span><span class="params">(DeviceUserFragment fragment)</span> </span>&#123;</div><div class="line">            mFragment = <span class="keyword">new</span> WeakReference&lt;&gt;(fragment);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">            <span class="keyword">super</span>.handleMessage(msg);</div><div class="line">            Object object = msg.obj;</div><div class="line">            <span class="keyword">switch</span> (msg.what) &#123;</div><div class="line">                <span class="keyword">case</span> HWServiceConfig.GET_DEVICE_USER_INFO:</div><div class="line">                    mFragment.get().mInfo = (DataUserInfo)object;</div><div class="line">                    mFragment.get().isInfoOK = <span class="keyword">true</span>;</div><div class="line">                    mFragment.get().updateUI();</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">default</span>:</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>这里顺便复习一下JVM中的四种引用的知识吧（直接扒的以前自己的文章）：</p>
+<ul>
+<li><strong>StrongReference</strong>（强引用）是最普通的引用类型，只要强引用存在，GC就不会进行垃圾回收。</li>
+<li><strong>SoftReference</strong>（软引用）用来描述一些有用但是非必需的对象。如果一个对象只具有软引用，则内存空间足够，垃圾回收器就不会回收它；<strong>如果内存空间不足了，就会回收这些对象的内存</strong>。只要垃圾回收器没有回收它，该对象就可以被程序使用。软引用可以和一个引用队列（ReferenceQueue）联合使用，如果软引用所引用的对象被垃圾回收器回收，JVM就会把这个软引用加入到与之关联的引用队列中。软引用可用来实现内存敏感的高速缓存。</li>
+<li><strong>WeakReference</strong>（弱引用）是一种生命周期比软引用更短的引用。当GC扫描启动时，只要扫描到只具有弱引用的对象，<strong>无论内存是否够用都会执行GC</strong>；但由于GC线程优先级很低，因此并不一定能迅速发现这些弱引用对象。弱引用也可以和一个引用队列联合使用。</li>
+<li><strong>PhantomReference</strong>（虚引用）不同于其余三种引用，虚引用不会影响对象的生命周期，也无法通过虚引用获得对象的一个实例；如果一个对象仅持有虚引用，那么它就和没有任何引用一样，在任何时候都可能被垃圾回收器回收。虚引用主要用来跟踪对象被垃圾回收器回收的活动，它必须和引用队列联合使用。</li>
+</ul>
+<p>明白了弱引用的生命周期，此处想必就很好理解了。构造一个外部类的弱引用，然后通过<code>get</code>方法获得其实例进行操作即可，既避免了内存泄露，又可以自由地调用外部类的方法。</p>
+<p><strong>WeakReference</strong> 和 <strong>SoftReference</strong> 在其他很多地方也都有运用，以后再补充~</p>
+<hr>
+<h1 id="参考资料">参考资料</h1><ul>
+<li><a href="http://blog.csdn.net/guolin_blog/article/details/42238627" target="_blank" rel="external">Android最佳性能实践 - 郭霖的专栏</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Android/android-performance-1/">Android应用性能优化总结</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">sczyh30</a></p>
+        <p><span>发布时间:</span>2015年10月23日</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Android/android-performance-1/" title="Android应用性能优化总结">http://www.sczyh30.com/posts/Android/android-performance-1/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Android/android-performance-1/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"知识共享-保持署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/C-C/cpp-stl-hashmap/">
+                    C++ STL之哈希表 | unordered_map
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Android/android-aysnc-message/">
+                    Android异步消息处理机制总结
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#图片加载"><span class="toc-number">1.</span> <span class="toc-text">图片加载</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注意一些额外的内存消耗"><span class="toc-number">2.</span> <span class="toc-text">注意一些额外的内存消耗</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#有限度地使用Service"><span class="toc-number">3.</span> <span class="toc-text">有限度地使用Service</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Handler必须为静态内部类"><span class="toc-number">4.</span> <span class="toc-text">Handler必须为静态内部类</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">5.</span> <span class="toc-text">参考资料</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Android应用性能优化总结　| 「浮生若梦」 - sczyh30's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="posts/Android/android-performance-1/" data-title="Android应用性能优化总结" data-url="http://www.sczyh30.com/posts/Android/android-performance-1/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"sczyh30"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = 'http://www.sczyh30.com/assets/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/C-C/cpp-stl-hashmap/" title="上一篇: C++ STL之哈希表 | unordered_map">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Android/android-aysnc-message/" title="下一篇: Android异步消息处理机制总结">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/call-with-current-continuation/">call/cc总结 | Scheme</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-computing-system-gc-osdi16-yak/">分布式计算系统中的GC问题 | Yak(OSDI 2016) 学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/spark-rdd-paper-summary/">Distributed System | Spark RDD 论文总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-demystifying-thread-model/">Vert.x 技术内幕 | 解道Vert.x线程模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-execute-blocking-internal/">Vert.x 技术内幕 | executeBlocking 实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-async-rpc/">Vert.x 技术内幕 | 异步RPC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-rpc-design/">Distributed System | RPC模块设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (集群模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-local-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (Local模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/busy-enough-2016-08/">最近真忙～</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/">Vert.x Blueprint 系列教程(三) | Micro Shop 微服务实战</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/">Vert.x Blueprint 系列教程(二) | Vert.x Kue 教程（Web部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/">Vert.x Blueprint 系列教程(二) | 开发基于消息的应用 - Vert.x Kue 教程（Core部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/">Vert.x Blueprint 系列教程(一) | 待办事项服务开发教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/quorum-based-voting-for-replica-control/">基于Quorum投票机制的Replica Control算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/netflix-hystrix-how-it-works-summary/">Netflix Hystrix | 工作流程浅析 && HystrixCircuitBreaker源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Concurrency/concurrency-treiber-stack/">并发编程算法 | Treiber Stack实现lock-free stack</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-base/">分布式系统基础总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/service-with-docker-compose/">使用 Docker Compose 编排容器集群</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gradle-annotation-processing-vertx-codegen/">在Gradle中使用Annotation Processing Tool | Vert.x Codegen 示例</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/circuit-breaker-pattern/">微服务设计模式 | Circuit Breaker Pattern</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-existential-types-scala-java/">类型系统 | Existential Type | Scala ++ Java ++ Haskell</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-refinement-types/">类型系统 | Refinement Type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-web-summary/">Play Framework 2.5 | Web开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/scala-type-lambda/">Scala | Type Lambda</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/akka-actor-sender-enclosing/">Akka Actor | 注意sender的闭包范围</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Miscellaneous/play-music-on-linux/">在Linux环境下玩转MIDI</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-type-system-query-prolouge/">探索万恶的Slick 3 类型系统 | Prologue</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-summary-functional-relational-mapping/">Slick 3总结 | Functional Relational Mapping</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-dependency-injection-di/">Play Framework 2.5 | Dependency Injection总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/functional-programming-type-and-kind/">FP :: Type Theory | Type, Type Constructor 与 Kind</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/typeclass-scala-haskell/">Scala | Haskell | Type Class总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-for-comprehensions-detail/">Scala | for-comprehension底层转换 | withFilter解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">POSIX I/O模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model 学习笔记(III)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional 标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">Modern C++ | 移动语义与完美转发 | Universal Reference</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model 学习笔记(I)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/rabbitmq-summary/">消息队列中间件 | RabbitMQ 总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/y-combinator/">不动点组合子 | Y Combinator</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/haskell-category-basic/">Haskell学习笔记 | 范畴论与Haskell（基础篇）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-event-dispatcher/">Android 事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-notes/">Android View 视图绘制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表 | unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-performance-1/">Android应用性能优化总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结 (性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-leetcode/">LeetCode | 链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏引擎把玩总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2017 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30 <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 7;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

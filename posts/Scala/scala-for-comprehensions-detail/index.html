@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="sczyh30" />
+
+
+
+<meta name="description" content="Scala中的for-comprehension是一种方便的语法糖，它实际上是几种操作map、flatMap和filter的组合。for-comprehension的EBNF表示如下：
+12345Expr1          ::=  ‘for’ (‘(’ Enumerators ‘)’ | ‘&amp;#123;’ Enumerators ‘&amp;#125;’)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scala | for-comprehension底层转换 | withFilter解析">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Scala/scala-for-comprehensions-detail/index.html">
+<meta property="og:site_name" content="「浮生若梦」 - sczyh30's blog">
+<meta property="og:description" content="Scala中的for-comprehension是一种方便的语法糖，它实际上是几种操作map、flatMap和filter的组合。for-comprehension的EBNF表示如下：
+12345Expr1          ::=  ‘for’ (‘(’ Enumerators ‘)’ | ‘&amp;#123;’ Enumerators ‘&amp;#125;’)">
+<meta property="og:updated_time" content="2016-12-14T15:27:09.855Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Scala | for-comprehension底层转换 | withFilter解析">
+<meta name="twitter:description" content="Scala中的for-comprehension是一种方便的语法糖，它实际上是几种操作map、flatMap和filter的组合。for-comprehension的EBNF表示如下：
+12345Expr1          ::=  ‘for’ (‘(’ Enumerators ‘)’ | ‘&amp;#123;’ Enumerators ‘&amp;#125;’)">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="「浮生若梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Scala | for-comprehension底层转换 | withFilter解析 | 「浮生若梦」 - sczyh30&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                            <li><a href="/en/">Blog(EN)</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="/about" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/sczyh30" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" href="http://weibo.com/sczyh30" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Google" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="https://twitter.com/sczyh30" title="Twitter"></a>
+                            
+                                <a class="fa Medium" href="https://medium.com/@sczyh30" title="Medium"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AMQP/">AMQP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/APT/">APT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Akka/">Akka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-14/">C++ 14</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CAP/">CAP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CE3/">CE3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CPS/">CPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cache/">Cache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Category-Theory/">Category Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chemistry/">Chemistry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Continuation/">Continuation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DI/">DI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Engine/">Engine</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Euterpea/">Euterpea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Loop/">Event Loop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GC/">GC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GDB/">GDB</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Game/">Game</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gradle/">Gradle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HotSpot/">HotSpot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JUC/">JUC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klass-oop/">Klass-oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lambda-Calculus/">Lambda Calculus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkedList/">LinkedList</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIDI/">MIDI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mathematical-Logic/">Mathematical Logic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metaspace/">Metaspace</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Netflix-Hystrix/">Netflix Hystrix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Network/">Network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Object-Model/">Object Model</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PLT/">PLT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paper/">Paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Play-Framework/">Play Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quorum/">Quorum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RPC/">RPC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Reflection/">Reflection</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL/">SQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/STL/">STL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scala/">Scala</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scheme/">Scheme</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Slick/">Slick</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sort/">Sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Summary/">Summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Class/">Type Class</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Lambda/">Type Lambda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-System/">Type System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Theory/">Type Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UE4/">UE4</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity/">Unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vert-x/">Vert.x</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/View/">View</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web/">Web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web开发/">Web开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/中间件/">中间件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/云服务/">云服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存区域/">内存区域</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式系统/">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式计算/">分布式计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端/">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础/">基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异步编程/">异步编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/微服务/">微服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息系统/">消息系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码分析/">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/线程安全/">线程安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Distributed System/Deep Learning/PLT</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                    <li><a href="/en/">Blog(EN)</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="/about" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a>
+                            
+                                <a class="fa Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-scala-for-comprehensions-detail" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Scala/scala-for-comprehensions-detail/" class="article-date">
+      <time datetime="2016-02-24T16:00:00.000Z" itemprop="datePublished">2016-02-25</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Scala | for-comprehension底层转换 | withFilter解析
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Scala/">Scala</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>Scala中的for-comprehension是一种方便的语法糖，它实际上是几种操作<code>map</code>、<code>flatMap</code>和<code>filter</code>的组合。for-comprehension的EBNF表示如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Expr1          ::=  ‘for’ (‘(’ Enumerators ‘)’ | ‘&#123;’ Enumerators ‘&#125;’)</div><div class="line">                       &#123;nl&#125; [‘yield’] Expr</div><div class="line">Enumerators    ::=  Generator &#123;semi Generator&#125;</div><div class="line">Generator      ::=  Pattern1 ‘&lt;-’ Expr &#123;[semi] Guard | semi Pattern1 ‘=’ Expr&#125;</div><div class="line">Guard          ::=  ‘if’ PostfixExpr</div></pre></td></tr></table></figure>
+<p>Scala中的for-comprehension与Haskell中的do-notation类似，都是对操作组合过程的简化，操作的对象都是Monad。这里就类比Haskell中的do-notation来总结Scala中的for-comprehension转换规则。</p>
+<h1 id="First_step">First step</h1><p>第一步Scala会处理generator中的<strong>refutable pattern</strong>。所谓的refutable pattern就是模式匹配中可能失败的情况，而irrefutable pattern就是模式匹配中一定会匹配成功的情况（如variables）。对于每个可能匹配失败的generator <code>p &lt;- e</code>，Scala会将其转化为：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p &lt;- e.withFilter &#123; <span class="keyword">case</span> p =&gt; <span class="literal">true</span>; <span class="keyword">case</span> _ =&gt; <span class="literal">false</span> &#125;</div></pre></td></tr></table></figure>
+<p>比如<code>for (1 &lt;- List(1, 2)) &quot;ha&quot;</code>这段表达式的转化结果为:（直接在REPL里通过宏查看AST）</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">scala&gt; reify( <span class="keyword">for</span> (<span class="number">1</span> &lt;- <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>)) <span class="string">"ha"</span> )</div><div class="line">res1: reflect.runtime.universe.<span class="type">Expr</span>[<span class="type">Unit</span>] =</div><div class="line"><span class="type">Expr</span>[<span class="type">Unit</span>](<span class="type">List</span>.apply(<span class="number">1</span>, <span class="number">2</span>).withFilter(((check$ifrefutable$<span class="number">1</span>) =&gt; check$ifrefutable$<span class="number">1</span>: <span class="meta">@unchecked</span> <span class="keyword">match</span> &#123;</div><div class="line">  <span class="keyword">case</span> <span class="number">1</span> =&gt; <span class="literal">true</span></div><div class="line">  <span class="keyword">case</span> _ =&gt; <span class="literal">false</span></div><div class="line">&#125;)).foreach(((x$<span class="number">1</span>) =&gt; x$<span class="number">1</span>: <span class="meta">@unchecked</span> <span class="keyword">match</span> &#123;</div><div class="line">  <span class="keyword">case</span> <span class="number">1</span> =&gt; <span class="string">"ha"</span></div><div class="line">&#125;)))</div></pre></td></tr></table></figure>
+<h1 id="单个generator的for-comprehension">单个generator的for-comprehension</h1><p>只有一个generator的for-comprehension：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (x &lt;- e1)</div><div class="line">    <span class="keyword">yield</span> e2</div></pre></td></tr></table></figure>
+<p>它会被转化为</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">e1 map &#123;x =&gt; e2&#125;</div></pre></td></tr></table></figure>
+<p>我们通过Quasiquotes获取AST来验证：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">scala&gt; <span class="keyword">val</span> e1 = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</div><div class="line">e1: <span class="type">List</span>[<span class="type">Int</span>] = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</div><div class="line"></div><div class="line">scala&gt; <span class="function"><span class="keyword">def</span> <span class="title">f1</span></span>(x: <span class="type">Int</span>) = x * <span class="number">2</span></div><div class="line">f1: (x: <span class="type">Int</span>)<span class="type">Int</span></div><div class="line"></div><div class="line">scala&gt; <span class="string">q" for (x &lt;- e1) yield f1 _ "</span></div><div class="line">res2: reflect.runtime.universe.<span class="type">Tree</span> = e1.map(((x) =&gt; (f1: (() =&gt; &lt;empty&gt;))))</div></pre></td></tr></table></figure>
+<p>在Haskell中原表达式等价于：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="title">do</span></div><div class="line">    x &lt;- e1</div><div class="line">    return e2</div></pre></td></tr></table></figure>
+<p>转换为非do-notation：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="title">e1</span> &gt;&gt;=</div><div class="line">     \x -&gt; return e2</div></pre></td></tr></table></figure>
+<p>根据Monad Laws - Right Unit转化：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(\x -&gt; e2) &lt;$&gt; e1</div></pre></td></tr></table></figure>
+<h1 id="多个generator的for-comprehension">多个generator的for-comprehension</h1><p>多个generator其实就是<code>map</code>和<code>flatMap</code>(<code>fmap</code>和<code>&gt;&gt;=</code>)的组合，比如：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (x &lt;- e1; y &lt;- e2)</div><div class="line">    <span class="keyword">yield</span> e3</div></pre></td></tr></table></figure>
+<p>会转化为</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">e1.flatMap(x =&gt; <span class="keyword">for</span> (y &lt;- e2) <span class="keyword">yield</span> e3)</div></pre></td></tr></table></figure>
+<p>即</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">e1 flatMap &#123; x =&gt;</div><div class="line">    e2 map &#123; y =&gt; e3 &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>REPL里验证：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">scala&gt; <span class="string">q"for(x &lt;- e1; y &lt;- e2) yield x + y"</span></div><div class="line">res3: reflect.runtime.universe.<span class="type">Tree</span> = e1.flatMap(((x) =&gt; e2.map(((y) =&gt; x.$plus(y)))))</div></pre></td></tr></table></figure>
+<p>举例(Scala):<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> e1 = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</div><div class="line"><span class="keyword">val</span> e2 = <span class="type">List</span>(<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)</div><div class="line"></div><div class="line"><span class="keyword">val</span> f1 = <span class="keyword">for</span>(x &lt;- e1; y &lt;- e2)</div><div class="line">  <span class="keyword">yield</span> x + y <span class="comment">// List(5, 6, 7, 6, 7, 8, 7, 8, 9)</span></div><div class="line"></div><div class="line"><span class="keyword">val</span> f2 = e1 flatMap &#123; x =&gt;</div><div class="line">  e2 map &#123; y =&gt; x + y &#125;</div><div class="line">&#125; <span class="comment">// List(5, 6, 7, 6, 7, 8, 7, 8, 9)</span></div></pre></td></tr></table></figure></p>
+<p>在Haskell中原表达式等价于：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="title">do</span></div><div class="line">    x &lt;- e1</div><div class="line">    y &lt;- e2</div><div class="line">    return e3</div></pre></td></tr></table></figure>
+<p>转换为非do-notation：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="title">e1</span> &gt;&gt;=</div><div class="line">     \x -&gt; e2 &gt;&gt;=</div><div class="line">         \y -&gt; return e3</div></pre></td></tr></table></figure>
+<p>根据Monad Laws - Right Unit转化：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="title">e1</span> &gt;&gt;=</div><div class="line">    \x -&gt; fmap (\y -&gt; e3) e2</div></pre></td></tr></table></figure>
+<p>举例(Haskell)：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">-- result: [5,6,7,6,7,8,7,8,9]</span></div><div class="line"><span class="title">f2</span> :: (<span class="type">Num</span> a) =&gt; [a]</div><div class="line"><span class="title">f2</span> = <span class="keyword">do</span></div><div class="line">    x &lt;- [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</div><div class="line">    y &lt;- [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]</div><div class="line">    return (x + y)</div><div class="line"></div><div class="line"><span class="title">f3</span> :: (<span class="type">Num</span> a) =&gt; [a]</div><div class="line"><span class="title">f3</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] &gt;&gt;=</div><div class="line">     \x -&gt; [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>] &gt;&gt;=</div><div class="line">          \y -&gt; return (x + y)</div><div class="line"></div><div class="line"><span class="title">f4</span> :: (<span class="type">Num</span> a) =&gt; [a]</div><div class="line"><span class="title">f4</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] &gt;&gt;=</div><div class="line">     \x -&gt; fmap (\y -&gt; x + y) [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]</div></pre></td></tr></table></figure>
+<h1 id="for-loop">for-loop</h1><p>Scala中，for表达式也有支持side effects的版本(for-loop)，比如：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span>(x &lt;- e1; y &lt;- e2)</div><div class="line">    println(x * y)</div></pre></td></tr></table></figure>
+<p>它的转化和含yield的差不多，只不过它用含副作用的<code>foreach</code>操作替代了<code>map</code>和<code>flatMap</code>算子：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">e1 foreach &#123;</div><div class="line">    x =&gt; e2 foreach &#123;</div><div class="line">        y =&gt; println(x * y)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="含条件的for表达式">含条件的for表达式</h1><p>Scala支持含有条件判断(if guard)的for表达式，其中<code>if guard</code>对应<code>withFilter</code>算子。</p>
+<p>转换规则：<code>p &lt;- e if g</code> 会转换为 <code>p &lt;- e.withFilter(p =&gt; g)</code>。</p>
+<p>比如：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (x &lt;- e1 <span class="keyword">if</span> p)</div><div class="line">    <span class="keyword">yield</span> e2</div></pre></td></tr></table></figure>
+<p>会转化为：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (x &lt;- e1 withFilter &#123;x =&gt; p&#125;)</div><div class="line">    <span class="keyword">yield</span> e2</div></pre></td></tr></table></figure>
+<p>即：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">e1 withFilter &#123;x =&gt; f&#125; map &#123;x =&gt; e2&#125;</div></pre></td></tr></table></figure>
+<p>REPL里验证：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">scala&gt; reify( <span class="keyword">for</span>(x &lt;- e1 <span class="keyword">if</span> x &gt; <span class="number">2</span>) <span class="keyword">yield</span> f1 _ )</div><div class="line">res20: reflect.runtime.universe.<span class="type">Expr</span>[<span class="type">List</span>[<span class="type">Int</span> =&gt; <span class="type">Int</span>]] =</div><div class="line"><span class="type">Expr</span>[<span class="type">List</span>[<span class="type">Int</span> =&gt; <span class="type">Int</span>]]($read.e1.withFilter(((x) =&gt; x.$greater(<span class="number">2</span>))).map(((x) =&gt; &#123;</div><div class="line">  ((x) =&gt; $read.f1(x))</div><div class="line">&#125;))(<span class="type">List</span>.canBuildFrom))</div><div class="line"></div><div class="line">scala&gt; <span class="string">q" for(x &lt;- e1 if x &gt; 2) yield f1 _ "</span></div><div class="line">res21: reflect.runtime.universe.<span class="type">Tree</span> = e1.withFilter(((x) =&gt; x.$greater(<span class="number">2</span>))).map(((x) =&gt; (f1: (() =&gt; &lt;empty&gt;))))</div></pre></td></tr></table></figure>
+<h1 id="含有value_definition的for表达式">含有value definition的for表达式</h1><p>这种情况下generator中含有value definition，比如：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p &lt;- e</div><div class="line">p1 = e1</div></pre></td></tr></table></figure>
+<p>这种转换要稍微啰嗦一点。对于 <code>p &lt;- e; p1 = e1</code> 这样的generator，Scala会将其转换为：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">(p, p1) &lt;- <span class="keyword">for</span> (x<span class="meta">@p</span>&lt;- e) <span class="keyword">yield</span> &#123;</div><div class="line">  <span class="keyword">val</span> x1<span class="meta">@p</span>1 = e1</div><div class="line">  (x, x1)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到展开的结果是多了一次for-comprehension，也就是多了一层<code>map</code>，这可能会带来一些效率问题。</p>
+<p>在REPL里验证：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">scala&gt; <span class="keyword">val</span> list = <span class="type">List</span>(<span class="string">"+"</span>, <span class="string">"1"</span>, <span class="string">"s"</span>)</div><div class="line">list: <span class="type">List</span>[<span class="type">String</span>] = <span class="type">List</span>(+, <span class="number">1</span>, s)</div><div class="line"></div><div class="line">scala&gt; reify ( <span class="keyword">for</span>(p &lt;- list; x = p; y = p) <span class="keyword">yield</span> y )</div><div class="line">res29: reflect.runtime.universe.<span class="type">Expr</span>[<span class="type">List</span>[<span class="type">String</span>]] =</div><div class="line"><span class="type">Expr</span>[<span class="type">List</span>[<span class="type">String</span>]]($read.list.map(((p) =&gt; &#123;</div><div class="line">  <span class="keyword">val</span> x = p;</div><div class="line">  <span class="keyword">val</span> y = p;</div><div class="line">  <span class="type">Tuple3</span>.apply(p, x, y)</div><div class="line">&#125;))(<span class="type">List</span>.canBuildFrom).map(((x$<span class="number">1</span>) =&gt; x$<span class="number">1</span>: <span class="meta">@unchecked</span> <span class="keyword">match</span> &#123;</div><div class="line">  <span class="keyword">case</span> <span class="type">Tuple3</span>((p @ _), (x @ _), (y @ _)) =&gt; y</div><div class="line">&#125;))(<span class="type">List</span>.canBuildFrom))</div></pre></td></tr></table></figure>
+<h1 id="withFilter">withFilter</h1><p>最后再来谈一下上面出现的<code>withFilter</code>函数，它于Scala 2.8引入，是<code>filter</code>的lazy版本。那么为什么要引入<code>withFilter</code>呢？为何不能直接用<code>filter</code>呢？我们先来看两段代码：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> found = <span class="literal">false</span></div><div class="line"><span class="keyword">for</span> (x &lt;- <span class="type">List</span>.range(<span class="number">1</span>, <span class="number">10</span>); <span class="keyword">if</span> x % <span class="number">2</span> == <span class="number">1</span> &amp;&amp; !found)</div><div class="line">  <span class="keyword">if</span> (x == <span class="number">5</span>) found = <span class="literal">true</span> <span class="keyword">else</span> println(x)</div></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> found = <span class="literal">false</span></div><div class="line"><span class="keyword">for</span> (x &lt;- <span class="type">Stream</span>.range(<span class="number">1</span>, <span class="number">10</span>); <span class="keyword">if</span> x % <span class="number">2</span> == <span class="number">1</span> &amp;&amp; !found)</div><div class="line">  <span class="keyword">if</span> (x == <span class="number">5</span>) found = <span class="literal">true</span> <span class="keyword">else</span> println(x)</div></pre></td></tr></table></figure>
+<p>其中，<code>Stream</code>是<code>List</code>的lazy版本，只在需要的时候求值。按照上面总结的for-comprehension转换规则，我们可以将上面的代码转换为：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> found = <span class="literal">false</span></div><div class="line"><span class="type">List</span>.range(<span class="number">1</span>,<span class="number">10</span>).f(_ % <span class="number">2</span> == <span class="number">1</span> &amp;&amp; !found).foreach(x =&gt; <span class="keyword">if</span> (x == <span class="number">5</span>) found = <span class="literal">true</span> <span class="keyword">else</span> println(x))</div></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> found = <span class="literal">false</span></div><div class="line"><span class="type">Stream</span>.range(<span class="number">1</span>,<span class="number">10</span>).f(_ % <span class="number">2</span> == <span class="number">1</span> &amp;&amp; !found).foreach(x =&gt; <span class="keyword">if</span> (x == <span class="number">5</span>) found = <span class="literal">true</span> <span class="keyword">else</span> println(x))</div></pre></td></tr></table></figure>
+<p>这里我们暂时用<code>f</code>来代表某个filter函数。如果令<code>f = filter</code>的话，上面两段程序的运行结果分别是：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// List</span></div><div class="line"><span class="number">1</span></div><div class="line"><span class="number">3</span></div><div class="line"><span class="number">7</span></div><div class="line"><span class="number">9</span></div></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Stream</span></div><div class="line"><span class="number">1</span></div><div class="line"><span class="number">3</span></div></pre></td></tr></table></figure>
+<p>可以看到<code>Stream</code>在对每个元素filter的时候，都会重新计算filter对应的<code>predicate</code>，所以上面的代码中<code>found</code>改变会对filter有影响；而<code>List</code>在filter元素的时候，对应的<code>predicate</code>是已经计算好的，不会再变更，因此<code>found</code>改变对filter没有影响。想必大家已经看出问题了，我们在使用for-comprehension的时候，总是希望if guard里的条件是按需求值的(on-demand)，而不是一开始就计算好的，因此把if guard转换成<code>filter</code>函数的话语义会有问题。所以，为了保持<code>filter</code>的语义不变，同时确保for-comprehension语义正确，Scala 2.8引入了<code>withFilter</code>函数作为<code>filter</code>的lazy实现，它的<code>predicate</code>是on-demand的。这样，for-comprehension中的guard就可以转换成<code>withFilter</code>函数，从而实现正确的语义。</p>
+<p><code>withFilter</code>的实现也非常简单，既然需要on-demand evaluation，那么就把predicate函数保存下来，到需要的时候再调用。<code>withFilter</code>函数会生成一个<code>WithFilter</code>对象：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">withFilter</span></span>(p: <span class="type">A</span> =&gt; <span class="type">Boolean</span>): <span class="type">FilterMonadic</span>[<span class="type">A</span>, <span class="type">Repr</span>] = <span class="keyword">new</span> <span class="type">WithFilter</span>(p)</div><div class="line"></div><div class="line"><span class="comment">/** A class supporting filtered operations. Instances of this class are</span></div><div class="line"> *  returned by method `withFilter`.</div><div class="line"> */</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">WithFilter</span>(<span class="params">p: <span class="type">A</span> =&gt; <span class="type">Boolean</span></span>) <span class="keyword">extends</span> <span class="title">FilterMonadic</span>[<span class="type">A</span>, <span class="type">Repr</span>] </span>&#123;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">map</span></span>[<span class="type">B</span>, <span class="type">That</span>](f: <span class="type">A</span> =&gt; <span class="type">B</span>)(<span class="keyword">implicit</span> bf: <span class="type">CanBuildFrom</span>[<span class="type">Repr</span>, <span class="type">B</span>, <span class="type">That</span>]): <span class="type">That</span> = &#123;</div><div class="line">    <span class="keyword">val</span> b = bf(repr)</div><div class="line">    <span class="keyword">for</span> (x &lt;- self)</div><div class="line">      <span class="keyword">if</span> (p(x)) b += f(x)</div><div class="line">    b.result</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">flatMap</span></span>[<span class="type">B</span>, <span class="type">That</span>](f: <span class="type">A</span> =&gt; <span class="type">GenTraversableOnce</span>[<span class="type">B</span>])(<span class="keyword">implicit</span> bf: <span class="type">CanBuildFrom</span>[<span class="type">Repr</span>, <span class="type">B</span>, <span class="type">That</span>]): <span class="type">That</span> = &#123;</div><div class="line">    <span class="keyword">val</span> b = bf(repr)</div><div class="line">    <span class="keyword">for</span> (x &lt;- self)</div><div class="line">      <span class="keyword">if</span> (p(x)) b ++= f(x).seq</div><div class="line">    b.result</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">foreach</span></span>[<span class="type">U</span>](f: <span class="type">A</span> =&gt; <span class="type">U</span>): <span class="type">Unit</span> =</div><div class="line">    <span class="keyword">for</span> (x &lt;- self)</div><div class="line">      <span class="keyword">if</span> (p(x)) f(x)</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">withFilter</span></span>(q: <span class="type">A</span> =&gt; <span class="type">Boolean</span>): <span class="type">WithFilter</span> =</div><div class="line">    <span class="keyword">new</span> <span class="type">WithFilter</span>(x =&gt; p(x) &amp;&amp; q(x))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到<code>WithFilter</code>里只允许<code>map</code>, <code>flatMap</code>, <code>foreach</code>和<code>withFilter</code>这四种操作，其中<code>map</code>和<code>flatMap</code>会得到原来的集合类型。</p>
+<hr>
+<h1 id="References">References</h1><ul>
+<li><em>Scala Language Specification</em>, 6.19</li>
+<li><a href="http://docs.scala-lang.org/tutorials/FAQ/yield" target="_blank" rel="external">How does yield work? - Scala Documentation</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Scala/scala-for-comprehensions-detail/">Scala | for-comprehension底层转换 | withFilter解析</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">sczyh30</a></p>
+        <p><span>发布时间:</span>2016年02月25日</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Scala/scala-for-comprehensions-detail/" title="Scala | for-comprehension底层转换 | withFilter解析">http://www.sczyh30.com/posts/Scala/scala-for-comprehensions-detail/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Scala/scala-for-comprehensions-detail/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"知识共享-保持署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/">
+                    Scala | 利用Curry-Howard Isomorphism实现union type
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Algorithm/algorithm-quicksort/">
+                    快速排序实现及优化 | DualPivotQuicksort
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#First_step"><span class="toc-number">1.</span> <span class="toc-text">First step</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#单个generator的for-comprehension"><span class="toc-number">2.</span> <span class="toc-text">单个generator的for-comprehension</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#多个generator的for-comprehension"><span class="toc-number">3.</span> <span class="toc-text">多个generator的for-comprehension</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#for-loop"><span class="toc-number">4.</span> <span class="toc-text">for-loop</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#含条件的for表达式"><span class="toc-number">5.</span> <span class="toc-text">含条件的for表达式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#含有value_definition的for表达式"><span class="toc-number">6.</span> <span class="toc-text">含有value definition的for表达式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#withFilter"><span class="toc-number">7.</span> <span class="toc-text">withFilter</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number">8.</span> <span class="toc-text">References</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Scala | for-comprehension底层转换 | withFilter解析　| 「浮生若梦」 - sczyh30's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="posts/Scala/scala-for-comprehensions-detail/" data-title="Scala | for-comprehension底层转换 | withFilter解析" data-url="http://www.sczyh30.com/posts/Scala/scala-for-comprehensions-detail/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"sczyh30"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = 'http://www.sczyh30.com/assets/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/" title="上一篇: Scala | 利用Curry-Howard Isomorphism实现union type">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Algorithm/algorithm-quicksort/" title="下一篇: 快速排序实现及优化 | DualPivotQuicksort">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/call-with-current-continuation/">call/cc总结 | Scheme</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-computing-system-gc-osdi16-yak/">分布式计算系统中的GC问题 | Yak(OSDI 2016) 学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/spark-rdd-paper-summary/">Distributed System | Spark RDD 论文总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-demystifying-thread-model/">Vert.x 技术内幕 | 解道Vert.x线程模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-execute-blocking-internal/">Vert.x 技术内幕 | executeBlocking 实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-async-rpc/">Vert.x 技术内幕 | 异步RPC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-rpc-design/">Distributed System | RPC模块设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (集群模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-local-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (Local模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/busy-enough-2016-08/">最近真忙～</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/">Vert.x Blueprint 系列教程(三) | Micro Shop 微服务实战</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/">Vert.x Blueprint 系列教程(二) | Vert.x Kue 教程（Web部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/">Vert.x Blueprint 系列教程(二) | 开发基于消息的应用 - Vert.x Kue 教程（Core部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/">Vert.x Blueprint 系列教程(一) | 待办事项服务开发教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/quorum-based-voting-for-replica-control/">基于Quorum投票机制的Replica Control算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/netflix-hystrix-how-it-works-summary/">Netflix Hystrix | 工作流程浅析 && HystrixCircuitBreaker源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Concurrency/concurrency-treiber-stack/">并发编程算法 | Treiber Stack实现lock-free stack</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-base/">分布式系统基础总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/service-with-docker-compose/">使用 Docker Compose 编排容器集群</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gradle-annotation-processing-vertx-codegen/">在Gradle中使用Annotation Processing Tool | Vert.x Codegen 示例</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/circuit-breaker-pattern/">微服务设计模式 | Circuit Breaker Pattern</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-existential-types-scala-java/">类型系统 | Existential Type | Scala ++ Java ++ Haskell</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-refinement-types/">类型系统 | Refinement Type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-web-summary/">Play Framework 2.5 | Web开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/scala-type-lambda/">Scala | Type Lambda</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/akka-actor-sender-enclosing/">Akka Actor | 注意sender的闭包范围</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Miscellaneous/play-music-on-linux/">在Linux环境下玩转MIDI</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-type-system-query-prolouge/">探索万恶的Slick 3 类型系统 | Prologue</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-summary-functional-relational-mapping/">Slick 3总结 | Functional Relational Mapping</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-dependency-injection-di/">Play Framework 2.5 | Dependency Injection总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/functional-programming-type-and-kind/">FP :: Type Theory | Type, Type Constructor 与 Kind</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/typeclass-scala-haskell/">Scala | Haskell | Type Class总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-for-comprehensions-detail/">Scala | for-comprehension底层转换 | withFilter解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">POSIX I/O模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model 学习笔记(III)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional 标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">Modern C++ | 移动语义与完美转发 | Universal Reference</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model 学习笔记(I)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/rabbitmq-summary/">消息队列中间件 | RabbitMQ 总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/y-combinator/">不动点组合子 | Y Combinator</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/haskell-category-basic/">Haskell学习笔记 | 范畴论与Haskell（基础篇）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-event-dispatcher/">Android 事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-notes/">Android View 视图绘制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表 | unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-performance-1/">Android应用性能优化总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结 (性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-leetcode/">LeetCode | 链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏引擎把玩总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2017 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30 <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 7;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

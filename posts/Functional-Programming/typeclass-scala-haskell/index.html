@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="sczyh30" />
+
+
+
+<meta name="description" content="Type class in HaskellType class是Haskell中最重要的概念之一，它可以看做是 对一系列具有某种性质的type的抽象 (比如Eq, Functor, Monad之类的)。每个type class都定义了一组函数。一个type如果要成为某个type class，就必须成为其实例(instance)并实现type class定义的函数。表面上看起来type class和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scala | Haskell | Type Class总结">
+<meta property="og:url" content="http://www.sczyh30.com/posts/Functional-Programming/typeclass-scala-haskell/index.html">
+<meta property="og:site_name" content="「浮生若梦」 - sczyh30's blog">
+<meta property="og:description" content="Type class in HaskellType class是Haskell中最重要的概念之一，它可以看做是 对一系列具有某种性质的type的抽象 (比如Eq, Functor, Monad之类的)。每个type class都定义了一组函数。一个type如果要成为某个type class，就必须成为其实例(instance)并实现type class定义的函数。表面上看起来type class和">
+<meta property="og:updated_time" content="2016-12-22T08:37:35.759Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Scala | Haskell | Type Class总结">
+<meta name="twitter:description" content="Type class in HaskellType class是Haskell中最重要的概念之一，它可以看做是 对一系列具有某种性质的type的抽象 (比如Eq, Functor, Monad之类的)。每个type class都定义了一组函数。一个type如果要成为某个type class，就必须成为其实例(instance)并实现type class定义的函数。表面上看起来type class和">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="「浮生若梦」 - sczyh30&#39;s blog" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+    <link href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>Scala | Haskell | Type Class总结 | 「浮生若梦」 - sczyh30&#39;s blog</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: true,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">sczyh30</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">踏歌长行，梦想永在。</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about">About Me</a></li>
+                        
+                            <li><a href="/en/">Blog(EN)</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="/about" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/sczyh30" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" href="http://weibo.com/sczyh30" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Google" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
+                            
+                                <a class="fa Twitter" href="https://twitter.com/sczyh30" title="Twitter"></a>
+                            
+                                <a class="fa Medium" href="https://medium.com/@sczyh30" title="Medium"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AMQP/">AMQP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/APT/">APT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Akka/">Akka</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Algorithm/">Algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/">C++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/C-14/">C++ 14</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CAP/">CAP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CE3/">CE3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CPS/">CPS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cache/">Cache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Category-Theory/">Category Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Chemistry/">Chemistry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Continuation/">Continuation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DI/">DI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Engine/">Engine</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Euterpea/">Euterpea</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Event-Loop/">Event Loop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GC/">GC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GDB/">GDB</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Game/">Game</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Gradle/">Gradle</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HashMap/">HashMap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HotSpot/">HotSpot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IO/">IO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JUC/">JUC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klass-oop/">Klass-oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Lambda-Calculus/">Lambda Calculus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LeetCode/">LeetCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LinkedList/">LinkedList</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MIDI/">MIDI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mathematical-Logic/">Mathematical Logic</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metaspace/">Metaspace</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Netflix-Hystrix/">Netflix Hystrix</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Network/">Network</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Object-Model/">Object Model</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PLT/">PLT</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Paper/">Paper</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Play-Framework/">Play Framework</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quorum/">Quorum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RPC/">RPC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Reflection/">Reflection</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SQL/">SQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/STL/">STL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scala/">Scala</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Scheme/">Scheme</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Slick/">Slick</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sort/">Sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Summary/">Summary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/">TCP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Class/">Type Class</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Lambda/">Type Lambda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-System/">Type System</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Type-Theory/">Type Theory</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UE4/">UE4</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity/">Unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vert-x/">Vert.x</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/View/">View</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web/">Web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web开发/">Web开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/中间件/">中间件</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/云服务/">云服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存区域/">内存区域</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式/">分布式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式系统/">分布式系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/分布式计算/">分布式计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/前端/">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础/">基础</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/容器/">容器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并发/">并发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/开发/">开发</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异步编程/">异步编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/微服务/">微服务</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/性能优化/">性能优化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/数据库/">数据库</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/架构/">架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/消息系统/">消息系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/源码分析/">源码分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/线程安全/">线程安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/虚拟化/">虚拟化</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+
+                
+                
+                <section class="switch-part switch-part3">
+                
+                    <div id="js-aboutme">Distributed System/Deep Learning/PLT</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">sczyh30</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="http://7xkkgd.com1.z0.glb.clouddn.com/blog-default-lambda-avatar.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">sczyh30</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">踏歌长行，梦想永在。</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about">About Me</a></li>
+                
+                    <li><a href="/en/">Blog(EN)</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="/about" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/sczyh30" title="GitHub"></a>
+                            
+                                <a class="fa 新浪微博" target="_blank" href="http://weibo.com/sczyh30" title="新浪微博"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa Google" target="_blank" href="https://plus.google.com/u/0/117807083506391735472" title="Google"></a>
+                            
+                                <a class="fa Twitter" target="_blank" href="https://twitter.com/sczyh30" title="Twitter"></a>
+                            
+                                <a class="fa Medium" target="_blank" href="https://medium.com/@sczyh30" title="Medium"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-typeclass-scala-haskell" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Functional-Programming/typeclass-scala-haskell/" class="article-date">
+      <time datetime="2016-03-06T16:00:00.000Z" itemprop="datePublished">2016-03-07</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Scala | Haskell | Type Class总结
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Functional-Programming/">Functional Programming</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Type-Class/">Type Class</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="Type_class_in_Haskell">Type class in Haskell</h1><p>Type class是Haskell中最重要的概念之一，它可以看做是 <strong>对一系列具有某种性质的type的抽象</strong> (比如<code>Eq</code>, <code>Functor</code>, <code>Monad</code>之类的)。每个type class都定义了一组函数。一个type如果要成为某个type class，就必须成为其实例(<code>instance)</code>并实现type class定义的函数。表面上看起来type class和OOP中的接口(interface)的作用类似，但是type class有着更多的优点，我们将在后面比较type class与interface的特点。</p>
+<p>在Haskell中，我们通过<code>class</code>关键字来定义type class。比如<code>Monad</code>的定义如下：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="type">Applicative</span> m =&gt; <span class="type">Monad</span> m <span class="keyword">where</span></span></div><div class="line">    (&gt;&gt;=)       :: <span class="keyword">forall</span> a b. m a -&gt; (a -&gt; m b) -&gt; m b</div><div class="line">    (&gt;&gt;)        :: <span class="keyword">forall</span> a b. m a -&gt; m b -&gt; m b</div><div class="line"></div><div class="line">    return      :: a -&gt; m a</div><div class="line"></div><div class="line">    fail        :: <span class="type">String</span> -&gt; m a</div></pre></td></tr></table></figure>
+<p>其中<code>Applicative m =&gt; Monad m</code>代表类型m(更严谨地说应该是type constructor，因为<code>(m :: * -&gt; *)</code>)同样是<code>Applicative</code>的实例。</p>
+<p>我们可以通过<code>instance</code>关键字来实现type class的实例。比如Maybe Monad的实现如下：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">data</span>  <span class="type">Maybe</span> a  =  <span class="type">Nothing</span> | <span class="type">Just</span> a</span></div><div class="line">  <span class="keyword">deriving</span> (<span class="type">Eq</span>, <span class="type">Ord</span>)</div><div class="line"><span class="class"></span></div><div class="line"><span class="keyword">instance</span>  <span class="type">Monad</span> <span class="type">Maybe</span>  <span class="keyword">where</span></div><div class="line">    (<span class="type">Just</span> x) &gt;&gt;= k      = k x</div><div class="line">    <span class="type">Nothing</span>  &gt;&gt;= _      = <span class="type">Nothing</span></div><div class="line"></div><div class="line">    (&gt;&gt;) = (*&gt;)</div><div class="line"></div><div class="line">    fail _              = <span class="type">Nothing</span></div></pre></td></tr></table></figure>
+<p>Haskell引入type class是为了解决 <strong>Ad-hoc polymorphism</strong> 的问题。所谓的Ad-hoc polymorphism可以用一句话概括：</p>
+<blockquote>
+<p>In programming languages, ad-hoc polymorphism is a kind of polymorphism in which polymorphic functions can be applied to arguments of different types, because a polymorphic function can denote a number of distinct and potentially heterogeneous implementations depending on the type of argument(s) to which it is applied.</p>
+</blockquote>
+<p>即函数根据不同的参数类型选择不同版本的函数进行调用。Ad-hoc polymorphism在OOP里一般通过函数重载或运算符重载实现，而在Haskell中ad-hoc polymorphism就通过type class实现。比如<code>show</code>函数：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="title">show</span> :: <span class="type">Show</span> a =&gt; a -&gt; <span class="type">String</span></div></pre></td></tr></table></figure>
+<p>类型<code>a</code>必须是<code>Show</code>的实例，对于不同的类型<code>a</code>，<code>show</code>函数会选择对应的函数实现来进行调用，这就实现了上面所说的ad-hoc polymorphism(编译期):</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="type">Prelude</span>&gt; show [<span class="number">1.7</span>, <span class="number">6.4</span>]</div><div class="line"><span class="string">"[1.7,6.4]"</span></div><div class="line"><span class="type">Prelude</span>&gt; show <span class="number">2</span></div><div class="line"><span class="string">"2"</span></div><div class="line"><span class="type">Prelude</span>&gt; show $ <span class="type">Just</span> <span class="number">4</span></div><div class="line"><span class="string">"Just 4"</span></div></pre></td></tr></table></figure>
+<p>Type class在Haskell中其实是一种语法糖，因此下面我们就来看一下GHC是如何desugar它的。</p>
+<h1 id="GHC处理type_class的方式">GHC处理type class的方式</h1><p>我们来看一下GHC处理type class的方式。由于对于某个type，作用域内最多只能有一种某个type class的实例，因此type class可以被GHC处理成一种 <strong>“dictionary-passing style”</strong>。这里参考一下 <em>A History of Haskell</em> 中的例子：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="type">Eq</span> a <span class="keyword">where</span></span></div><div class="line">    (==) :: a -&gt; a -&gt; <span class="type">Bool</span></div><div class="line">    (/=) :: a -&gt; a -&gt; <span class="type">Bool</span></div><div class="line"><span class="class"></span></div><div class="line"><span class="keyword">instance</span> <span class="type">Eq</span> <span class="type">Int</span> <span class="keyword">where</span></div><div class="line">  i1 == i2 = eqInt i1 i2</div><div class="line">  i1 /= i2 = not (i1 == i2)</div><div class="line"><span class="class"></span></div><div class="line"><span class="keyword">instance</span> (<span class="type">Eq</span> <span class="title">a</span>) =&gt; <span class="type">Eq</span> [a] <span class="keyword">where</span></div><div class="line">  [] == [] = <span class="type">True</span></div><div class="line">  (x:xs) == (y:ys) = (x == y) &amp;&amp; (xs == ys)</div><div class="line">  xs /= ys = not (xs == ys)</div><div class="line"></div><div class="line"><span class="title">member</span> :: <span class="type">Eq</span> a =&gt; a -&gt; [a] -&gt; <span class="type">Bool</span></div><div class="line"><span class="title">member</span> x [] = <span class="type">False</span></div><div class="line"><span class="title">member</span> x (y:ys) | x == y = <span class="type">True</span></div><div class="line">                | otherwise = member x ys</div></pre></td></tr></table></figure>
+<p>它可以被转化成为以下形式：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">data</span> <span class="type">Eq</span> a = <span class="type">MkEq</span> (<span class="title">a</span> -&gt; <span class="title">a</span> -&gt; <span class="type">Bool</span>) (<span class="title">a</span> -&gt; <span class="title">a</span> -&gt; <span class="type">Bool</span>)</span></div><div class="line"><span class="title">eq</span> (<span class="type">MkEq</span> e _) = e</div><div class="line"><span class="title">ne</span> (<span class="type">MkEq</span> _ n) = n</div><div class="line"></div><div class="line"><span class="title">dEqInt</span> :: <span class="type">Eq</span> <span class="type">Int</span></div><div class="line"><span class="title">dEqInt</span> = <span class="type">MkEq</span> eqInt (\x y -&gt; not (eqInt x y))</div><div class="line"></div><div class="line"><span class="title">dEqList</span> :: <span class="type">Eq</span> a -&gt; <span class="type">Eq</span> [a]</div><div class="line"><span class="title">dEqList</span> d = <span class="type">MkEq</span> el (\x y -&gt; not (el x y))</div><div class="line">  <span class="keyword">where</span></div><div class="line">    el [] [] = <span class="type">True</span></div><div class="line">    el (x:xs) (y:ys) = eq d x y &amp;&amp; el xs ys</div><div class="line">    el _ _ = <span class="type">False</span></div><div class="line"></div><div class="line"><span class="title">member</span> :: <span class="type">Eq</span> a -&gt; a -&gt; [a] -&gt; <span class="type">Bool</span></div><div class="line"><span class="title">member</span> d x [] = <span class="type">False</span></div><div class="line"><span class="title">member</span> d x (y:ys) | eq d x y = <span class="type">True</span></div><div class="line">                  | otherwise = member d x ys</div></pre></td></tr></table></figure>
+<p>我们看到，type class的定义部分被转换成了一个data type，它定义了对应type class的字典(dictionary)，里面记录了type class里的函数。上面的例子中，转换后的<code>eq</code>和<code>ne</code>函数会从这个字典里选择对应的函数。我们再来看一下转换后的<code>member</code>函数。它会接受对应的字典参数，并通过<code>eq</code>函数从字典中提取出对应的判断函数。最后就是对应的instance实现部分了。instance部分被转换成了一个选择函数，返回一个完整的字典。比如<code>dEqList</code>函数会接受一个<code>Eq a</code>类型的字典，返回一个<code>Eq [a]</code>类型的字典。</p>
+<p>简单总结一下转换过程：</p>
+<ul>
+<li><code>class</code> -&gt; data type (dictionary)</li>
+<li><code>instance</code> -&gt; selector function</li>
+</ul>
+<h1 id="Type_class_pattern_in_Scala:_Implicit_Objects">Type class pattern in Scala: Implicit Objects</h1><p>Scala中并没有直接通过关键字支持type class(毕竟还混合了OOP)。Scala中type class成为了一种pattern，可以通过<code>trait</code>加上<code>implicit</code>来实现。</p>
+<p>比如要对一组“可加的元素”（即我们熟悉的幺半群<code>Monoid</code>）进行求和(<code>concat</code>)操作，在Haskell里可以这么写(和默认的<code>Monoid</code>实现有差别)：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&#123;-# LANGUAGE FlexibleInstances #-&#125;</span></div><div class="line"><span class="class"></span></div><div class="line"><span class="keyword">class</span> <span class="type">Monoid</span> a <span class="keyword">where</span></div><div class="line">  mempty :: a</div><div class="line">  mappend :: a -&gt; a -&gt; a</div><div class="line"><span class="class"></span></div><div class="line"><span class="keyword">instance</span> <span class="type">Monoid</span> <span class="type">Integer</span> <span class="keyword">where</span></div><div class="line">  mempty = <span class="number">0</span></div><div class="line">  mappend a b = a + b</div><div class="line"><span class="class"></span></div><div class="line"><span class="keyword">instance</span> <span class="type">Monoid</span> <span class="type">String</span> <span class="keyword">where</span></div><div class="line">  mempty = <span class="string">""</span></div><div class="line">  mappend a b = a ++ b</div><div class="line"></div><div class="line"><span class="title">mconcat</span> :: <span class="type">Monoid</span> a =&gt; [a] -&gt; a</div><div class="line"><span class="title">mconcat</span> xs = foldl mappend mempty xs</div></pre></td></tr></table></figure>
+<p>而在Scala中，我们可以通过Implicit Object来实现：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Monoid</span>[<span class="type">A</span>] </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">mempty</span></span>: <span class="type">A</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">mappend</span></span>(a: <span class="type">A</span>, b: <span class="type">A</span>): <span class="type">A</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">implicit</span> <span class="class"><span class="keyword">object</span> <span class="title">IntMonoid</span> <span class="keyword">extends</span> <span class="title">Monoid</span>[<span class="type">Int</span>] </span>&#123;</div><div class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">mempty</span> </span>= <span class="number">0</span></div><div class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">mappend</span></span>(a: <span class="type">Int</span>, b: <span class="type">Int</span>) = a + b</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">implicit</span> <span class="class"><span class="keyword">object</span> <span class="title">StringMonoid</span> <span class="keyword">extends</span> <span class="title">Monoid</span>[<span class="type">String</span>] </span>&#123;</div><div class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">mempty</span> </span>= <span class="string">""</span></div><div class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">mappend</span></span>(a: <span class="type">String</span>, b: <span class="type">String</span>) = a + b</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">mconcat</span></span>[<span class="type">A</span>](xs: <span class="type">List</span>[<span class="type">A</span>])(<span class="keyword">implicit</span> monoid: <span class="type">Monoid</span>[<span class="type">A</span>]): <span class="type">A</span> = &#123;</div><div class="line">  xs.foldLeft(monoid.mempty)(monoid.mappend)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先我们定义了一个<code>Monoid</code> trait代表幺半群（性质：封闭、可结合、有幺元），这个trait就对应Haskell中type class的定义。接着我们分别为<code>Int</code>类型和<code>String</code>类型实现了对应的<code>Monoid</code>实例，注意对应的<code>Monoid</code>实例都是<strong>implicit object</strong>。最后我们要实现一个<code>mconcat</code>对一组具有幺半群性质的类型的值进行”求和”计算，这里我们将<code>Monoid</code>实例作为了implicit参数传递进了<code>mconcat</code>方法中，这样根据Scala的类型系统以及implicit匹配过程，当<code>xs</code>的类型是<code>List[Int]</code>的时候，<code>IntMonoid</code>会作为implicit参数传入<code>mconcat</code>方法；而当<code>xs</code>的类型是<code>List[String]</code>的时候，<code>StringMonoid</code>会作为implicit参数传入<code>mconcat</code>方法；如果没有匹配的implicit参数就会编译失败，从而确保了类型安全。是不是很奇妙呢？当然我们也可以用Scala的context bound语法糖省略掉implicit参数：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">mconcat</span></span>[<span class="type">A</span> : <span class="type">Monoid</span>](xs: <span class="type">List</span>[<span class="type">A</span>]): <span class="type">A</span> = &#123;</div><div class="line">  <span class="keyword">val</span> monoid = implicitly[<span class="type">Monoid</span>[<span class="type">A</span>]]</div><div class="line">  xs.foldLeft(monoid.mempty)(monoid.mappend)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="Type_class与接口的对比及优点">Type class与接口的对比及优点</h1><p>从上面的代码，我们可以看出，type class和trait/interface作用类似，都是对某一系列类型抽象出特定的行为。那么type class与trait/interface相比有什么优点呢？想象一下，如果用interface的话，每个sub-class都要在其body内实现对应的函数。这样如果要给现有的类实现这个interface的话，就必须要修改原类，在原类中增加对应的实现，这显然不符合Open Closed Principle(对扩展开放，对修改关闭)。所以OOP中提出了诸如 <em>适配器模式</em> 这样的设计模式用于扩展已有的类，但写各种adapter增加了代码的冗杂程度。</p>
+<p>而对于type class pattern来说，实现type class实例的代码并不写在类型定义中，而是在外部实现一个对应type class的实例。这样，我们要给现有的类型实现一个type class的话就不需要更改原有类型的定义了，只需要实现对应的type class实例就可以了。这其实就是 <strong>抽象与实现分离</strong>，即类型定义与约束实现是分离的，某个类型并不清楚自己属于某个type class。与接口的方式相比，type class符合Open Closed Principle。</p>
+<p>上面我们提到过，编译器会根据一定的机制在 <strong>编译期</strong> 自动寻找需要的type class实例，其中Haskell底层是通过转换成字典的形式让编译器寻找type class实例，而Scala中则是通过传入implicit参数的方式让编译器寻找type class实例，这保证了类型安全。</p>
+<p>相比Haskell而言，Scala中的type class pattern更加灵活（托<code>implicit</code>的福），比如:</p>
+<ul>
+<li>结合context bound语法糖，Scala中可以方便的组合多个type class，如<code>A : Eq : Ord</code></li>
+<li>Type class可以有默认实现(default implicit parameter)</li>
+<li>Scala中type class实例是具名的(implicit object)，因此同一种类型可以有不同的type class实例，并且可以通过控制作用域(通过<code>import</code>)来选择不同的实例</li>
+</ul>
+<p>当然type class还有更多的高级玩法，以后实践的多了再慢慢总结。。。</p>
+<hr>
+<h1 id="References">References</h1><ul>
+<li><a href="http://ropas.snu.ac.kr/~bruno/papers/TypeClasses.pdf" target="_blank" rel="external">Bruno C. d. S. Oliveira, Adriaan Moors, Martin Odersky. <em>Type Classes as Objects and Implicits.</em></a></li>
+<li><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/history-of-haskell/history.pdf" target="_blank" rel="external">Paul Hudak, John Hughes, Simon Peyton Jones, Philip Wadler. <em>A History of Haskell: Being Lazy With Class.</em></a></li>
+<li><a href="http://research.microsoft.com/en-us/um/people/simonpj/Papers/haskell-retrospective/ECOOP-July09.pdf" target="_blank" rel="external">Classes, Jim, but not as we know them (ECOOP 2009)</a></li>
+<li><a href="https://www.youtube.com/watch?v=hIZxTQP1ifo" target="_blank" rel="external">Edward Kmett - Type Classes vs. the World</a></li>
+<li><a href="http://stackoverflow.com/questions/5408861/what-are-type-classes-in-scala-useful-for" target="_blank" rel="external">What are type classes in Scala useful for?</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/Functional-Programming/typeclass-scala-haskell/">Scala | Haskell | Type Class总结</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">sczyh30</a></p>
+        <p><span>发布时间:</span>2016年03月07日</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/Functional-Programming/typeclass-scala-haskell/" title="Scala | Haskell | Type Class总结">http://www.sczyh30.com/posts/Functional-Programming/typeclass-scala-haskell/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://www.sczyh30.com/posts/Functional-Programming/typeclass-scala-haskell/　　作者: sczyh30" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"知识共享-保持署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/posts/Functional-Programming/functional-programming-type-and-kind/">
+                    FP :: Type Theory | Type, Type Constructor 与 Kind
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/posts/Java/java-concurrent-threadlocal/">
+                    并发编程 | ThreadLocal源码深入分析
+                </a>
+            </div>
+        
+    </nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Type_class_in_Haskell"><span class="toc-number">1.</span> <span class="toc-text">Type class in Haskell</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GHC处理type_class的方式"><span class="toc-number">2.</span> <span class="toc-text">GHC处理type class的方式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Type_class_pattern_in_Scala:_Implicit_Objects"><span class="toc-number">3.</span> <span class="toc-text">Type class pattern in Scala: Implicit Objects</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Type_class与接口的对比及优点"><span class="toc-number">4.</span> <span class="toc-text">Type class与接口的对比及优点</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#References"><span class="toc-number">5.</span> <span class="toc-text">References</span></a></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Scala | Haskell | Type Class总结　| 「浮生若梦」 - sczyh30's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <div class="duoshuo" id="comments">
+    <div id="comment-box" ></div>
+    <div class="ds-thread" id="ds-thread" data-thread-key="posts/Functional-Programming/typeclass-scala-haskell/" data-title="Scala | Haskell | Type Class总结" data-url="http://www.sczyh30.com/posts/Functional-Programming/typeclass-scala-haskell/"></div>
+    <script>
+        var duoshuoQuery = {short_name:"sczyh30"};
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = 'http://www.sczyh30.com/assets/embed.js';
+            s.async = true; s.charset = 'UTF-8';
+            (d.head || d.body).appendChild(s);
+        }
+
+        
+    </script>
+    
+    <script> loadComment(); </script>
+
+</div>
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/Functional-Programming/functional-programming-type-and-kind/" title="上一篇: FP :: Type Theory | Type, Type Constructor 与 Kind">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/posts/Java/java-concurrent-threadlocal/" title="下一篇: 并发编程 | ThreadLocal源码深入分析">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/call-with-current-continuation/">call/cc总结 | Scheme</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-computing-system-gc-osdi16-yak/">分布式计算系统中的GC问题 | Yak(OSDI 2016) 学习笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/spark-rdd-paper-summary/">Distributed System | Spark RDD 论文总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-demystifying-thread-model/">Vert.x 技术内幕 | 解道Vert.x线程模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-execute-blocking-internal/">Vert.x 技术内幕 | executeBlocking 实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-async-rpc/">Vert.x 技术内幕 | 异步RPC实现原理</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-rpc-design/">Distributed System | RPC模块设计与实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (集群模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Vert-x/vertx-advanced-local-event-bus-internal/">Vert.x 技术内幕 | Event Bus 源码分析 (Local模式)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/busy-enough-2016-08/">最近真忙～</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/">Vert.x Blueprint 系列教程(三) | Micro Shop 微服务实战</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/">Vert.x Blueprint 系列教程(二) | Vert.x Kue 教程（Web部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/">Vert.x Blueprint 系列教程(二) | 开发基于消息的应用 - Vert.x Kue 教程（Core部分）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/">Vert.x Blueprint 系列教程(一) | 待办事项服务开发教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/quorum-based-voting-for-replica-control/">基于Quorum投票机制的Replica Control算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/netflix-hystrix-how-it-works-summary/">Netflix Hystrix | 工作流程浅析 && HystrixCircuitBreaker源码分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Concurrency/concurrency-treiber-stack/">并发编程算法 | Treiber Stack实现lock-free stack</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Distributed-System/distributed-system-base/">分布式系统基础总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/service-with-docker-compose/">使用 Docker Compose 编排容器集群</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gradle-annotation-processing-vertx-codegen/">在Gradle中使用Annotation Processing Tool | Vert.x Codegen 示例</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Microservice/circuit-breaker-pattern/">微服务设计模式 | Circuit Breaker Pattern</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-existential-types-scala-java/">类型系统 | Existential Type | Scala ++ Java ++ Haskell</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/type-system-refinement-types/">类型系统 | Refinement Type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-web-summary/">Play Framework 2.5 | Web开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/scala-type-lambda/">Scala | Type Lambda</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/akka-actor-sender-enclosing/">Akka Actor | 注意sender的闭包范围</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Miscellaneous/play-music-on-linux/">在Linux环境下玩转MIDI</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-type-system-query-prolouge/">探索万恶的Slick 3 类型系统 | Prologue</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/slick-3-summary-functional-relational-mapping/">Slick 3总结 | Functional Relational Mapping</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/play-framework-2-5-dependency-injection-di/">Play Framework 2.5 | Dependency Injection总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/functional-programming-type-and-kind/">FP :: Type Theory | Type, Type Constructor 与 Kind</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/typeclass-scala-haskell/">Scala | Haskell | Type Class总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-concurrent-threadlocal/">并发编程 | ThreadLocal源码深入分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-8-completable-future/">并发编程 | JDK 1.8中的CompletableFuture | FRP风格</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-fp-union-curry-howard-isomorphism/">Scala | 利用Curry-Howard Isomorphism实现union type</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Scala/scala-for-comprehensions-detail/">Scala | for-comprehension底层转换 | withFilter解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-quicksort/">快速排序实现及优化 | DualPivotQuicksort</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-io-model/">POSIX I/O模型之阻塞、非阻塞、同步、异步浅析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-series/">TCP 相关知识总结目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-keepalive-heartbeat/">TCP Keepalive && Heartbeat</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-congestion-control/">TCP 拥塞控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/network-basis/">计算机网络相关知识总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Network/tcp-connection/">TCP连接的建立和终止</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-klass-oop/">深入探究JVM | klass-oop对象模型研究</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-3/">Inside The C++ Object Model 学习笔记(III)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-functional/">C++ 11 STL | functional 标准库</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-move-semantic/">Modern C++ | 移动语义与完美转发 | Universal Reference</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/inside-cpp-object-model-summary-1/">Inside The C++ Object Model 学习笔记(I)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/rabbitmq-summary/">消息队列中间件 | RabbitMQ 总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/y-combinator/">不动点组合子 | Y Combinator</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Functional-Programming/haskell-category-basic/">Haskell学习笔记 | 范畴论与Haskell（基础篇）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-event-dispatcher/">Android 事件分发机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/android-view-draw-notes/">Android View 视图绘制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-refactor-mvp/">Android MVP架构重构实践</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/C-C/cpp-stl-hashmap/">C++ STL之哈希表 | unordered_map</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-performance-1/">Android应用性能优化总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Android/android-aysnc-message/">Android异步消息处理机制总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Summary/struct_sizeof/">C/C++结构体字节对齐</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-hashcode-equal/">hashCode方法及equals方法的规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-basic-summary-01/">Java基础技术细节总结 - 语言规范</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/gdb-simple/">gdb用法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-cache/">缓存算法（页面置换算法）总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-02/">Web开发笔记 - 前端总结 (性能篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Web/web-frontend-01/">Web开发笔记 - 前端总结(开发篇)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Algorithm/algorithm-linkedlist-leetcode/">LeetCode | 链表相关算法总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-classloader-parent-delegation-model/">深入探究JVM | 类加载器与双亲委派模型</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/test-migrate/">博客搬迁咯~</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-hotspot-implements/">深入探究JVM | HotSpot JVM的GC实现</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-method-types/">深入探究JVM | 初探GC算法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reference-type/">Java中的几种引用 | 弱引用、软引用、虚引用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-gc-intro-count-vs-reachability/">深入探究JVM | 初探GC - 引用计数 VS 可达分析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-2/">深入解析Java反射（2） - invoke方法</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/java-reflection-1/">深入解析Java反射（1） - 基础</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Architecture/docker-tutorial/">Docker入门学习札记</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-ue4ce3/">UE4/CE3游戏引擎把玩总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Develop/game-dev-unity/">Unity游戏开发总结</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2014/">2014晶体培养 - 硫酸铜单晶</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/Life/chemistry-jt-2013/">2013寒假晶体培养 - 硫酸铜单晶</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2015 - 2017 sczyh30's blog
+            </div>
+            <div class="footer-right">
+                <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>.  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank">Yelee</a> by MOxFIVE. Enhanced by sczyh30 <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 7;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+            
+            
+            
+            
+            
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
