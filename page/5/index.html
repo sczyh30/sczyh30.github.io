@@ -483,6 +483,88 @@
 
 
   
+    <article id="post-tcp-retransmission" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Network/tcp-retransmission/" class="article-date">
+      <time datetime="2016-01-26T16:00:00.000Z" itemprop="datePublished">2016-01-27</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>TCP协议需保证所有的数据包都可以到达，因此必须要有重传机制。</p>
+<ul>
+<li>RTT: Round Trip Time</li>
+<li>RTO: Retransmission Timeout（重传超时时间）</li>
+</ul>
+<h1 id="RTO_Algorithm">RTO Algorithm</h1><p>如何计算RTO：</p>
+<ul>
+<li>经典算法</li>
+<li>Karn’s Algorithm</li>
+<li>标准算法(Jacobson/Karels Algorithm, 目前Linux内核在用)</li>
+</ul>
+<p>前面两种算法用的都是“加权移动平均”，这种方法最大的毛病就是如果RTT有一个大的波动的话，很难被发现，因为被平滑掉了。</p>
+<h1 id="重传机制">重传机制</h1><h2 id="超时重传">超时重传</h2><p>通过重传计时器(retransmission timer)实现。</p>
+<h2 id="快速重传">快速重传</h2><p>TCP在收到一个乱序的报文段时，会立即发送一个重复的ACK，并且此ACK不可被延迟。</p>
+<p>如果连续收到3个或3个以上重复的ACK，TCP会判定此报文段丢失，需要重新传递，而无需等待RTO。这就叫做快速重传。</p>
+<h2 id="SACK_&amp;&amp;_Duplicate_SACK">SACK &amp;&amp; Duplicate SACK</h2><p>Selective Acknowledgment (SACK)是 TCP 的一项可选特性，可以提高某些网络中所有可用带宽的使用效率。普通 TCP（即未提供 SACK 特性）应答是严格累积的 — 对 N 的应答意味着字节 N 和所有之前的字节都已经收到。SACK 要解决的问题普通累积式应答的 “全有或全无” 性质。</p>
+<p>例如，即使包 2（假设从 0 到 9 的序列）是在传送过程中惟一丢失的包，接收方也只能对包 1 发出一个普通的 ACK，因为这是连续接收到的包中的最后一个。另一方面，SACK 接收方可以发出包 1 的 ACK 和包 3 到包 9 的 SACK 选项。这样，发送端就可以根据回传的SACK来知道哪些数据到了，哪些数据丢失了，进而可以优化Fast Retransmit。SACK需要两端的协议都支持，在目前的Linux Kernal中默认为开启状态。</p>
+<h1 id="low-rate_DoS_attacks">low-rate DoS attacks</h1><p>应用层应用：Slowloris (HTTP slow headers)</p>
+<p>防范：随机化RTO</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Network/">Network</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Network/">Network</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TCP/">TCP</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-tcp-flow-control" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -548,11 +630,11 @@
 
 
   
-    <article id="post-tcp-retransmission" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-network-basis" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/posts/Network/tcp-retransmission/" class="article-date">
-      <time datetime="2016-01-26T16:00:00.000Z" itemprop="datePublished">2016-01-27</time>
+      <a href="/posts/Network/network-basis/" class="article-date">
+      <time datetime="2016-01-25T16:00:00.000Z" itemprop="datePublished">2016-01-26</time>
 </a>
 
 
@@ -567,7 +649,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/posts/Network/tcp-retransmission/">TCP Retransmission</a>
+      <a class="article-title" href="/posts/Network/network-basis/">计算机网络相关知识总结</a>
     </h1>
   
 
@@ -577,25 +659,26 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p>TCP协议需保证所有的数据包都可以到达，因此必须要有重传机制。</p>
+        <p>本文将不断更新~</p>
+<h1 id="网络模型">网络模型</h1><p><strong>OSI七层模型</strong>：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层</p>
+<p>数据链路层对应的数据为Frame，网络层对应的数据为Packet，传输层对应的数据为Segment。</p>
+<p>网络数据首先会打到TCP的Segment中，然后TCP的Segment会打到IP的Packet中，然后再打到以太网Ethernet的Frame中，传到对端后，各个层解析自己的协议，然后把数据交给更高层的协议处理。</p>
+<p><img src="http://7xkkgd.com1.z0.glb.clouddn.com/osi-seven-layer.png" alt="The standard seven-layer OSI model"></p>
+<p><strong>TCP/IP四层模型</strong>：链路层、网络层(IP/ICMP/IGMP)、传输层(TCP/UDP)、应用层(如Telnet/HTTP/FTP)</p>
+<h1 id="IPv4_and_IPv6_Headers">IPv4 and IPv6 Headers</h1><p>IPv4 Datagram分为首部(Header)和数据两部分。IPv4 Header由固定部分(Basic)和选项部分(Options)组成，其中固定部分的大小为20 bytes。IPv4 Header最大为60 bytes。</p>
+<p>总结几个重要的field:</p>
 <ul>
-<li>RTT: Round Trip Time</li>
-<li>RTO: Retransmission Timeout（重传超时时间）</li>
+<li>ToS(Type of Service)：DS Field(Differentiated Services Field) + ECN(Explicit Congestion Notification, 显式拥塞通知)</li>
+<li>TTL(Time-to-Live)：数据报可以经过的最多路由数，指示了数据报的生存时间</li>
 </ul>
-<h1 id="RTO_Algorithm">RTO Algorithm</h1><p>如何计算RTO：</p>
-<ul>
-<li>经典算法</li>
-<li>Karn’s Algorithm</li>
-<li>标准算法(Jacobson/Karels Algorithm, 目前Linux内核在用)</li>
-</ul>
-<p>前面两种算法用的都是“加权移动平均”，这种方法最大的毛病就是如果RTT有一个大的波动的话，很难被发现，因为被平滑掉了。</p>
-<h1 id="重传机制">重传机制</h1><h2 id="超时重传">超时重传</h2><p>通过重传计时器(retransmission timer)实现。</p>
-<h2 id="快速重传">快速重传</h2><p>TCP在收到一个乱序的报文段时，会立即发送一个重复的ACK，并且此ACK不可被延迟。</p>
-<p>如果连续收到3个或3个以上重复的ACK，TCP会判定此报文段丢失，需要重新传递，而无需等待RTO。这就叫做快速重传。</p>
-<h2 id="SACK_&amp;&amp;_Duplicate_SACK">SACK &amp;&amp; Duplicate SACK</h2><p>Selective Acknowledgment (SACK)是 TCP 的一项可选特性，可以提高某些网络中所有可用带宽的使用效率。普通 TCP（即未提供 SACK 特性）应答是严格累积的 — 对 N 的应答意味着字节 N 和所有之前的字节都已经收到。SACK 要解决的问题普通累积式应答的 “全有或全无” 性质。</p>
-<p>例如，即使包 2（假设从 0 到 9 的序列）是在传送过程中惟一丢失的包，接收方也只能对包 1 发出一个普通的 ACK，因为这是连续接收到的包中的最后一个。另一方面，SACK 接收方可以发出包 1 的 ACK 和包 3 到包 9 的 SACK 选项。这样，发送端就可以根据回传的SACK来知道哪些数据到了，哪些数据丢失了，进而可以优化Fast Retransmit。SACK需要两端的协议都支持，在目前的Linux Kernal中默认为开启状态。</p>
-<h1 id="low-rate_DoS_attacks">low-rate DoS attacks</h1><p>应用层应用：Slowloris (HTTP slow headers)</p>
-<p>防范：随机化RTO</p>
+<p><img src="http://7xkkgd.com1.z0.glb.clouddn.com/ipv4-header.png" alt="The IPv4 Datagram"></p>
+<p>与IPv4 Header不同，IPv6 Header具有固定的大小(40 bytes)，并且没有选项部分。但是IPv6 Header可以有扩展首部(extension headers)，其作用与Options类似。Next Header字段用于指示extension headers。</p>
+<p><img src="http://7xkkgd.com1.z0.glb.clouddn.com/ipv6-header.png" alt="The IPv6 Header"></p>
+<h1 id="大端、小端与网络字节序">大端、小端与网络字节序</h1><p>大小端是面向多字节定义的字节存储顺序。</p>
+<p>大端（Big-Endian）就是最高有效字节（MSB）在前，内存存储体现上，数据的高位更加靠近低地址。</p>
+<p>小端(Little-Endian)就是最低有效字节（LSB）在前，内存存储体现上，数据的低位更加靠近低地址。</p>
+<p>比如对字<code>0x01234567</code>，最高有效字节为0x01，最低有效字节为0x67，那么其对应的大端存储顺序为<code>01 23 45 67</code>，小端存储顺序为<code>67 45 23 01</code>。</p>
+<p>对于IP数据报来说，RFC标准要求数据在网络中传输时都要求以大端字节序传输，因此网络字节序就对应Big-Endian字节序。</p>
 
       
     </div>
@@ -610,7 +693,7 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Network/">Network</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TCP/">TCP</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Network/">Network</a></li></ul>
     </div>
 
       
@@ -724,89 +807,6 @@
       
     <div class="article-tag tagcloud">
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Network/">Network</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TCP/">TCP</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-network-basis" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/posts/Network/network-basis/" class="article-date">
-      <time datetime="2016-01-25T16:00:00.000Z" itemprop="datePublished">2016-01-26</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/posts/Network/network-basis/">计算机网络相关知识总结</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p>本文将不断更新~</p>
-<h1 id="网络模型">网络模型</h1><p><strong>OSI七层模型</strong>：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层</p>
-<p>数据链路层对应的数据为Frame，网络层对应的数据为Packet，传输层对应的数据为Segment。</p>
-<p>网络数据首先会打到TCP的Segment中，然后TCP的Segment会打到IP的Packet中，然后再打到以太网Ethernet的Frame中，传到对端后，各个层解析自己的协议，然后把数据交给更高层的协议处理。</p>
-<p><img src="http://7xkkgd.com1.z0.glb.clouddn.com/osi-seven-layer.png" alt="The standard seven-layer OSI model"></p>
-<p><strong>TCP/IP四层模型</strong>：链路层、网络层(IP/ICMP/IGMP)、传输层(TCP/UDP)、应用层(如Telnet/HTTP/FTP)</p>
-<h1 id="IPv4_and_IPv6_Headers">IPv4 and IPv6 Headers</h1><p>IPv4 Datagram分为首部(Header)和数据两部分。IPv4 Header由固定部分(Basic)和选项部分(Options)组成，其中固定部分的大小为20 bytes。IPv4 Header最大为60 bytes。</p>
-<p>总结几个重要的field:</p>
-<ul>
-<li>ToS(Type of Service)：DS Field(Differentiated Services Field) + ECN(Explicit Congestion Notification, 显式拥塞通知)</li>
-<li>TTL(Time-to-Live)：数据报可以经过的最多路由数，指示了数据报的生存时间</li>
-</ul>
-<p><img src="http://7xkkgd.com1.z0.glb.clouddn.com/ipv4-header.png" alt="The IPv4 Datagram"></p>
-<p>与IPv4 Header不同，IPv6 Header具有固定的大小(40 bytes)，并且没有选项部分。但是IPv6 Header可以有扩展首部(extension headers)，其作用与Options类似。Next Header字段用于指示extension headers。</p>
-<p><img src="http://7xkkgd.com1.z0.glb.clouddn.com/ipv6-header.png" alt="The IPv6 Header"></p>
-<h1 id="大端、小端与网络字节序">大端、小端与网络字节序</h1><p>大小端是面向多字节定义的字节存储顺序。</p>
-<p>大端（Big-Endian）就是最高有效字节（MSB）在前，内存存储体现上，数据的高位更加靠近低地址。</p>
-<p>小端(Little-Endian)就是最低有效字节（LSB）在前，内存存储体现上，数据的低位更加靠近低地址。</p>
-<p>比如对字<code>0x01234567</code>，最高有效字节为0x01，最低有效字节为0x67，那么其对应的大端存储顺序为<code>01 23 45 67</code>，小端存储顺序为<code>67 45 23 01</code>。</p>
-<p>对于IP数据报来说，RFC标准要求数据在网络中传输时都要求以大端字节序传输，因此网络字节序就对应Big-Endian字节序。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Network/">Network</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Network/">Network</a></li></ul>
     </div>
 
       

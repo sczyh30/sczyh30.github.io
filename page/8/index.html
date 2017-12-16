@@ -429,6 +429,96 @@
 
 
   
+    <article id="post-jvm-gc-safepoint-condition" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Java/jvm-gc-safepoint-condition/" class="article-date">
+      <time datetime="2015-06-30T16:00:00.000Z" itemprop="datePublished">2015-07-01</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>最近看JVM看得火热。。在这里我们来总结一下HotSpot JVM里GC Safepoint以及触发GC的条件相关的一些知识。</p>
+<h1 id="GC_Safepoint">GC Safepoint</h1><p>如果要触发一次GC，那么JVM中所有Java线程都必须到达GC Safepoint。</p>
+<p>JVM只会在特定位置放置safepoint，比如：</p>
+<ul>
+<li>内存分配的地方（allocation，即new一个新对象的时候）</li>
+<li>长时间执行区块结束的时刻（如方法调用，循环跳转等）</li>
+</ul>
+<p>之所以只在特定的位置放置safepoint，是因为OopMap要占用空间，如果设太多safepoint那么占用空间会太大；再者，safepoint会影响优化，如果某个无用的值处设置了safepoint，那么JIT就无法优化掉这些无用变量，这会影响性能。</p>
+<p>HotSpot JVM在通过JIT编译时，会在所有方法返回之前以及循环跳转、异常跳转之前放置Safepoint，并且在每个Safepoint都生成一些信息存储哪些地方是引用（<strong>OopMap</strong>），以便JVM能找到需要的引用。</p>
+<p>那么如何确保GC时所有线程都到达GC Safepoint呢？有两种方法：<strong>抢占式中断</strong>(Preemptive Suspension)和<strong>主动式中断</strong>(Voluntary Suspension)。</p>
+<p>抢占式中断不需要线程的执行代码去主动配合，当触发GC时，JVM会中断所有线程，然后依次检查每个线程中断的位置是否为Safepoint，如果不是则恢复线程，让它执行至Safepoint再进行终端。</p>
+<p>大部分JVM实现（如HotSpot JVM）都是采用<strong>主动式中断</strong>，即GC需要中断线程的时候，它仅仅简单地设个标志，执行线程会主动轮询这个标志位，如果标志位就绪的话就自行中断。Polling Point与Safepoint是重合的。主动式中断的思想是一种hand-shacking protocol的思想。</p>
+<p>通过对Safepoint的研究，我们了解到了GC触发的时刻主要是在<strong>new一个新的对象</strong>或者在<strong>循环跳转或方法返回之前</strong>。</p>
+<p>【扩展】Safepoint有好几种，比如还有<strong>deoptimization safepoint</strong>之类的，作用不同。</p>
+<h1 id="Safe-Region">Safe-Region</h1><p>只有GC Safepoint是不足的，因为我们发现，有一种情况，线程无法响应JVM的中断请求，也无法去轮询标志位：</p>
+<ul>
+<li>线程处于阻塞或等待状态</li>
+</ul>
+<p>对于这种情况，引入了safe-region的概念。</p>
+<p>Safe-Region是指在代码片段中，引用关系不会发生变化，因此GC可以随心所欲地在任何地方执行。在线程执行到Safe Region里面的代码时，首先标识自己已经进入了Safe Region，那样当这段时间里JVM要发起GC，就不用管标识自己为Safe Region状态的线程了。在线程要离开Safe Region时，它要检查系统是否已经完成了根节点枚举（或者是整个GC过程），如果完成了，那线程就继续执行，否则它就必须等待直到收到可以安全离开Safe Region的信号为止。</p>
+<p>另外，当一个线程在执行native方法时，由于此时该线程在执行JVM管理之外的代码，不能对JVM的执行状态做任何修改，因而JVM要进入safepoint不需要关心它。所以也可以把正在执行native函数的线程看作“已经进入了safepoint”，或者把这种情况叫做“在safe-region里”。</p>
+<hr>
+<h1 id="参考资料">参考资料</h1><ul>
+<li><a href="http://www.infoq.com/cn/articles/jvm-memory-collection" target="_blank" rel="external">JVM内存回收理论与实现, 周志明</a></li>
+<li><a href="http://xiao-feng.blogspot.com/2008/01/gc-safe-point-and-safe-region.html" target="_blank" rel="external">GC safe-point (or safepoint) and safe-region, Xiao-Feng Li</a></li>
+<li><a href="https://www.zhihu.com/question/29268019" target="_blank" rel="external">现代JVM中的Safe Region和Safe Point到底是如何定义和划分的? - RednaxelaFX的回答</a></li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GC/">GC</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HotSpot/">HotSpot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-jvm-gc-method-types" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -501,96 +591,6 @@
       
     <div class="article-tag tagcloud">
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GC/">GC</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-jvm-gc-safepoint-condition" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/posts/Java/jvm-gc-safepoint-condition/" class="article-date">
-      <time datetime="2015-06-30T16:00:00.000Z" itemprop="datePublished">2015-07-01</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/posts/Java/jvm-gc-safepoint-condition/">深入探究JVM | Safepoint及GC的触发条件</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p>最近看JVM看得火热。。在这里我们来总结一下HotSpot JVM里GC Safepoint以及触发GC的条件相关的一些知识。</p>
-<h1 id="GC_Safepoint">GC Safepoint</h1><p>如果要触发一次GC，那么JVM中所有Java线程都必须到达GC Safepoint。</p>
-<p>JVM只会在特定位置放置safepoint，比如：</p>
-<ul>
-<li>内存分配的地方（allocation，即new一个新对象的时候）</li>
-<li>长时间执行区块结束的时刻（如方法调用，循环跳转等）</li>
-</ul>
-<p>之所以只在特定的位置放置safepoint，是因为OopMap要占用空间，如果设太多safepoint那么占用空间会太大；再者，safepoint会影响优化，如果某个无用的值处设置了safepoint，那么JIT就无法优化掉这些无用变量，这会影响性能。</p>
-<p>HotSpot JVM在通过JIT编译时，会在所有方法返回之前以及循环跳转、异常跳转之前放置Safepoint，并且在每个Safepoint都生成一些信息存储哪些地方是引用（<strong>OopMap</strong>），以便JVM能找到需要的引用。</p>
-<p>那么如何确保GC时所有线程都到达GC Safepoint呢？有两种方法：<strong>抢占式中断</strong>(Preemptive Suspension)和<strong>主动式中断</strong>(Voluntary Suspension)。</p>
-<p>抢占式中断不需要线程的执行代码去主动配合，当触发GC时，JVM会中断所有线程，然后依次检查每个线程中断的位置是否为Safepoint，如果不是则恢复线程，让它执行至Safepoint再进行终端。</p>
-<p>大部分JVM实现（如HotSpot JVM）都是采用<strong>主动式中断</strong>，即GC需要中断线程的时候，它仅仅简单地设个标志，执行线程会主动轮询这个标志位，如果标志位就绪的话就自行中断。Polling Point与Safepoint是重合的。主动式中断的思想是一种hand-shacking protocol的思想。</p>
-<p>通过对Safepoint的研究，我们了解到了GC触发的时刻主要是在<strong>new一个新的对象</strong>或者在<strong>循环跳转或方法返回之前</strong>。</p>
-<p>【扩展】Safepoint有好几种，比如还有<strong>deoptimization safepoint</strong>之类的，作用不同。</p>
-<h1 id="Safe-Region">Safe-Region</h1><p>只有GC Safepoint是不足的，因为我们发现，有一种情况，线程无法响应JVM的中断请求，也无法去轮询标志位：</p>
-<ul>
-<li>线程处于阻塞或等待状态</li>
-</ul>
-<p>对于这种情况，引入了safe-region的概念。</p>
-<p>Safe-Region是指在代码片段中，引用关系不会发生变化，因此GC可以随心所欲地在任何地方执行。在线程执行到Safe Region里面的代码时，首先标识自己已经进入了Safe Region，那样当这段时间里JVM要发起GC，就不用管标识自己为Safe Region状态的线程了。在线程要离开Safe Region时，它要检查系统是否已经完成了根节点枚举（或者是整个GC过程），如果完成了，那线程就继续执行，否则它就必须等待直到收到可以安全离开Safe Region的信号为止。</p>
-<p>另外，当一个线程在执行native方法时，由于此时该线程在执行JVM管理之外的代码，不能对JVM的执行状态做任何修改，因而JVM要进入safepoint不需要关心它。所以也可以把正在执行native函数的线程看作“已经进入了safepoint”，或者把这种情况叫做“在safe-region里”。</p>
-<hr>
-<h1 id="参考资料">参考资料</h1><ul>
-<li><a href="http://www.infoq.com/cn/articles/jvm-memory-collection" target="_blank" rel="external">JVM内存回收理论与实现, 周志明</a></li>
-<li><a href="http://xiao-feng.blogspot.com/2008/01/gc-safe-point-and-safe-region.html" target="_blank" rel="external">GC safe-point (or safepoint) and safe-region, Xiao-Feng Li</a></li>
-<li><a href="https://www.zhihu.com/question/29268019" target="_blank" rel="external">现代JVM中的Safe Region和Safe Point到底是如何定义和划分的? - RednaxelaFX的回答</a></li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Java/">Java</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GC/">GC</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HotSpot/">HotSpot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
       
@@ -780,7 +780,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘Metaspace</a>
+      <a class="article-title" href="/posts/Java/jvm-metaspace/">深入探究JVM | 探秘 Metaspace</a>
     </h1>
   
 
@@ -790,22 +790,22 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p>Java 8彻底将永久代移除出了HotSpot JVM，将其原有的数据迁移至Java Heap或Metaspace。这一篇文章我们来总结一下Metaspace（元空间）的特性。如有错误，敬请指出，谢谢~</p>
-<hr>
-<h1 id="引言：永久代为什么被移出HotSpot_JVM了？">引言：永久代为什么被移出HotSpot JVM了？</h1><p>在HotSpot JVM中，永久代中用于存放类和方法的元数据以及常量池，在Java中对应能通过反射获取到的数据，比如<code>Class</code>和<code>Method</code>。每当一个类初次被加载的时候，它的元数据都会放到永久代中。</p>
-<p>永久代是有大小限制的，因此如果加载的类太多，很有可能导致永久代内存溢出，即万恶的 <em>java.lang.OutOfMemoryError: PermGen</em> 。为此我们不得不对虚拟机做调优<br>那么，Java 8中永久代为什么被移出HotSpot JVM了？<br>详见：<a href="http://openjdk.java.net/jeps/122" target="_blank" rel="external">JEP 122: Remove the Permanent Generation</a><br>原因主要有两个：</p>
-<ul>
-<li>1、由于Permanent Generation内存经常不够用或发生内存泄露，引发恼人的<em>java.lang.OutOfMemoryError: PermGen</em> （在Java Web开发中非常常见）。</li>
-<li>2、移除Permanent Generation可以促进HotSpot JVM与JRockit VM的融合，因为JRockit没有永久代。</li>
-</ul>
-<p>根据上面的各种原因，永久代最终被移除，<strong>方法区移至Metaspace，字符串常量移至Java Heap</strong>。</p>
-<h1 id="探秘元空间">探秘元空间</h1><p>由于Metaspace的资料比较少，这里主要是依据Oracle官方的Java虚拟机规范及Oracle Blog里的几篇文章来总结的。</p>
+        <p>Java 8 彻底将永久代 (PermGen) 移除出了 HotSpot JVM，将其原有的数据迁移至 Java Heap 或 Metaspace。这一篇文章我们来总结一下Metaspace（元空间）的特性。如有错误，敬请指出，谢谢~</p>
+<h1 id="引言：永久代为什么被移出HotSpot_JVM了？">引言：永久代为什么被移出HotSpot JVM了？</h1><p>在 HotSpot JVM 中，永久代中用于存放类和方法的元数据以及常量池，比如<code>Class</code>和<code>Method</code>。每当一个类初次被加载的时候，它的元数据都会放到永久代中。</p>
+<p>永久代是有大小限制的，因此如果加载的类太多，很有可能导致永久代内存溢出，即万恶的 <em>java.lang.OutOfMemoryError: PermGen</em> ，为此我们不得不对虚拟机做调优。</p>
+<p>那么，Java 8 中 PermGen 为什么被移出 HotSpot JVM 了？我总结了两个主要原因（详见：<a href="http://openjdk.java.net/jeps/122" target="_blank" rel="external">JEP 122: Remove the Permanent Generation</a>）：</p>
+<ol>
+<li>由于 PermGen 内存经常会溢出，引发恼人的 <em>java.lang.OutOfMemoryError: PermGen</em>，因此 JVM 的开发者希望这一块内存可以更灵活地被管理，不要再经常出现这样的 OOM</li>
+<li>移除 PermGen 可以促进 HotSpot JVM 与 JRockit VM 的融合，因为 JRockit 没有永久代。</li>
+</ol>
+<p>根据上面的各种原因，PermGen 最终被移除，<strong>方法区移至 Metaspace，字符串常量移至 Java Heap</strong>。</p>
+<h1 id="探秘元空间">探秘元空间</h1><p>由于 Metaspace 的资料比较少，这里主要是依据Oracle官方的Java虚拟机规范及Oracle Blog里的几篇文章来总结的。</p>
 <p>首先，Metaspace（元空间）是哪一块区域？官方的解释是：</p>
 <blockquote>
 <p>In JDK 8, classes metadata is now stored in the <strong>native heap</strong> and this space is called <strong>Metaspace</strong>.</p>
 </blockquote>
-<p>也就是说，JDK 8开始把类的元数据放到本地堆内存(native heap)中，这一块区域就叫Metaspace，中文名叫元空间。</p>
-<h2 id="1、优点">1、优点</h2><p>使用本地内存有什么好处呢？最直接的表现就是OOM问题将不复存在，因为默认的类的元数据分配只受本地内存大小的限制，也就是说本地内存剩余多少，理论上Metaspace就可以有多大（貌似容量还与操作系统的虚拟内存有关？这里不太清楚），这解决了空间不足的问题。不过，让Metaspace变得无限大显然是不现实的，因此我们也要限制Metaspace的大小：使用<strong>-XX:MaxMetaspaceSize</strong>参数来指定Metaspace区域的大小。JVM默认在运行时根据需要动态地设置<strong>MaxMetaspaceSize</strong>的大小。</p>
+<p>也就是说，JDK 8 开始把类的元数据放到本地堆内存(native heap)中，这一块区域就叫 Metaspace，中文名叫元空间。</p>
+<h2 id="优点">优点</h2><p>使用本地内存有什么好处呢？最直接的表现就是OOM问题将不复存在，因为默认的类的元数据分配只受本地内存大小的限制，也就是说本地内存剩余多少，理论上Metaspace就可以有多大（貌似容量还与操作系统的虚拟内存有关？这里不太清楚），这解决了空间不足的问题。不过，让 Metaspace 变得无限大显然是不现实的，因此我们也要限制 Metaspace 的大小：使用 <strong>-XX:MaxMetaspaceSize</strong> 参数来指定 Metaspace 区域的大小。JVM 默认在运行时根据需要动态地设置 <strong>MaxMetaspaceSize</strong> 的大小。</p>
 <p>除此之外，它还有以下优点：</p>
 <ul>
 <li>Take advantage of Java Language Specification property : Classes and associated metadata lifetimes match class loader’s</li>
@@ -814,15 +814,15 @@
 <li>No GC scan or compaction</li>
 <li>No relocation for metaspace objects</li>
 </ul>
-<h2 id="2、垃圾回收">2、垃圾回收</h2><p>如果Metaspace的空间占用达到了设定的最大值，那么就会触发GC来收集死亡对象和类的加载器。根据JDK 8的特性，G1和CMS都会很好地收集Metaspace区（一般都伴随着Full GC）。</p>
+<h2 id="GC">GC</h2><p>如果Metaspace的空间占用达到了设定的最大值，那么就会触发GC来收集死亡对象和类的加载器。根据JDK 8的特性，G1和CMS都会很好地收集Metaspace区（一般都伴随着Full GC）。</p>
 <p>为了减少垃圾回收的频率及时间，控制吞吐量，对Metaspace进行适当的监控和调优是非常有必要的。如果在Metaspace区发生了频繁的Full GC，那么可能表示存在内存泄露或Metaspace区的空间太小了。</p>
-<h2 id="3、新增参数">3、新增参数</h2><ul>
-<li><strong>-XX:MetaspaceSize</strong>是分配给类元数据空间（以字节计）的初始大小(Oracle逻辑存储上的初始高水位，<em>the initial high-water-mark</em> )，此值为估计值。MetaspaceSize的值设置的过大会延长垃圾回收时间。垃圾回收过后，引起下一次垃圾回收的类元数据空间的大小可能会变大。</li>
-<li><strong>-XX:MaxMetaspaceSize</strong>是分配给类元数据空间的最大值，超过此值就会触发Full GC，此值默认没有限制，但应取决于系统内存的大小。JVM会动态地改变此值。</li>
-<li><strong>-XX:MinMetaspaceFreeRatio</strong>表示一次GC以后，为了避免增加元数据空间的大小，空闲的类元数据的容量的最小比例，不够就会导致垃圾回收。</li>
-<li><strong>-XX:MaxMetaspaceFreeRatio</strong>表示一次GC以后，为了避免增加元数据空间的大小，空闲的类元数据的容量的最大比例，不够就会导致垃圾回收。</li>
+<h2 id="新增的_JVM_参数">新增的 JVM 参数</h2><ul>
+<li><strong>-XX:MetaspaceSize</strong> 是分配给类元数据空间（以字节计）的初始大小(Oracle逻辑存储上的初始高水位，<em>the initial high-water-mark</em> )，此值为估计值。MetaspaceSize的值设置的过大会延长垃圾回收时间。垃圾回收过后，引起下一次垃圾回收的类元数据空间的大小可能会变大。</li>
+<li><strong>-XX:MaxMetaspaceSize</strong> 是分配给类元数据空间的最大值，超过此值就会触发Full GC，此值默认没有限制，但应取决于系统内存的大小。JVM会动态地改变此值。</li>
+<li><strong>-XX:MinMetaspaceFreeRatio</strong> 表示一次GC以后，为了避免增加元数据空间的大小，空闲的类元数据的容量的最小比例，不够就会导致垃圾回收。</li>
+<li><strong>-XX:MaxMetaspaceFreeRatio</strong> 表示一次GC以后，为了避免增加元数据空间的大小，空闲的类元数据的容量的最大比例，不够就会导致垃圾回收。</li>
 </ul>
-<h2 id="4、监控与调优（待补充）">4、监控与调优（待补充）</h2><p><code>VisualVM</code>, <code>jstat</code>, <code>jstack</code>可以监测元空间的动态，后续将更新这里。</p>
+<h2 id="监控与调优（待补充）">监控与调优（待补充）</h2><p><code>VisualVM</code>、<code>jstat</code>、<code>jstack</code> 可以监测 Metaspace 的动态，后续将更新这里。</p>
 <hr>
 <h1 id="参考资料">参考资料</h1><ul>
 <li><em>The Java Virtual Machine Specification, Java SE 8 Edition, Oracle</em></li>
@@ -988,106 +988,6 @@
 
 
   
-    <article id="post-jvm-memory" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/posts/Java/jvm-memory/" class="article-date">
-      <time datetime="2015-06-23T16:00:00.000Z" itemprop="datePublished">2015-06-24</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p>Java 虚拟机在执行Java程序的时候会把它管理的内存区域划为几部分，这一节我们就来解析一下Java的内存区域。</p>
-<hr>
-<p>有的人把JVM管理的内存简单地分为堆内存和栈内存，这样分未免有些太肤浅了。<br>Java的内存区域主要分为五部分：</p>
-<ul>
-<li>程序计数器(PC)</li>
-<li>虚拟机栈(JVM Stack)</li>
-<li>本地方法栈(Native Method Stack)</li>
-<li>Java 堆内存(Java Heap)</li>
-<li>方法区(Method Area)</li>
-</ul>
-<p><img src="http://img.blog.csdn.net/20150626182021585" alt="Java内存区域"><br>（图转自网络）</p>
-<p>下面我们来解析这几个区域。</p>
-<h2 id="程序计数器">程序计数器</h2><p>相信学过计算机组成原理的人都知道，CPU内部的寄存器中就包含一个程序计数器（x86下为eip寄存器,ARM下为R15寄存器），存放程序执行的下一条指令地址。在程序开始执行前，将程序指令序列的起始地址，即程序的第一条指令所在的内存单元地址送入PC，CPU按照PC的地址从内存中读取第一条指令。每一条指令执行时，CPU会自动修改PC的量至下一条指令的地址，指令之间的跳转离不开PC。JVM内存中的程序计数器也是这样的作用，它储存JVM当前执行bytecode的地址。</p>
-<p>Java虚拟机允许多个线程同时执行指令。如果有多个线程正在执行指令，那么每个线程都会有一个程序计数器，它是线程私有的。在任意时刻，一个线程只允许执行一个方法的代码。每当执行到一条Java方法的指令时，程序计数器保存当前执行字节码的地址；若执行的为native方法，则PC的值为undefined。</p>
-<h2 id="Java_虚拟机栈">Java 虚拟机栈</h2><p>Java虚拟机栈也是线程私有的，每一条线程都拥有自己私有的Java 虚拟机栈，它与线程同时创建。它描述了Java方法执行的内存模型：每个方法在执行的同时都会创建一个<strong>栈帧</strong>，用于存储<strong>局部变量表、操作数栈、动态链接、方法出口</strong>等信息。每一个方法从调用直至完成的过程，都对应一个栈帧从入栈到出栈的过程。关于栈帧详细的内容在后边复习虚拟机字节码执行引擎的时候再说吧。<br>Java 虚拟机栈在方法调用和返回中也扮演了很重要的角色。因为除了栈帧的入栈和出栈之外，Java虚拟机栈不会再受其它因素的影响，因此栈帧可在<strong>系统的堆</strong>上分配内存（<strong>注意</strong>，是系统的Heap而不是Java Heap）。Java虚拟机栈所使用的内存不需要保证是连续的。</p>
-<h2 id="本地方法栈">本地方法栈</h2><p>本地方法栈和Java虚拟机栈的作用相似，Java虚拟机栈执行的是字节码，而本地方法栈执行的是native方法。本地方法栈使用<strong>传统的栈</strong>（C Stack）来支持native方法。在HotSpot JVM中Java虚拟机栈和本地方法栈合二为一。</p>
-<h2 id="Java_堆">Java 堆</h2><p>在JVM中，Java 堆是可供各线程共享的运行时内存区域，是Java 虚拟机所管理的内存区域中最大的一块。此区域非常重要，<strong>几乎所有的对象实例和数组实例都要在Java堆上分配</strong>，但随着JIT编译器及逃逸分析技术的发展，也可能会被优化为栈上分配，高大上。。。）。同时，Java 堆也是发生GC收集的主要区域。<br>从内存回收的角度来看，它可以分为<strong>新生代</strong>和<strong>老年代</strong>，再细分可以分为Eden Space,From Survivor Space,To Survivor Space区域。Java堆的容量可以是固定的，也可以随着需要来扩展，并且在用不到的时候自动收缩。</p>
-<h2 id="方法区">方法区</h2><p>方法区是线程共享的，它储存了<strong>每一个类的结构信息</strong>，比如运行时常量池（runtime constant pool）、字段和方法数据、构造函数和普通方法的字节码内容，还包括一些初始化的时候用到的特殊方法。<strong>方法区是堆的逻辑部分。</strong><br>在JDK1.7及以前的HotSpot JVM中，方法区位于<em>永久代</em>（Permanent Generation，<em>PermGen</em>）中。由于永久代内可能会发生内存泄露或溢出等问题而导致的<em>java.lang.OutOfMemoryError: PermGen </em>，JEP小组从JDK1.7开始就筹划移除永久代（<a href="http://openjdk.java.net/jeps/122" target="_blank" rel="external">JEP 122: Remove the Permanent Generation</a>），并且在JDK 1.7中把字符串常量，符号引用等移出了永久代。到了Java 8，永久代被彻底地移出了JVM，取而代之的是<em>元空间</em>（Metaspace）：</p>
-<blockquote>
-<p>In JDK 8, classes metadata is now stored in the native heap and this space is called Metaspace.</p>
-</blockquote>
-<p>所以从Java 8开始，方法区被移至 <em>Metaspace</em> 内。有关Metaspace的相关总结，见下一篇文章。</p>
-<h2 id="运行时常量池">运行时常量池</h2><p>运行时常量池是class文件中每一个类或接口的常量池表的运行时表示形式，是方法区的一部分。它包括了若干种不同的常量。常量池表存放<strong>编译器生成的各种字面量和符号引用</strong>，这部分内容将在类加载后进入方法区的运行时常量池中存放。运行时常量池具有动态性，运行期间也可以将新的量放到运行时常量池中，典型的应用是String类的intern方法:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> String <span class="title">intern</span><span class="params">()</span></span></div></pre></td></tr></table></figure></p>
-<p>JDK 1.7开始，字符串常量和符号引用等就被移出永久代：</p>
-<ul>
-<li>符号引用迁移至系统堆内存(<em>Native Heap</em>)</li>
-<li>字符串字面量迁移至Java堆(<em>Java Heap</em>)</li>
-</ul>
-<p><strong>下一篇文章我将会总结Java 8中的Metaspace相关知识</strong>。</p>
-<hr>
-<h1 id="参考资料">参考资料</h1><ul>
-<li>《深入理解Java虚拟机：JVM高级特性与最佳实践》，周志明 著</li>
-<li><a href="http://stackoverflow.com/questions/24074164/what-is-the-use-of-metaspace-in-java-8" target="_blank" rel="external">What is the use of Metaspace in Java 8? - StackOverflow</a></li>
-<li><a href="https://blogs.oracle.com/poonam/entry/about_g1_garbage_collector_permanent" target="_blank" rel="external">About G1 Garbage Collector, Permanent Generation and Metaspace</a></li>
-<li><em>The Java Virtual Machine Specification, Java SE 8 Edition, Oracle</em></li>
-<li><a href="http://openjdk.java.net/jeps/122" target="_blank" rel="external">JEP 122: Remove the Permanent Generation</a></li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Java/">Java</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存区域/">内存区域</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-java-reflection-1" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1173,6 +1073,106 @@
       
     <div class="article-tag tagcloud">
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Reflection/">Reflection</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-jvm-memory" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Java/jvm-memory/" class="article-date">
+      <time datetime="2015-06-23T16:00:00.000Z" itemprop="datePublished">2015-06-24</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/posts/Java/jvm-memory/">深入探究JVM | Java的内存区域解析</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>Java 虚拟机在执行Java程序的时候会把它管理的内存区域划为几部分，这一节我们就来解析一下Java的内存区域。</p>
+<hr>
+<p>有的人把JVM管理的内存简单地分为堆内存和栈内存，这样分未免有些太肤浅了。<br>Java的内存区域主要分为五部分：</p>
+<ul>
+<li>程序计数器(PC)</li>
+<li>虚拟机栈(JVM Stack)</li>
+<li>本地方法栈(Native Method Stack)</li>
+<li>Java 堆内存(Java Heap)</li>
+<li>方法区(Method Area)</li>
+</ul>
+<p><img src="http://img.blog.csdn.net/20150626182021585" alt="Java内存区域"><br>（图转自网络）</p>
+<p>下面我们来解析这几个区域。</p>
+<h2 id="程序计数器">程序计数器</h2><p>相信学过计算机组成原理的人都知道，CPU内部的寄存器中就包含一个程序计数器（x86下为eip寄存器,ARM下为R15寄存器），存放程序执行的下一条指令地址。在程序开始执行前，将程序指令序列的起始地址，即程序的第一条指令所在的内存单元地址送入PC，CPU按照PC的地址从内存中读取第一条指令。每一条指令执行时，CPU会自动修改PC的量至下一条指令的地址，指令之间的跳转离不开PC。JVM内存中的程序计数器也是这样的作用，它储存JVM当前执行bytecode的地址。</p>
+<p>Java虚拟机允许多个线程同时执行指令。如果有多个线程正在执行指令，那么每个线程都会有一个程序计数器，它是线程私有的。在任意时刻，一个线程只允许执行一个方法的代码。每当执行到一条Java方法的指令时，程序计数器保存当前执行字节码的地址；若执行的为native方法，则PC的值为undefined。</p>
+<h2 id="Java_虚拟机栈">Java 虚拟机栈</h2><p>Java虚拟机栈也是线程私有的，每一条线程都拥有自己私有的Java 虚拟机栈，它与线程同时创建。它描述了Java方法执行的内存模型：每个方法在执行的同时都会创建一个<strong>栈帧</strong>，用于存储<strong>局部变量表、操作数栈、动态链接、方法出口</strong>等信息。每一个方法从调用直至完成的过程，都对应一个栈帧从入栈到出栈的过程。关于栈帧详细的内容在后边复习虚拟机字节码执行引擎的时候再说吧。<br>Java 虚拟机栈在方法调用和返回中也扮演了很重要的角色。因为除了栈帧的入栈和出栈之外，Java虚拟机栈不会再受其它因素的影响，因此栈帧可在<strong>系统的堆</strong>上分配内存（<strong>注意</strong>，是系统的Heap而不是Java Heap）。Java虚拟机栈所使用的内存不需要保证是连续的。</p>
+<h2 id="本地方法栈">本地方法栈</h2><p>本地方法栈和Java虚拟机栈的作用相似，Java虚拟机栈执行的是字节码，而本地方法栈执行的是native方法。本地方法栈使用<strong>传统的栈</strong>（C Stack）来支持native方法。在HotSpot JVM中Java虚拟机栈和本地方法栈合二为一。</p>
+<h2 id="Java_堆">Java 堆</h2><p>在JVM中，Java 堆是可供各线程共享的运行时内存区域，是Java 虚拟机所管理的内存区域中最大的一块。此区域非常重要，<strong>几乎所有的对象实例和数组实例都要在Java堆上分配</strong>，但随着JIT编译器及逃逸分析技术的发展，也可能会被优化为栈上分配，高大上。。。）。同时，Java 堆也是发生GC收集的主要区域。<br>从内存回收的角度来看，它可以分为<strong>新生代</strong>和<strong>老年代</strong>，再细分可以分为Eden Space,From Survivor Space,To Survivor Space区域。Java堆的容量可以是固定的，也可以随着需要来扩展，并且在用不到的时候自动收缩。</p>
+<h2 id="方法区">方法区</h2><p>方法区是线程共享的，它储存了<strong>每一个类的结构信息</strong>，比如运行时常量池（runtime constant pool）、字段和方法数据、构造函数和普通方法的字节码内容，还包括一些初始化的时候用到的特殊方法。<strong>方法区是堆的逻辑部分。</strong><br>在JDK1.7及以前的HotSpot JVM中，方法区位于<em>永久代</em>（Permanent Generation，<em>PermGen</em>）中。由于永久代内可能会发生内存泄露或溢出等问题而导致的<em>java.lang.OutOfMemoryError: PermGen </em>，JEP小组从JDK1.7开始就筹划移除永久代（<a href="http://openjdk.java.net/jeps/122" target="_blank" rel="external">JEP 122: Remove the Permanent Generation</a>），并且在JDK 1.7中把字符串常量，符号引用等移出了永久代。到了Java 8，永久代被彻底地移出了JVM，取而代之的是<em>元空间</em>（Metaspace）：</p>
+<blockquote>
+<p>In JDK 8, classes metadata is now stored in the native heap and this space is called Metaspace.</p>
+</blockquote>
+<p>所以从Java 8开始，方法区被移至 <em>Metaspace</em> 内。有关Metaspace的相关总结，见下一篇文章。</p>
+<h2 id="运行时常量池">运行时常量池</h2><p>运行时常量池是class文件中每一个类或接口的常量池表的运行时表示形式，是方法区的一部分。它包括了若干种不同的常量。常量池表存放<strong>编译器生成的各种字面量和符号引用</strong>，这部分内容将在类加载后进入方法区的运行时常量池中存放。运行时常量池具有动态性，运行期间也可以将新的量放到运行时常量池中，典型的应用是String类的intern方法:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> String <span class="title">intern</span><span class="params">()</span></span></div></pre></td></tr></table></figure></p>
+<p>JDK 1.7开始，字符串常量和符号引用等就被移出永久代：</p>
+<ul>
+<li>符号引用迁移至系统堆内存(<em>Native Heap</em>)</li>
+<li>字符串字面量迁移至Java堆(<em>Java Heap</em>)</li>
+</ul>
+<p><strong>下一篇文章我将会总结Java 8中的Metaspace相关知识</strong>。</p>
+<hr>
+<h1 id="参考资料">参考资料</h1><ul>
+<li>《深入理解Java虚拟机：JVM高级特性与最佳实践》，周志明 著</li>
+<li><a href="http://stackoverflow.com/questions/24074164/what-is-the-use-of-metaspace-in-java-8" target="_blank" rel="external">What is the use of Metaspace in Java 8? - StackOverflow</a></li>
+<li><a href="https://blogs.oracle.com/poonam/entry/about_g1_garbage_collector_permanent" target="_blank" rel="external">About G1 Garbage Collector, Permanent Generation and Metaspace</a></li>
+<li><em>The Java Virtual Machine Specification, Java SE 8 Edition, Oracle</em></li>
+<li><a href="http://openjdk.java.net/jeps/122" target="_blank" rel="external">JEP 122: Remove the Permanent Generation</a></li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/内存区域/">内存区域</a></li></ul>
     </div>
 
       

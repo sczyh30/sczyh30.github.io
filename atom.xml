@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.sczyh30.com/"/>
-  <updated>2017-12-04T14:40:01.066Z</updated>
+  <updated>2017-12-16T15:40:23.280Z</updated>
   <id>http://www.sczyh30.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://www.sczyh30.com/posts/%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84/netflix-hystrix-1-5-sliding-window/"/>
     <id>http://www.sczyh30.com/posts/高可用架构/netflix-hystrix-1-5-sliding-window/</id>
     <published>2017-12-03T16:00:00.000Z</published>
-    <updated>2017-12-04T14:40:01.066Z</updated>
+    <updated>2017-12-16T15:40:23.280Z</updated>
     
     <content type="html"><![CDATA[<h1 id="总览">总览</h1><p>Netflix Hystrix 通过类似滑动窗口的数据结构来统计调用的指标数据。Hystrix 1.5 将滑动窗口设计成了数据流（reactive stream, RxJava 中的 <code>Observable</code>）的形式。通过消费数据流的形式利用滑动窗口，并对数据流进行变换后进行后续的操作，可以让开发者更加灵活地去使用。由于 Hystrix 里大量使用了 RxJava，再加上滑动窗口本质就是不断变换的数据流，滑动窗口中每个桶的数据都来自于源源不断的事件，因此滑动窗口非常适合用观察者模式和响应式编程思想的 RxJava 实现。使用 RxJava 实现有一大好处：可以通过 RxJava 的一系列操作符来实现滑动窗口，从而可以依赖 RxJava 的线程模型来保证数据写入和聚合的线程安全，将这一系列的机制交给 RxJava。所有的操作都是在 RxJava 的后台线程上进行的，RxJava 会保证操作的有序性和线程安全（参见 <a href="http://reactivex.io/documentation/contract.html" target="_blank" rel="external">The Observable Contract</a>）。</p>
 <p>这里我们就以 Hystrix 熔断器依赖的记录调用情况统计的 <code>HealthCountsStream</code> 为例来看一下 Hystrix 1.5 是如何利用 RxJava 将滑动窗口抽象并实现成 reactive stream 的，以及如何去消费对应的数据流。</p>
@@ -81,7 +81,9 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Func2&lt;HystrixCommandMetrics.HealthCounts, <span class="keyword">long</span>[], HystrixCommandMetrics.HealthCounts&gt; healthCheckAccumulator = HystrixCommandMetrics.HealthCounts::plus;</div><div class="line"></div><div class="line"><span class="comment">// 具体的实现，位于 HystrixCommandMetrics.HealthCounts 类内</span></div><div class="line"><span class="function"><span class="keyword">public</span> HealthCounts <span class="title">plus</span><span class="params">(<span class="keyword">long</span>[] eventTypeCounts)</span> </span>&#123;</div><div class="line">    <span class="keyword">long</span> updatedTotalCount = totalCount; <span class="comment">// 之前的请求总数</span></div><div class="line">    <span class="keyword">long</span> updatedErrorCount = errorCount; <span class="comment">// 之前的失败个数</span></div><div class="line"></div><div class="line">    <span class="keyword">long</span> successCount = eventTypeCounts[HystrixEventType.SUCCESS.ordinal()];</div><div class="line">    <span class="keyword">long</span> failureCount = eventTypeCounts[HystrixEventType.FAILURE.ordinal()];</div><div class="line">    <span class="keyword">long</span> timeoutCount = eventTypeCounts[HystrixEventType.TIMEOUT.ordinal()];</div><div class="line">    <span class="keyword">long</span> threadPoolRejectedCount = eventTypeCounts[HystrixEventType.THREAD_POOL_REJECTED.ordinal()];</div><div class="line">    <span class="keyword">long</span> semaphoreRejectedCount = eventTypeCounts[HystrixEventType.SEMAPHORE_REJECTED.ordinal()];</div><div class="line"></div><div class="line">    <span class="comment">// 加上所有事件的总数</span></div><div class="line">    updatedTotalCount += (successCount + failureCount + timeoutCount + threadPoolRejectedCount + semaphoreRejectedCount);</div><div class="line">    <span class="comment">// 加上失败事件的总数（包括请求失败、超时、线程池满、信号量满）</span></div><div class="line">    updatedErrorCount += (failureCount + timeoutCount + threadPoolRejectedCount + semaphoreRejectedCount);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> HealthCounts(updatedTotalCount, updatedErrorCount);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>Hystrix 熔断器里会实时地去消费每个窗口产生的健康统计数据，并根据指标来决定熔断器的状态：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* package */</span><span class="class"><span class="keyword">class</span> <span class="title">HystrixCircuitBreakerImpl</span> <span class="keyword">implements</span> <span class="title">HystrixCircuitBreaker</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> HystrixCommandProperties properties;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> HystrixCommandMetrics metrics;</div><div class="line"></div><div class="line">    <span class="keyword">enum</span> Status &#123;</div><div class="line">        CLOSED, OPEN, HALF_OPEN;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AtomicReference&lt;Status&gt; status = <span class="keyword">new</span> AtomicReference&lt;Status&gt;(Status.CLOSED);</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AtomicLong circuitOpened = <span class="keyword">new</span> AtomicLong(-<span class="number">1</span>);</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AtomicReference&lt;Subscription&gt; activeSubscription = <span class="keyword">new</span> AtomicReference&lt;Subscription&gt;(<span class="keyword">null</span>);</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">HystrixCircuitBreakerImpl</span><span class="params">(HystrixCommandKey key, HystrixCommandGroupKey commandGroup, <span class="keyword">final</span> HystrixCommandProperties properties, HystrixCommandMetrics metrics)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.properties = properties;</div><div class="line">        <span class="keyword">this</span>.metrics = metrics;</div><div class="line"></div><div class="line">        <span class="comment">//On a timer, this will set the circuit between OPEN/CLOSED as command executions occur</span></div><div class="line">        Subscription s = subscribeToStream();</div><div class="line">        activeSubscription.set(s);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> Subscription <span class="title">subscribeToStream</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">/*</span></div><div class="line">         * This stream will recalculate the OPEN/CLOSED status on every onNext from the health stream</div><div class="line">         */</div><div class="line">        <span class="keyword">return</span> metrics.getHealthCountsStream()</div><div class="line">                .observe()</div><div class="line">                .subscribe(<span class="keyword">new</span> Subscriber&lt;HealthCounts&gt;() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCompleted</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(Throwable e)</span> </span>&#123;</div><div class="line"></div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onNext</span><span class="params">(HealthCounts hc)</span> </span>&#123;</div><div class="line">                        <span class="comment">// check if we are past the statisticalWindowVolumeThreshold</span></div><div class="line">                        <span class="keyword">if</span> (hc.getTotalRequests() &lt; properties.circuitBreakerRequestVolumeThreshold().get()) &#123;</div><div class="line">                            <span class="comment">// we are not past the minimum volume threshold for the stat window,</span></div><div class="line">                            <span class="comment">// so no change to circuit status.</span></div><div class="line">                            <span class="comment">// if it was CLOSED, it stays CLOSED</span></div><div class="line">                            <span class="comment">// if it was half-open, we need to wait for a successful command execution</span></div><div class="line">                            <span class="comment">// if it was open, we need to wait for sleep window to elapse</span></div><div class="line">                        &#125; <span class="keyword">else</span> &#123;</div><div class="line">                            <span class="keyword">if</span> (hc.getErrorPercentage() &lt; properties.circuitBreakerErrorThresholdPercentage().get()) &#123;</div><div class="line">                                <span class="comment">//we are not past the minimum error threshold for the stat window,</span></div><div class="line">                                <span class="comment">// so no change to circuit status.</span></div><div class="line">                                <span class="comment">// if it was CLOSED, it stays CLOSED</span></div><div class="line">                                <span class="comment">// if it was half-open, we need to wait for a successful command execution</span></div><div class="line">                                <span class="comment">// if it was open, we need to wait for sleep window to elapse</span></div><div class="line">                            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                                <span class="comment">// our failure rate is too high, we need to set the state to OPEN</span></div><div class="line">                                <span class="keyword">if</span> (status.compareAndSet(Status.CLOSED, Status.OPEN)) &#123;</div><div class="line">                                    circuitOpened.set(System.currentTimeMillis());</div><div class="line">                                &#125;</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="总结">总结</h1><p>Hystrix 1.5 使用 RxJava 来实现滑动窗口，将滑动窗口抽象成响应式数据流的形式，既适合 Hystrix 事件驱动的特点，又易于实现和使用。滑动窗口的实现的要点就是每个桶的聚合以及滑动窗口的形成，Hystrix 巧妙地运用了 RxJava 中的 <a href="http://reactivex.io/documentation/operators/window.html" target="_blank" rel="external"><code>window</code></a> 操作符来将单位窗口时间内的事件，以及将一个窗口大小内的桶聚集到一起，并通过 <a href="http://reactivex.io/documentation/operators/reduce.html" target="_blank" rel="external"><code>reduce</code></a> 等折叠操作将事件集合聚集为桶，将滑动窗口内的桶聚集成指标数据，非常巧妙。同时，Hystrix 利用 ThreadLocal<subject> 作为一个线程安全的“代理”，可以确保多个发布者写的线程安全；通过 RxJava 的 <a href="http://reactivex.io/documentation/operators/refcount.html" target="_blank" rel="external"><code>share</code></a> 操作符可以确保多个订阅者从某个共享的 Observable 中观察的序列一致。</subject></p>
+<h1 id="总结">总结</h1><p>Hystrix 1.5 使用 RxJava 1.x 来实现滑动窗口，将滑动窗口抽象成响应式数据流的形式，既适合 Hystrix 事件驱动的特点，又易于实现和使用。滑动窗口的实现的要点就是每个桶的聚合以及滑动窗口的形成，Hystrix 巧妙地运用了 RxJava 中的 <a href="http://reactivex.io/documentation/operators/window.html" target="_blank" rel="external"><code>window</code></a> 操作符来将单位窗口时间内的事件，以及将一个窗口大小内的桶聚集到一起，并通过 <a href="http://reactivex.io/documentation/operators/reduce.html" target="_blank" rel="external"><code>reduce</code></a> 等折叠操作将事件集合聚集为桶，将滑动窗口内的桶聚集成指标数据，非常巧妙。同时，Hystrix 利用 ThreadLocal<subject> 作为一个线程安全的“代理”，可以确保多个发布者写的线程安全；通过 RxJava 的 <a href="http://reactivex.io/documentation/operators/refcount.html" target="_blank" rel="external"><code>share</code></a> 操作符可以确保多个订阅者从某个共享的 Observable 中观察的序列一致。</subject></p>
+<p>最后用一张图来总结 Hystrix Metrics 事件驱动的流程：</p>
+<p><img src="http://7xkkgd.com1.z0.glb.clouddn.com/hystrix/hystrix-metrics-event-driven-flow.png" alt="Event driven flow of Hystrix"></p>
 <hr>
 <h1 id="References">References</h1><ul>
 <li><a href="https://github.com/Netflix/Hystrix/wiki/Metrics-and-Monitoring" target="_blank" rel="external">Metrics and Monitoring - Hystrix Wiki</a></li>
@@ -244,7 +246,7 @@
     <link href="http://www.sczyh30.com/posts/Distributed-System/spark-rdd-paper-summary/"/>
     <id>http://www.sczyh30.com/posts/Distributed-System/spark-rdd-paper-summary/</id>
     <published>2016-09-26T16:00:00.000Z</published>
-    <updated>2017-02-24T02:59:03.761Z</updated>
+    <updated>2017-02-24T02:59:03.762Z</updated>
     
     <content type="html"><![CDATA[<p>本篇文章是对Spark RDD论文的总结，中间会穿插一些Spark的内部实现总结，对应Spark版本为2.0。</p>
 <h1 id="RDD">RDD</h1><h2 id="Motivation">Motivation</h2><p>传统的分布式计算框架(如MapReduce)在执行计算任务时，中间结果通常会存于磁盘中，这样带来的IO消耗是非常大的，尤其是对于各种机器学习算法，它们需要复用上次计算的结果进行迭代，如果每次结果都存到磁盘上再从磁盘读取，耗时会很大。因此Spark这篇论文提出了一种新的分布式数据抽象 —— <strong>RDD</strong>。</p>
@@ -539,88 +541,6 @@
   </entry>
   
   <entry>
-    <title>Distributed System | RPC模块设计与实现</title>
-    <link href="http://www.sczyh30.com/posts/Distributed-System/distributed-system-rpc-design/"/>
-    <id>http://www.sczyh30.com/posts/Distributed-System/distributed-system-rpc-design/</id>
-    <published>2016-09-06T16:00:00.000Z</published>
-    <updated>2017-02-23T14:54:34.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>RPC是分布式系统中不可缺少的一部分。之前接触过几种RPC模块，这里就总结一下常见RPC模块的设计思想和实现。最后我们来设计一个可以方便进行RPC调用的RPC模块。</p>
-<h1 id="RPC模块设计需要考虑的问题">RPC模块设计需要考虑的问题</h1><p>RPC模块将网络通信的过程封装成了方法调用的过程。从使用者的角度来看，在调用端进行RPC调用，就像进行本地函数调用一样；而在背后，RPC模块会将先调用端的函数名称、参数等调用信息序列化，其中序列化的方式有很多种，比如Java原生序列化、JSON、Protobuf等。接着RPC模块会将序列化后的消息通过某种协议(如TCP, AMQP等)发送到被调用端，被调用端在收到消息以后会对其解码，还原成调用信息，然后在本地进行方法调用，然后把调用结果发送回调用端，这样一次RPC调用过程就完成了。在这个过程中，我们要考虑到一些问题：</p>
-<ul>
-<li>设计成什么样的调用模型？</li>
-<li>调用信息通过什么样的方式序列化？通过哪种协议传输？性能如何？可靠性如何？</li>
-<li>分布式系统中最关注的问题：出现failure如何应对？如何容错？</li>
-</ul>
-<p>我们一点一点来思考。第一点是设计成什么样的调用模型。常见的几种模型：</p>
-<ul>
-<li>服务代理。即实现一个服务接口，被调用端实现此服务接口，实现对应的方法逻辑，并写好RPC调用信息接收部分；调用端通过RPC模块获取一个服务代理实例，这个服务代理实例继承了服务接口并封装了相应的远程调用逻辑（包括消息的编码、解码、传输等）。调用端通过这个服务代理实例进行RPC调用。像Vert.x Service Proxy和grpc都是这种模型。这样的RPC模块需要具备生成服务代理类的功能</li>
-<li>直接调用，即设计特定的API用于RPC调用。比如Go的rpc包，里面的<code>Client</code>就提供了一个<code>Call</code>方法用于任意RPC调用，调用者需要传入方法名称、参数以及返回值指针（异步模式下传入callback handler）</li>
-</ul>
-<p>我更倾向于选择服务代理这种模型，因为服务代理这种模型在进行RPC调用的时候就像直接LPC一样方便，但是需要RPC模块生成服务代理类，实现起来可能会麻烦些；当然Go的rpc包封装的也比较好，调用也比较方便，考虑到Go的类型系统，这已经不错了。。。</p>
-<p>RPC调用耗时会包含通信耗时和本地调用耗时。当网络状况不好的时候，RPC调用可能会很长时间才能得到结果。对传统的同步RPC模式来说，这期间会阻塞调用者的调用线程。当需要进行大量RPC调用的时候，这种阻塞就伤不起了。这时候，异步RPC模式就派上用场了。我们可以对传统RPC模式稍加改造，把服务接口设计成异步模式的，即每个方法都要绑定一个回调函数，或利用Future-Promise模型返回一个<code>Future</code>。设计成异步模式以后，整个架构的灵活性就能得到很大的提升。</p>
-<p>第二点是调用信息的序列化反序列化以及传输。序列化主要分为文本(如JSON, XML等)和二进制(如Thrift, Protocol等)两种，不同的序列化策略性能不同，因此我们应该尽量选择性能高，同时便于开发的序列化策略。在大型项目中我们常用Protobuf，性能比较好，支持多语言，但是需要单独定义<code>.proto</code>文件；有的时候我们会选择JSON，尽管效率不是很高但是方便，比如Vert.x Service Proxy就选择了JSON格式(底层依赖Event Bus)。另一点就是传输协议的选择。通常情况下我们会选择TCP协议(各种基于TCP的应用层协议，如HTTP/2)进行通信，当然用基于AMQP协议的消息队列也可以，两者都比较可靠。</p>
-<p>这里还需提一点：如何高效地并发处理request/response，这依赖于通信模块的实现。拿Java来说，基于Netty NIO或者Java AIO的I/O多路复用都可以很好地并发处理请求；而像Go RPC则是来一个request就创建一个Goroutine并在其中处理请求(Goroutine作为轻量级用户态线程，创建性能消耗小)。</p>
-<p>最后一点也是最重要的一点：实现容错，这也是分布式系统设计要考虑的一个核心。想象一下一次RPC调用过程中可能产生的各种failure：</p>
-<ul>
-<li>网络拥塞</li>
-<li>丢包，通信异常</li>
-<li>服务提供端挂了，调用端得不到response</li>
-</ul>
-<p>一种简单的应对方式是不断地超时重传，即 <em>at least once</em> 模式。调用端设置一个超时定时器，若一定时间内没有收到response就继续发送调用请求，直到收到response或请求次数达到阈值。这种模式会发送重复请求，因此只适用于幂等性的操作，即执行多次结果相同的操作，比如读取操作。当然服务提供端也可以实现对应的逻辑来检查重复的请求。</p>
-<p>更符合我们期望的容错方案是 <em>at most once</em> 模式。<em>at most once</em> 模式要求服务提供端检查重复请求，如果检查到当前请求是重复请求则返回之前的调用结果。服务提供端需要缓存之前的调用结果。这里面有几点需要考虑：</p>
-<ul>
-<li>如何实现重传和重复请求检测？是依靠协议（如TCP的超时重传）还是自己实现？</li>
-</ul>
-<p>如果自己实现的话：</p>
-<ul>
-<li>如何检查重复请求？我们可以给每个请求生成一个独一无二的标识符(xid)，并且在重传请求的时候使用相同的xid进行重传。用伪代码可以表示为：</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (seen(xid)) &#123;</div><div class="line">  result = oldResult;</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  result = call(...);</div><div class="line">  oldResult = result;</div><div class="line">  setCurrentId(xid);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<ul>
-<li>如何保证xid是独一无二的？可以考虑使用UUID或者不同seed下的随机数。</li>
-<li>服务请求端需要在一个合适的时间丢弃掉保存的之前缓存的调用结果。</li>
-<li>当某个RPC调用过程还正在执行时，如何应对另外的重复请求？这种情况可以设置一个flag用于标识是否正在执行。</li>
-<li>如果服务调用端挂了并且重启怎么办？如果服务调用端将xid和调用结果缓存在内存中，那么保存的信息就丢失了。因此我们可以考虑将缓存信息定时写入硬盘，或者写入replication server中，当然这些情况就比较复杂了，涉及到高可用和一致性的问题。</li>
-</ul>
-<p>由此可见，虽然RPC模块看似比较简单，但是设计的时候要考虑的问题还是非常多的。尤其是在保证性能的基础上又要保证可靠性，还要保证开发者的易用性，这就需要细致地思考了。</p>
-<h1 id="常见RPC模块实现">常见RPC模块实现</h1><p>这里我来简单总结一下用过的常见的几个RPC模块的使用及实现思路。</p>
-<h2 id="Go_RPC">Go RPC</h2><p>Go的<code>rpc</code>包使用了Go自己的gob协议作为序列化协议(通过<code>encoding/gob</code>模块内的<code>Encoder</code>/<code>Decoder</code>进行编码和解码)，而传输协议可以直接使用TCP(<code>Dial</code>方法)或者使用HTTP(<code>DialHTTP</code>)方法。开发者需要在服务端定义struct并且实现各种方法，然后将struct注册到服务端。需要进行RPC调用的时候，我们就可以在调用端通过<code>Call</code>方法（同步）或者<code>Go</code>方法（异步）进行调用。同步模式下调用结果即为<code>reply</code>指针所指的对象，而异步模式则会在调用结果准备就绪后通知绑定的channel并执行处理。</p>
-<p>在rpc包的实现中(<code>net/rpc/server.go</code>)，每个注册的服务类都被封装成了一个<code>service</code>结构体，而其中的每个方法则被封装成了一个<code>methodType</code>结构体：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> methodType <span class="keyword">struct</span> &#123;</div><div class="line">	sync.Mutex <span class="comment">// protects counters</span></div><div class="line">	method     reflect.Method</div><div class="line">	ArgType    reflect.Type</div><div class="line">	ReplyType  reflect.Type</div><div class="line">	numCalls   <span class="keyword">uint</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> service <span class="keyword">struct</span> &#123;</div><div class="line">	name   <span class="keyword">string</span>                 <span class="comment">// name of service</span></div><div class="line">	rcvr   reflect.Value          <span class="comment">// receiver of methods for the service</span></div><div class="line">	typ    reflect.Type           <span class="comment">// type of the receiver</span></div><div class="line">	method <span class="keyword">map</span>[<span class="keyword">string</span>]*methodType <span class="comment">// registered methods</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>每个服务端都被封装成了一个<code>Server</code>结构体，其中的<code>serviceMap</code>存储着各个服务类的元数据：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> Server <span class="keyword">struct</span> &#123;</div><div class="line">	mu         sync.RWMutex <span class="comment">// protects the serviceMap</span></div><div class="line">	serviceMap <span class="keyword">map</span>[<span class="keyword">string</span>]*service</div><div class="line">	reqLock    sync.Mutex <span class="comment">// protects freeReq</span></div><div class="line">	freeReq    *Request</div><div class="line">	respLock   sync.Mutex <span class="comment">// protects freeResp</span></div><div class="line">	freeResp   *Response</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>RPC Server处理调用请求的默认路径是<code>/_goRPC_</code>。当请求到达时，Go就会调用<code>Server</code>结构体实现的<code>ServeHTTP</code>方法，经<code>ServeConn</code>方法传入gob codec预处理以后最终在<code>ServeCodec</code>方法内处理请求并进行调用：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(server *Server)</span> <span class="title">ServeCodec</span><span class="params">(codec ServerCodec)</span></span> &#123;</div><div class="line">	sending := <span class="built_in">new</span>(sync.Mutex)</div><div class="line">	<span class="keyword">for</span> &#123;</div><div class="line">		service, mtype, req, argv, replyv, keepReading, err := server.readRequest(codec)</div><div class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">			<span class="keyword">if</span> debugLog &amp;&amp; err != io.EOF &#123;</div><div class="line">				log.Println(<span class="string">"rpc:"</span>, err)</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">if</span> !keepReading &#123;</div><div class="line">				<span class="keyword">break</span></div><div class="line">			&#125;</div><div class="line">			<span class="comment">// send a response if we actually managed to read a header.</span></div><div class="line">			<span class="keyword">if</span> req != <span class="literal">nil</span> &#123;</div><div class="line">				server.sendResponse(sending, req, invalidRequest, codec, err.Error())</div><div class="line">				server.freeRequest(req)</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">continue</span></div><div class="line">		&#125;</div><div class="line">		<span class="keyword">go</span> service.call(server, sending, mtype, req, argv, replyv, codec)</div><div class="line">	&#125;</div><div class="line">	codec.Close()</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>如果成功读取请求数据，那么接下来RPC Server就会新建一个Goroutine用来在本地执行方法，并向调用端返回response：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *service)</span> <span class="title">call</span><span class="params">(server *Server, sending *sync.Mutex, mtype *methodType, req *Request, argv, replyv reflect.Value, codec ServerCodec)</span></span> &#123;</div><div class="line">	mtype.Lock()</div><div class="line">	mtype.numCalls++</div><div class="line">	mtype.Unlock()</div><div class="line">	function := mtype.method.Func</div><div class="line">	<span class="comment">// Invoke the method, providing a new value for the reply.</span></div><div class="line">	returnValues := function.Call([]reflect.Value&#123;s.rcvr, argv, replyv&#125;)</div><div class="line">	<span class="comment">// The return value for the method is an error.</span></div><div class="line">	errInter := returnValues[<span class="number">0</span>].Interface()</div><div class="line">	errmsg := <span class="string">""</span></div><div class="line">	<span class="keyword">if</span> errInter != <span class="literal">nil</span> &#123;</div><div class="line">		errmsg = errInter.(error).Error()</div><div class="line">	&#125;</div><div class="line">	server.sendResponse(sending, req, replyv.Interface(), codec, errmsg)</div><div class="line">	server.freeRequest(req)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在执行调用的过程中应该注意并发问题，防止资源争用，修改数据时需要对数据加锁；至于方法的执行就是利用了Go的反射机制。调用完以后，RPC Server接着调用<code>sendResponse</code>方法发送response，其中写入response的时候同样需要加锁，防止资源争用。</p>
-<h2 id="grpc">grpc</h2><p>grpc是Google开源的一个通用的RPC框架，支持C, Java和Go等语言。既然是Google出品，序列化协议必然用protobuf啦（毕竟高效），传输协议使用HTTP/2，非常不错。开发时需要在<code>.proto</code>文件里定义数据类型以及服务接口，然后配上protoc的grpc插件就能够自动生成各个语言的服务接口和代理类。粗略地看了下grpc-java的源码，底层利用Netty和OkHttp实现HTTP通信，性能应该不错。</p>
-<h2 id="Vert-x_Service_Proxy">Vert.x Service Proxy</h2><p>Vert.x Service Proxy是Vert.x的一个异步RPC组件，支持通过各种JVM语言(Java, Scala, JS, JRuby, Groovy等)进行RPC调用。使用Vert.x Service Proxy时我们只需要按照异步开发模式编写服务接口，加上相应的注解，Vert.x Service Proxy就会自动生成相应的服务代理类和服务调用处理类。Vert.x Service Proxy底层借助Event Bus进行通信，调用时将调用消息包装成JSON数据然后通过Event Bus传输到服务端，得到结果后再返回给调用端。Vert.x的一大特性就是异步、响应式编程，因此Vert.x Service Proxy的RPC模型为异步RPC，用起来非常方便。几个异步过程可以通过各种组合子串成一串，妥妥的reactive programming的风格~</p>
-<p>更多的关于Vert.x Service Proxy的实现原理的内容可以看这一篇：<a href="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-async-rpc/">Vert.x 技术内幕 | 异步RPC实现原理</a>。</p>
-<p>PS: 我经常吐槽Vert.x Service Proxy这个名字，因为光看名字很多人不知道它可以用来实现RPC，导致了很多人以为Vert.x不能做RPC。。。应该改名叫Vert.x Async RPC比较合适。。。当然它还有很大的改进空间，主要是被Vert.x Event Bus的性能和可靠性给拖累了。。。</p>
-<h2 id="Java_RMI">Java RMI</h2><p>Java RMI(Remote Method Invocation)是Java里的一种RPC编程接口，类似于服务代理的一种模式。用起来不是很方便。。。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;RPC是分布式系统中不可缺少的一部分。之前接触过几种RPC模块，这里就总结一下常见RPC模块的设计思想和实现。最后我们来设计一个可以方便进行RPC调用的RPC模块。&lt;/p&gt;
-&lt;h1 id=&quot;RPC模块设计需要考虑的问题&quot;&gt;RPC模块设计需要考虑的问题&lt;/h1&gt;&lt;p&gt;RPC模
-    
-    </summary>
-    
-      <category term="Distributed System" scheme="http://www.sczyh30.com/categories/Distributed-System/"/>
-    
-    
-      <category term="分布式系统" scheme="http://www.sczyh30.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/"/>
-    
-      <category term="架构" scheme="http://www.sczyh30.com/tags/%E6%9E%B6%E6%9E%84/"/>
-    
-      <category term="RPC" scheme="http://www.sczyh30.com/tags/RPC/"/>
-    
-  </entry>
-  
-  <entry>
     <title>Vert.x 技术内幕 | 异步RPC实现原理</title>
     <link href="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-async-rpc/"/>
     <id>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-async-rpc/</id>
@@ -700,11 +620,93 @@
   </entry>
   
   <entry>
+    <title>Distributed System | RPC模块设计与实现</title>
+    <link href="http://www.sczyh30.com/posts/Distributed-System/distributed-system-rpc-design/"/>
+    <id>http://www.sczyh30.com/posts/Distributed-System/distributed-system-rpc-design/</id>
+    <published>2016-09-06T16:00:00.000Z</published>
+    <updated>2017-02-23T14:54:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>RPC是分布式系统中不可缺少的一部分。之前接触过几种RPC模块，这里就总结一下常见RPC模块的设计思想和实现。最后我们来设计一个可以方便进行RPC调用的RPC模块。</p>
+<h1 id="RPC模块设计需要考虑的问题">RPC模块设计需要考虑的问题</h1><p>RPC模块将网络通信的过程封装成了方法调用的过程。从使用者的角度来看，在调用端进行RPC调用，就像进行本地函数调用一样；而在背后，RPC模块会将先调用端的函数名称、参数等调用信息序列化，其中序列化的方式有很多种，比如Java原生序列化、JSON、Protobuf等。接着RPC模块会将序列化后的消息通过某种协议(如TCP, AMQP等)发送到被调用端，被调用端在收到消息以后会对其解码，还原成调用信息，然后在本地进行方法调用，然后把调用结果发送回调用端，这样一次RPC调用过程就完成了。在这个过程中，我们要考虑到一些问题：</p>
+<ul>
+<li>设计成什么样的调用模型？</li>
+<li>调用信息通过什么样的方式序列化？通过哪种协议传输？性能如何？可靠性如何？</li>
+<li>分布式系统中最关注的问题：出现failure如何应对？如何容错？</li>
+</ul>
+<p>我们一点一点来思考。第一点是设计成什么样的调用模型。常见的几种模型：</p>
+<ul>
+<li>服务代理。即实现一个服务接口，被调用端实现此服务接口，实现对应的方法逻辑，并写好RPC调用信息接收部分；调用端通过RPC模块获取一个服务代理实例，这个服务代理实例继承了服务接口并封装了相应的远程调用逻辑（包括消息的编码、解码、传输等）。调用端通过这个服务代理实例进行RPC调用。像Vert.x Service Proxy和grpc都是这种模型。这样的RPC模块需要具备生成服务代理类的功能</li>
+<li>直接调用，即设计特定的API用于RPC调用。比如Go的rpc包，里面的<code>Client</code>就提供了一个<code>Call</code>方法用于任意RPC调用，调用者需要传入方法名称、参数以及返回值指针（异步模式下传入callback handler）</li>
+</ul>
+<p>我更倾向于选择服务代理这种模型，因为服务代理这种模型在进行RPC调用的时候就像直接LPC一样方便，但是需要RPC模块生成服务代理类，实现起来可能会麻烦些；当然Go的rpc包封装的也比较好，调用也比较方便，考虑到Go的类型系统，这已经不错了。。。</p>
+<p>RPC调用耗时会包含通信耗时和本地调用耗时。当网络状况不好的时候，RPC调用可能会很长时间才能得到结果。对传统的同步RPC模式来说，这期间会阻塞调用者的调用线程。当需要进行大量RPC调用的时候，这种阻塞就伤不起了。这时候，异步RPC模式就派上用场了。我们可以对传统RPC模式稍加改造，把服务接口设计成异步模式的，即每个方法都要绑定一个回调函数，或利用Future-Promise模型返回一个<code>Future</code>。设计成异步模式以后，整个架构的灵活性就能得到很大的提升。</p>
+<p>第二点是调用信息的序列化反序列化以及传输。序列化主要分为文本(如JSON, XML等)和二进制(如Thrift, Protocol等)两种，不同的序列化策略性能不同，因此我们应该尽量选择性能高，同时便于开发的序列化策略。在大型项目中我们常用Protobuf，性能比较好，支持多语言，但是需要单独定义<code>.proto</code>文件；有的时候我们会选择JSON，尽管效率不是很高但是方便，比如Vert.x Service Proxy就选择了JSON格式(底层依赖Event Bus)。另一点就是传输协议的选择。通常情况下我们会选择TCP协议(各种基于TCP的应用层协议，如HTTP/2)进行通信，当然用基于AMQP协议的消息队列也可以，两者都比较可靠。</p>
+<p>这里还需提一点：如何高效地并发处理request/response，这依赖于通信模块的实现。拿Java来说，基于Netty NIO或者Java AIO的I/O多路复用都可以很好地并发处理请求；而像Go RPC则是来一个request就创建一个Goroutine并在其中处理请求(Goroutine作为轻量级用户态线程，创建性能消耗小)。</p>
+<p>最后一点也是最重要的一点：实现容错，这也是分布式系统设计要考虑的一个核心。想象一下一次RPC调用过程中可能产生的各种failure：</p>
+<ul>
+<li>网络拥塞</li>
+<li>丢包，通信异常</li>
+<li>服务提供端挂了，调用端得不到response</li>
+</ul>
+<p>一种简单的应对方式是不断地超时重传，即 <em>at least once</em> 模式。调用端设置一个超时定时器，若一定时间内没有收到response就继续发送调用请求，直到收到response或请求次数达到阈值。这种模式会发送重复请求，因此只适用于幂等性的操作，即执行多次结果相同的操作，比如读取操作。当然服务提供端也可以实现对应的逻辑来检查重复的请求。</p>
+<p>更符合我们期望的容错方案是 <em>at most once</em> 模式。<em>at most once</em> 模式要求服务提供端检查重复请求，如果检查到当前请求是重复请求则返回之前的调用结果。服务提供端需要缓存之前的调用结果。这里面有几点需要考虑：</p>
+<ul>
+<li>如何实现重传和重复请求检测？是依靠协议（如TCP的超时重传）还是自己实现？</li>
+</ul>
+<p>如果自己实现的话：</p>
+<ul>
+<li>如何检查重复请求？我们可以给每个请求生成一个独一无二的标识符(xid)，并且在重传请求的时候使用相同的xid进行重传。用伪代码可以表示为：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (seen(xid)) &#123;</div><div class="line">  result = oldResult;</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  result = call(...);</div><div class="line">  oldResult = result;</div><div class="line">  setCurrentId(xid);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>如何保证xid是独一无二的？可以考虑使用UUID或者不同seed下的随机数。</li>
+<li>服务请求端需要在一个合适的时间丢弃掉保存的之前缓存的调用结果。</li>
+<li>当某个RPC调用过程还正在执行时，如何应对另外的重复请求？这种情况可以设置一个flag用于标识是否正在执行。</li>
+<li>如果服务调用端挂了并且重启怎么办？如果服务调用端将xid和调用结果缓存在内存中，那么保存的信息就丢失了。因此我们可以考虑将缓存信息定时写入硬盘，或者写入replication server中，当然这些情况就比较复杂了，涉及到高可用和一致性的问题。</li>
+</ul>
+<p>由此可见，虽然RPC模块看似比较简单，但是设计的时候要考虑的问题还是非常多的。尤其是在保证性能的基础上又要保证可靠性，还要保证开发者的易用性，这就需要细致地思考了。</p>
+<h1 id="常见RPC模块实现">常见RPC模块实现</h1><p>这里我来简单总结一下用过的常见的几个RPC模块的使用及实现思路。</p>
+<h2 id="Go_RPC">Go RPC</h2><p>Go的<code>rpc</code>包使用了Go自己的gob协议作为序列化协议(通过<code>encoding/gob</code>模块内的<code>Encoder</code>/<code>Decoder</code>进行编码和解码)，而传输协议可以直接使用TCP(<code>Dial</code>方法)或者使用HTTP(<code>DialHTTP</code>)方法。开发者需要在服务端定义struct并且实现各种方法，然后将struct注册到服务端。需要进行RPC调用的时候，我们就可以在调用端通过<code>Call</code>方法（同步）或者<code>Go</code>方法（异步）进行调用。同步模式下调用结果即为<code>reply</code>指针所指的对象，而异步模式则会在调用结果准备就绪后通知绑定的channel并执行处理。</p>
+<p>在rpc包的实现中(<code>net/rpc/server.go</code>)，每个注册的服务类都被封装成了一个<code>service</code>结构体，而其中的每个方法则被封装成了一个<code>methodType</code>结构体：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> methodType <span class="keyword">struct</span> &#123;</div><div class="line">	sync.Mutex <span class="comment">// protects counters</span></div><div class="line">	method     reflect.Method</div><div class="line">	ArgType    reflect.Type</div><div class="line">	ReplyType  reflect.Type</div><div class="line">	numCalls   <span class="keyword">uint</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> service <span class="keyword">struct</span> &#123;</div><div class="line">	name   <span class="keyword">string</span>                 <span class="comment">// name of service</span></div><div class="line">	rcvr   reflect.Value          <span class="comment">// receiver of methods for the service</span></div><div class="line">	typ    reflect.Type           <span class="comment">// type of the receiver</span></div><div class="line">	method <span class="keyword">map</span>[<span class="keyword">string</span>]*methodType <span class="comment">// registered methods</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>每个服务端都被封装成了一个<code>Server</code>结构体，其中的<code>serviceMap</code>存储着各个服务类的元数据：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> Server <span class="keyword">struct</span> &#123;</div><div class="line">	mu         sync.RWMutex <span class="comment">// protects the serviceMap</span></div><div class="line">	serviceMap <span class="keyword">map</span>[<span class="keyword">string</span>]*service</div><div class="line">	reqLock    sync.Mutex <span class="comment">// protects freeReq</span></div><div class="line">	freeReq    *Request</div><div class="line">	respLock   sync.Mutex <span class="comment">// protects freeResp</span></div><div class="line">	freeResp   *Response</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>RPC Server处理调用请求的默认路径是<code>/_goRPC_</code>。当请求到达时，Go就会调用<code>Server</code>结构体实现的<code>ServeHTTP</code>方法，经<code>ServeConn</code>方法传入gob codec预处理以后最终在<code>ServeCodec</code>方法内处理请求并进行调用：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(server *Server)</span> <span class="title">ServeCodec</span><span class="params">(codec ServerCodec)</span></span> &#123;</div><div class="line">	sending := <span class="built_in">new</span>(sync.Mutex)</div><div class="line">	<span class="keyword">for</span> &#123;</div><div class="line">		service, mtype, req, argv, replyv, keepReading, err := server.readRequest(codec)</div><div class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">			<span class="keyword">if</span> debugLog &amp;&amp; err != io.EOF &#123;</div><div class="line">				log.Println(<span class="string">"rpc:"</span>, err)</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">if</span> !keepReading &#123;</div><div class="line">				<span class="keyword">break</span></div><div class="line">			&#125;</div><div class="line">			<span class="comment">// send a response if we actually managed to read a header.</span></div><div class="line">			<span class="keyword">if</span> req != <span class="literal">nil</span> &#123;</div><div class="line">				server.sendResponse(sending, req, invalidRequest, codec, err.Error())</div><div class="line">				server.freeRequest(req)</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">continue</span></div><div class="line">		&#125;</div><div class="line">		<span class="keyword">go</span> service.call(server, sending, mtype, req, argv, replyv, codec)</div><div class="line">	&#125;</div><div class="line">	codec.Close()</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果成功读取请求数据，那么接下来RPC Server就会新建一个Goroutine用来在本地执行方法，并向调用端返回response：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *service)</span> <span class="title">call</span><span class="params">(server *Server, sending *sync.Mutex, mtype *methodType, req *Request, argv, replyv reflect.Value, codec ServerCodec)</span></span> &#123;</div><div class="line">	mtype.Lock()</div><div class="line">	mtype.numCalls++</div><div class="line">	mtype.Unlock()</div><div class="line">	function := mtype.method.Func</div><div class="line">	<span class="comment">// Invoke the method, providing a new value for the reply.</span></div><div class="line">	returnValues := function.Call([]reflect.Value&#123;s.rcvr, argv, replyv&#125;)</div><div class="line">	<span class="comment">// The return value for the method is an error.</span></div><div class="line">	errInter := returnValues[<span class="number">0</span>].Interface()</div><div class="line">	errmsg := <span class="string">""</span></div><div class="line">	<span class="keyword">if</span> errInter != <span class="literal">nil</span> &#123;</div><div class="line">		errmsg = errInter.(error).Error()</div><div class="line">	&#125;</div><div class="line">	server.sendResponse(sending, req, replyv.Interface(), codec, errmsg)</div><div class="line">	server.freeRequest(req)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在执行调用的过程中应该注意并发问题，防止资源争用，修改数据时需要对数据加锁；至于方法的执行就是利用了Go的反射机制。调用完以后，RPC Server接着调用<code>sendResponse</code>方法发送response，其中写入response的时候同样需要加锁，防止资源争用。</p>
+<h2 id="grpc">grpc</h2><p>grpc是Google开源的一个通用的RPC框架，支持C, Java和Go等语言。既然是Google出品，序列化协议必然用protobuf啦（毕竟高效），传输协议使用HTTP/2，非常不错。开发时需要在<code>.proto</code>文件里定义数据类型以及服务接口，然后配上protoc的grpc插件就能够自动生成各个语言的服务接口和代理类。粗略地看了下grpc-java的源码，底层利用Netty和OkHttp实现HTTP通信，性能应该不错。</p>
+<h2 id="Vert-x_Service_Proxy">Vert.x Service Proxy</h2><p>Vert.x Service Proxy是Vert.x的一个异步RPC组件，支持通过各种JVM语言(Java, Scala, JS, JRuby, Groovy等)进行RPC调用。使用Vert.x Service Proxy时我们只需要按照异步开发模式编写服务接口，加上相应的注解，Vert.x Service Proxy就会自动生成相应的服务代理类和服务调用处理类。Vert.x Service Proxy底层借助Event Bus进行通信，调用时将调用消息包装成JSON数据然后通过Event Bus传输到服务端，得到结果后再返回给调用端。Vert.x的一大特性就是异步、响应式编程，因此Vert.x Service Proxy的RPC模型为异步RPC，用起来非常方便。几个异步过程可以通过各种组合子串成一串，妥妥的reactive programming的风格~</p>
+<p>更多的关于Vert.x Service Proxy的实现原理的内容可以看这一篇：<a href="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-async-rpc/">Vert.x 技术内幕 | 异步RPC实现原理</a>。</p>
+<p>PS: 我经常吐槽Vert.x Service Proxy这个名字，因为光看名字很多人不知道它可以用来实现RPC，导致了很多人以为Vert.x不能做RPC。。。应该改名叫Vert.x Async RPC比较合适。。。当然它还有很大的改进空间，主要是被Vert.x Event Bus的性能和可靠性给拖累了。。。</p>
+<h2 id="Java_RMI">Java RMI</h2><p>Java RMI(Remote Method Invocation)是Java里的一种RPC编程接口，类似于服务代理的一种模式。用起来不是很方便。。。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;RPC是分布式系统中不可缺少的一部分。之前接触过几种RPC模块，这里就总结一下常见RPC模块的设计思想和实现。最后我们来设计一个可以方便进行RPC调用的RPC模块。&lt;/p&gt;
+&lt;h1 id=&quot;RPC模块设计需要考虑的问题&quot;&gt;RPC模块设计需要考虑的问题&lt;/h1&gt;&lt;p&gt;RPC模
+    
+    </summary>
+    
+      <category term="Distributed System" scheme="http://www.sczyh30.com/categories/Distributed-System/"/>
+    
+    
+      <category term="分布式系统" scheme="http://www.sczyh30.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/"/>
+    
+      <category term="RPC" scheme="http://www.sczyh30.com/tags/RPC/"/>
+    
+      <category term="架构" scheme="http://www.sczyh30.com/tags/%E6%9E%B6%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Vert.x 技术内幕 | Event Bus 源码分析 (集群模式)</title>
     <link href="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/"/>
     <id>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/</id>
     <published>2016-09-04T16:00:00.000Z</published>
-    <updated>2016-11-24T06:07:29.833Z</updated>
+    <updated>2016-11-24T06:07:29.834Z</updated>
     
     <content type="html"><![CDATA[<p><a href="http://www.sczyh30.com/posts/Vert-x/vertx-advanced-local-event-bus-internal/">上篇文章</a>中我们探索了Local模式下Event Bus的源码，在这篇文章中我们来探索一下Vert.x中的Clustered Event Bus是如何实现的。对应的Vert.x版本为<strong>3.3.2</strong>。</p>
 <h1 id="集群模式介绍">集群模式介绍</h1><p>我们先来简单地介绍一下集群模式下Event Bus的基本原理。</p>
@@ -950,7 +952,7 @@
     <link href="http://www.sczyh30.com/posts/Life/busy-enough-2016-08/"/>
     <id>http://www.sczyh30.com/posts/Life/busy-enough-2016-08/</id>
     <published>2016-08-29T16:25:00.000Z</published>
-    <updated>2016-11-24T06:07:29.002Z</updated>
+    <updated>2016-11-24T06:07:29.003Z</updated>
     
     <content type="html"><![CDATA[<p>最近越来越忙了，要忙各种项目，Blog都没空更了。。。等着抽空更新一波之前没发的文章。。。</p>
 <p><img src="http://7xkkgd.com1.z0.glb.clouddn.com/CoYX-A0XEAEYpu9.jpg" alt=""></p>
@@ -976,7 +978,7 @@
     <link href="http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/"/>
     <id>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/</id>
     <published>2016-08-29T10:00:00.000Z</published>
-    <updated>2016-11-24T06:07:29.975Z</updated>
+    <updated>2016-11-24T06:07:29.976Z</updated>
     
     <content type="html"><![CDATA[<p>Vert.x 蓝图项目已经发布至Vert.x官方网站：<a href="http://vertx.io/blog/vert-x-blueprint-tutorials/" target="_blank" rel="external">Vert.x Blueprint Tutorials</a></p>
 <hr>
@@ -1014,7 +1016,7 @@
     <link href="http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/"/>
     <id>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/</id>
     <published>2016-07-24T07:00:00.000Z</published>
-    <updated>2016-11-24T06:07:29.967Z</updated>
+    <updated>2016-11-24T06:07:29.968Z</updated>
     
     <content type="html"><![CDATA[<p><a href="http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/">上部分蓝图教程</a>中我们一起探索了如何用Vert.x开发一个基于消息的应用。在这部分教程中，我们将粗略地探索一下<code>kue-http</code>模块的实现。</p>
 <h1 id="Vert-x_Kue_REST_API">Vert.x Kue REST API</h1><p><code>kue-http</code>模块中只有一个类<code>KueHttpVerticle</code>，作为整个REST API以及UI服务的实现。对REST API部分来说，如果看过我们之前的 <a href="http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/">Vert.x 蓝图 | 待办事项服务开发教程</a> 的话，你应该对这一部分非常熟悉了，因此这里我们就不详细解释了。有关使用Vert.x Web实现REST API的教程可参考 <a href="http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/">Vert.x 蓝图 | 待办事项服务开发教程</a>。</p>
@@ -1432,7 +1434,7 @@ java -jar kue-http/build/libs/vertx-blueprint-kue-http<span class="class">.jar</
     <link href="http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/"/>
     <id>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/</id>
     <published>2016-06-15T16:00:00.000Z</published>
-    <updated>2016-11-24T06:07:29.922Z</updated>
+    <updated>2016-11-24T06:07:29.923Z</updated>
     
     <content type="html"><![CDATA[<p>本文章是 <a href="http://vertx.io/blog/vert-x-blueprint-tutorials/" target="_blank" rel="external">Vert.x 蓝图系列</a> 的第一篇教程。全系列：</p>
 <ul>
@@ -1738,7 +1740,7 @@ java -jar kue-http/build/libs/vertx-blueprint-kue-http<span class="class">.jar</
     <link href="http://www.sczyh30.com/posts/Architecture/quorum-based-voting-for-replica-control/"/>
     <id>http://www.sczyh30.com/posts/Architecture/quorum-based-voting-for-replica-control/</id>
     <published>2016-05-24T16:00:00.000Z</published>
-    <updated>2016-12-05T06:38:52.684Z</updated>
+    <updated>2016-12-05T06:38:52.685Z</updated>
     
     <content type="html"><![CDATA[<p>在分布式系统中，一份数据可能有多份副本（冗余数据）。为了保证数据读写的正确性，同一时刻一份数据的多份副本只能用于读或用于写，而不能同时被超过两个访问对象并发读写。Quorum机制就可以保证这一点，我们来看一下它的思想。</p>
 <p>一个分布式系统中，我们给每个数据副本都赋予一票。假设一共有 <strong>V</strong> 个数据副本，那么总共就有 <strong>V</strong> 个票数。每个操作必须要获得读票数(完成读操作所需要读取的最小副本数，read quorum,  <strong>V(r)</strong> )或写票数(完成写操作所需要读取的最小副本数write quorum,  <strong>V(w)</strong> )才能够对数据进行读或写。票数需要遵循以下规则：</p>
@@ -1859,40 +1861,6 @@ java -jar kue-http/build/libs/vertx-blueprint-kue-http<span class="class">.jar</
       <category term="高可用架构" scheme="http://www.sczyh30.com/tags/%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84/"/>
     
       <category term="限流降级" scheme="http://www.sczyh30.com/tags/%E9%99%90%E6%B5%81%E9%99%8D%E7%BA%A7/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>并发编程算法 | Treiber Stack实现lock-free stack</title>
-    <link href="http://www.sczyh30.com/posts/Concurrency/concurrency-treiber-stack/"/>
-    <id>http://www.sczyh30.com/posts/Concurrency/concurrency-treiber-stack/</id>
-    <published>2016-05-21T16:00:00.000Z</published>
-    <updated>2016-12-11T14:46:46.387Z</updated>
-    
-    <content type="html"><![CDATA[<p>多线程环境下各种数据结构的实现有了很大的变化，每当我们更新某个数据的时候，我们都要考虑其它线程是否对其进行了修改。最简单的一种方法就是加锁，不过加锁会导致性能低下，而且可能阻塞其他线程。因此，我们引入了非阻塞(non-blocking)的算法 —— 通过CAS操作保证操作的原子性，同时我们还引入了 <em>lock-free</em> 的概念，它指的是一个线程出现问题（如阻塞，失败）但不影响其他线程（从总体看程序仍然是在运行的）。这里就来看一下Non-blocking stack的一个实现 —— <strong>Treiber Stack</strong>。</p>
-<h1 id="Treiber_Stack">Treiber Stack</h1><p>这里给出的是Treiber Stack的一个简化版的Java实现：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Concurrent stack implementation</div><div class="line"> * Treiber's Algorithm</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcurrentStack</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">    <span class="keyword">private</span> AtomicReference&lt;Node&lt;E&gt;&gt; top = <span class="keyword">new</span> AtomicReference&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E elem)</span> </span>&#123;</div><div class="line">        Node&lt;E&gt; newHead = <span class="keyword">new</span> Node&lt;&gt;(elem);</div><div class="line">        Node&lt;E&gt; oldHead;</div><div class="line">        <span class="keyword">do</span> &#123;</div><div class="line">            oldHead = top.get();</div><div class="line">            newHead.next = oldHead;</div><div class="line">        &#125; <span class="keyword">while</span> (!top.compareAndSet(oldHead, newHead));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span> </span>&#123;</div><div class="line">        Node&lt;E&gt; oldHead;</div><div class="line">        Node&lt;E&gt; newHead;</div><div class="line">        <span class="keyword">do</span> &#123;</div><div class="line">            oldHead = top.get();</div><div class="line">            <span class="keyword">if</span> (oldHead == <span class="keyword">null</span>)</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            newHead = oldHead.next;</div><div class="line">        &#125; <span class="keyword">while</span> (!top.compareAndSet(oldHead, newHead));</div><div class="line">        <span class="keyword">return</span> oldHead.item;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">final</span> E item;</div><div class="line">        <span class="keyword">public</span> Node&lt;E&gt; next;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(E item)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.item = item;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>我们使用了<code>AtomicReference</code>来实现Treiber Stack。每当我们<code>push</code>进去一个元素的时候，我们首先根据要添加的元素创建一个<code>Node</code>，然后获取原栈顶结点，并将新结点的下一个结点指向原栈顶结点。此时我们使用CAS操作来更改栈顶结点，如果此时的栈顶和之前的相同，代表CAS操作成功，那么就把新插入的元素设为栈顶；如果此时的栈顶和之前的不同（即其他线程改变了栈顶结点），CAS操作失败，那么需要重复上述操作（更新当前的栈顶元素并且重设next），直到成功。<code>pop</code>操作的原理也相似。</p>
-<hr>
-<h1 id="References">References</h1><ul>
-<li><em>Java Concurrency In Practice</em></li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;多线程环境下各种数据结构的实现有了很大的变化，每当我们更新某个数据的时候，我们都要考虑其它线程是否对其进行了修改。最简单的一种方法就是加锁，不过加锁会导致性能低下，而且可能阻塞其他线程。因此，我们引入了非阻塞(non-blocking)的算法 —— 通过CAS操作保证操作的
-    
-    </summary>
-    
-      <category term="Concurrency" scheme="http://www.sczyh30.com/categories/Concurrency/"/>
-    
-    
-      <category term="并发" scheme="http://www.sczyh30.com/tags/%E5%B9%B6%E5%8F%91/"/>
-    
-      <category term="Algorithm" scheme="http://www.sczyh30.com/tags/Algorithm/"/>
-    
-      <category term="多线程" scheme="http://www.sczyh30.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
     
   </entry>
   
@@ -2018,11 +1986,45 @@ java -jar kue-http/build/libs/vertx-blueprint-kue-http<span class="class">.jar</
   </entry>
   
   <entry>
+    <title>并发编程算法 | Treiber Stack实现lock-free stack</title>
+    <link href="http://www.sczyh30.com/posts/Concurrency/concurrency-treiber-stack/"/>
+    <id>http://www.sczyh30.com/posts/Concurrency/concurrency-treiber-stack/</id>
+    <published>2016-05-21T16:00:00.000Z</published>
+    <updated>2016-12-11T14:46:46.387Z</updated>
+    
+    <content type="html"><![CDATA[<p>多线程环境下各种数据结构的实现有了很大的变化，每当我们更新某个数据的时候，我们都要考虑其它线程是否对其进行了修改。最简单的一种方法就是加锁，不过加锁会导致性能低下，而且可能阻塞其他线程。因此，我们引入了非阻塞(non-blocking)的算法 —— 通过CAS操作保证操作的原子性，同时我们还引入了 <em>lock-free</em> 的概念，它指的是一个线程出现问题（如阻塞，失败）但不影响其他线程（从总体看程序仍然是在运行的）。这里就来看一下Non-blocking stack的一个实现 —— <strong>Treiber Stack</strong>。</p>
+<h1 id="Treiber_Stack">Treiber Stack</h1><p>这里给出的是Treiber Stack的一个简化版的Java实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Concurrent stack implementation</div><div class="line"> * Treiber's Algorithm</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcurrentStack</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">    <span class="keyword">private</span> AtomicReference&lt;Node&lt;E&gt;&gt; top = <span class="keyword">new</span> AtomicReference&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E elem)</span> </span>&#123;</div><div class="line">        Node&lt;E&gt; newHead = <span class="keyword">new</span> Node&lt;&gt;(elem);</div><div class="line">        Node&lt;E&gt; oldHead;</div><div class="line">        <span class="keyword">do</span> &#123;</div><div class="line">            oldHead = top.get();</div><div class="line">            newHead.next = oldHead;</div><div class="line">        &#125; <span class="keyword">while</span> (!top.compareAndSet(oldHead, newHead));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span> </span>&#123;</div><div class="line">        Node&lt;E&gt; oldHead;</div><div class="line">        Node&lt;E&gt; newHead;</div><div class="line">        <span class="keyword">do</span> &#123;</div><div class="line">            oldHead = top.get();</div><div class="line">            <span class="keyword">if</span> (oldHead == <span class="keyword">null</span>)</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            newHead = oldHead.next;</div><div class="line">        &#125; <span class="keyword">while</span> (!top.compareAndSet(oldHead, newHead));</div><div class="line">        <span class="keyword">return</span> oldHead.item;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">final</span> E item;</div><div class="line">        <span class="keyword">public</span> Node&lt;E&gt; next;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(E item)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.item = item;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们使用了<code>AtomicReference</code>来实现Treiber Stack。每当我们<code>push</code>进去一个元素的时候，我们首先根据要添加的元素创建一个<code>Node</code>，然后获取原栈顶结点，并将新结点的下一个结点指向原栈顶结点。此时我们使用CAS操作来更改栈顶结点，如果此时的栈顶和之前的相同，代表CAS操作成功，那么就把新插入的元素设为栈顶；如果此时的栈顶和之前的不同（即其他线程改变了栈顶结点），CAS操作失败，那么需要重复上述操作（更新当前的栈顶元素并且重设next），直到成功。<code>pop</code>操作的原理也相似。</p>
+<hr>
+<h1 id="References">References</h1><ul>
+<li><em>Java Concurrency In Practice</em></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;多线程环境下各种数据结构的实现有了很大的变化，每当我们更新某个数据的时候，我们都要考虑其它线程是否对其进行了修改。最简单的一种方法就是加锁，不过加锁会导致性能低下，而且可能阻塞其他线程。因此，我们引入了非阻塞(non-blocking)的算法 —— 通过CAS操作保证操作的
+    
+    </summary>
+    
+      <category term="Concurrency" scheme="http://www.sczyh30.com/categories/Concurrency/"/>
+    
+    
+      <category term="并发" scheme="http://www.sczyh30.com/tags/%E5%B9%B6%E5%8F%91/"/>
+    
+      <category term="Algorithm" scheme="http://www.sczyh30.com/tags/Algorithm/"/>
+    
+      <category term="多线程" scheme="http://www.sczyh30.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
     <title>使用 Docker Compose 编排容器集群</title>
     <link href="http://www.sczyh30.com/posts/Architecture/service-with-docker-compose/"/>
     <id>http://www.sczyh30.com/posts/Architecture/service-with-docker-compose/</id>
     <published>2016-05-19T16:00:00.000Z</published>
-    <updated>2016-11-24T06:07:29.682Z</updated>
+    <updated>2016-11-24T06:07:29.683Z</updated>
     
     <content type="html"><![CDATA[<p><a href="https://docs.docker.com/compose/" target="_blank" rel="external">Docker Compose</a>可以让我们方便、快速地编排容器集群，有利于分布式架构的实现。</p>
 <p>假设我们有一个应用以MySQL作为数据存储，如果没有编排工具的话，我们在构建此应用的Docker镜像时必须将MySQL一同打包进镜像中，这样不仅会使镜像体积臃肿，而且不利于分布式架构的实现（假如要做读写分离、主从复制之类的）。而有了Docker Compose，我们就可以创建两个镜像：单独的应用镜像和MySQL镜像。在运行时，分别创建两个容器，并且将两个容器链接(link)在一起，使它们之间可以按照配置相互通信。这样就将我们的单体应用拆分成了多个组件构成的应用（其实这就是微服务的思想），从而更有利于服务间的解耦以及分布式架构的实现。</p>

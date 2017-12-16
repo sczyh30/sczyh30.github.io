@@ -568,99 +568,6 @@
 
 
   
-    <article id="post-play-framework-2-5-web-summary" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/posts/Scala/play-framework-2-5-web-summary/" class="article-date">
-      <time datetime="2016-04-16T16:00:00.000Z" itemprop="datePublished">2016-04-17</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/posts/Scala/play-framework-2-5-web-summary/">Play Framework 2.5 | Web开发总结</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p>Samsara Aquarius已完成，是时候总结一下Play Framework的一些有用的东西和一些坑了～这里对应的Play版本为 <strong>2.5.2</strong>。</p>
-<h1 id="Action,_Controller_和_Result">Action, Controller 和 Result</h1><p>在Play的Web开发中，<strong>Action</strong>, <strong>Controller</strong> 和 <strong>Result</strong> 这三个东西最为重要了。我们一个一个来解释：</p>
-<h2 id="Result">Result</h2><p><code>Result</code>代表HTTP请求的结果，它包含header和body两部分。Play内部封装了常见的HTTP response状态，可以在这些Status的基础上生成Result，比如<code>200 OK</code>：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/** Generates a ‘200 OK’ result. */</span></div><div class="line"><span class="keyword">val</span> <span class="type">Ok</span> = <span class="keyword">new</span> <span class="type">Status</span>(<span class="type">OK</span>)</div></pre></td></tr></table></figure></p>
-<h2 id="Action">Action</h2><p>每个Action相当于一个<code>Request =&gt; Result</code>类型（处理请求并返回结果）的函数，即每个Action都接受一个<code>Request</code>对象（代表HTTP请求），并产生<code>Result</code>对象（代表HTTP回应）。</p>
-<p>Play Framework 2底层是基于Netty实现的，因此<code>Action</code>经过处理以后会在Netty通信层执行(Reactor模式)。关于Action的详细实现，后边我还会专门写一篇文章分析。</p>
-<h2 id="Controller">Controller</h2><p>在Play中，Controller里的函数用于生成Action。其实Action就相当于处理请求的函数，只不过将普通的函数包装了一层而已（继承关系：<code>Action &lt;:&lt; EssentialAction &lt;:&lt; (RequestHeader =&gt; Accumulator[ByteString, Result])</code>），因此调用这些函数其实就是在调用Action中包装的函数。</p>
-<h1 id="Session、Cookie与Flash">Session、Cookie与Flash</h1><p>Play中处理Session、Cookie的语法都比较简洁。比如Cookie的添加与删除：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> res1 = <span class="type">Ok</span>(<span class="string">"Good Scala"</span>) withCookies <span class="type">Cookie</span>(<span class="string">"fuck"</span>, <span class="string">"shit"</span>)</div><div class="line"><span class="keyword">val</span> res2 = res1.discardingCookies(<span class="type">DiscardingCookie</span>(<span class="string">"fuck"</span>))</div></pre></td></tr></table></figure>
-<p>Session的使用也类似：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> res2 = <span class="type">Ok</span>(<span class="string">"Good Scala"</span>) withSession <span class="type">Session</span>(<span class="string">"fuck"</span>, <span class="string">"shit"</span>)</div><div class="line"><span class="keyword">val</span> res_rm = res2 withNewSession <span class="comment">// clear session</span></div></pre></td></tr></table></figure>
-<p>但是Play里的session有个坑，它没实现expiration的功能，因此需要我们自己在session中加个时间戳，然后自己实现expiration的逻辑。</p>
-<p>另外还有个<strong>大坑</strong>！如果需要添加session的话，需要这样：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="type">Ok</span>(<span class="string">"Good Scala"</span>) withSession (request.session + <span class="type">Session</span>(<span class="string">"fuck"</span>, <span class="string">"shit"</span>))</div></pre></td></tr></table></figure>
-<p>因为<code>withSession(s)</code>方法会将<code>s</code>设为当前的session，原先的session将会被抹掉。<br>。所以一定要把原先的session加上，要不然原先的session会丢失。</p>
-<p>Flash和Session类似，但Flash只在一个request内有效，多用于request之间数据的传递：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="type">Ok</span>(<span class="string">"Good Scala"</span>) flashing <span class="string">"fuck"</span> -&gt; <span class="string">"shit"</span></div></pre></td></tr></table></figure>
-<h1 id="自定义Action">自定义Action</h1><p>比如有一些逻辑中，我们需要验证用户是否登录，如果没有登录就自动跳转到登录界面。如果在每个Action中都写上登录验证逻辑的话会非常不优美，因此我们可以自定义一个<code>AuthenticatedAction</code>，里面包装了权限验证的逻辑：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">AuthenticatedAction</span> <span class="keyword">extends</span> <span class="title">ActionBuilder</span>[<span class="type">Request</span>] </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">invokeBlock</span></span>[<span class="type">A</span>](request: <span class="type">Request</span>[<span class="type">A</span>],</div><div class="line">                              block: (<span class="type">Request</span>[<span class="type">A</span>]) =&gt; <span class="type">Future</span>[<span class="type">Result</span>]): <span class="type">Future</span>[<span class="type">Result</span>] = &#123;</div><div class="line">    utils.<span class="type">DateUtils</span>.ensureSession(request)</div><div class="line">    request.session.get(<span class="string">"user_token"</span>) <span class="keyword">match</span> &#123;</div><div class="line">      <span class="keyword">case</span> <span class="type">Some</span>(u) =&gt;</div><div class="line">        block(request)</div><div class="line">      <span class="keyword">case</span> <span class="type">None</span> =&gt;</div><div class="line">        <span class="type">Future</span>.successful(<span class="type">Redirect</span>(routes.<span class="type">UserController</span>.loginIndex()))</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>我们自定义的Action需要实现<code>ActionBuilder[Request]</code>接口，并重写<code>invokeBlock</code>函数。</p>
-<h1 id="拦截器">拦截器</h1><p>在Play中使用Filter也非常方便。比如我们想给应用添加安全拦截器，我们可以写一个Filter：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> filters</div><div class="line"></div><div class="line"><span class="keyword">import</span> javax.inject.<span class="type">Inject</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> play.api.http.<span class="type">HttpFilters</span></div><div class="line"><span class="keyword">import</span> play.filters.headers.<span class="type">SecurityHeadersFilter</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Filters</span> <span class="title">@Inject</span>(<span class="params"></span>) (<span class="params">security: <span class="type">SecurityHeadersFilter</span></span>) <span class="keyword">extends</span> <span class="title">HttpFilters</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">filters</span> </span>= <span class="type">Seq</span>(security)</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>其中我们通过依赖注入获取安全拦截器<code>SecurityHeadersFilter</code>实例。然后，我们在<code>application.conf</code>中配置拦截器：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">play.http.filters=filters.<span class="type">Filters</span></div></pre></td></tr></table></figure>
-<h1 id="依赖注入">依赖注入</h1><p>Play Framework 2.4.0开始又引入了依赖注入（学习Spring大乱炖的节奏）。之前写了一篇总结：<a href="http://www.sczyh30.com/posts/Scala/play-framework-2-5-dependency-injection-di/">Play Framework 2.5 | Dependency Injection总结</a>。</p>
-<h1 id="Twirl模板引擎">Twirl模板引擎</h1><p>这次开发还顺便玩了玩Play 2的Twirl模板引擎，用起来还比较顺手～不过现在一般都用前后端分离的架构了，后端模板引擎也用的少了。</p>
-<h1 id="微服务架构思考">微服务架构思考</h1><p>用Play做微服务应用是一个不错的选择，那么如何将单体架构重构成微服务架构呢？这里面就有一个主要的问题：如何将各个组件解耦。一种最简单的思路就是用Play实现一个API Gateway作为网关服务(需要多实例部署+负载均衡+高可用)，API Gateway将请求分派到各个组件中，组件之间通过Actor进行通信。可以总结为两点：事件驱动+异步通信。事件驱动可以使整个微服务架构更加灵活，各个组件的耦合度降低，而基于Akka Actor的异步通信可以提高并发性能，提高吞吐量。当然实际生产环境中还要考虑容错、高可用等等的问题，设计起来会更加复杂。</p>
-<hr>
-<h1 id="TODO">TODO</h1><ul>
-<li>Play 2.5 Streaming(Iteratees/Enumerator/Akka Stream)</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Scala/">Scala</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Play-Framework/">Play Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Web开发/">Web开发</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-type-system-refinement-types" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -735,6 +642,99 @@
       
     <div class="article-tag tagcloud">
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Type-Theory/">Type Theory</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-play-framework-2-5-web-summary" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Scala/play-framework-2-5-web-summary/" class="article-date">
+      <time datetime="2016-04-16T16:00:00.000Z" itemprop="datePublished">2016-04-17</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/posts/Scala/play-framework-2-5-web-summary/">Play Framework 2.5 | Web开发总结</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>Samsara Aquarius已完成，是时候总结一下Play Framework的一些有用的东西和一些坑了～这里对应的Play版本为 <strong>2.5.2</strong>。</p>
+<h1 id="Action,_Controller_和_Result">Action, Controller 和 Result</h1><p>在Play的Web开发中，<strong>Action</strong>, <strong>Controller</strong> 和 <strong>Result</strong> 这三个东西最为重要了。我们一个一个来解释：</p>
+<h2 id="Result">Result</h2><p><code>Result</code>代表HTTP请求的结果，它包含header和body两部分。Play内部封装了常见的HTTP response状态，可以在这些Status的基础上生成Result，比如<code>200 OK</code>：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/** Generates a ‘200 OK’ result. */</span></div><div class="line"><span class="keyword">val</span> <span class="type">Ok</span> = <span class="keyword">new</span> <span class="type">Status</span>(<span class="type">OK</span>)</div></pre></td></tr></table></figure></p>
+<h2 id="Action">Action</h2><p>每个Action相当于一个<code>Request =&gt; Result</code>类型（处理请求并返回结果）的函数，即每个Action都接受一个<code>Request</code>对象（代表HTTP请求），并产生<code>Result</code>对象（代表HTTP回应）。</p>
+<p>Play Framework 2底层是基于Netty实现的，因此<code>Action</code>经过处理以后会在Netty通信层执行(Reactor模式)。关于Action的详细实现，后边我还会专门写一篇文章分析。</p>
+<h2 id="Controller">Controller</h2><p>在Play中，Controller里的函数用于生成Action。其实Action就相当于处理请求的函数，只不过将普通的函数包装了一层而已（继承关系：<code>Action &lt;:&lt; EssentialAction &lt;:&lt; (RequestHeader =&gt; Accumulator[ByteString, Result])</code>），因此调用这些函数其实就是在调用Action中包装的函数。</p>
+<h1 id="Session、Cookie与Flash">Session、Cookie与Flash</h1><p>Play中处理Session、Cookie的语法都比较简洁。比如Cookie的添加与删除：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> res1 = <span class="type">Ok</span>(<span class="string">"Good Scala"</span>) withCookies <span class="type">Cookie</span>(<span class="string">"fuck"</span>, <span class="string">"shit"</span>)</div><div class="line"><span class="keyword">val</span> res2 = res1.discardingCookies(<span class="type">DiscardingCookie</span>(<span class="string">"fuck"</span>))</div></pre></td></tr></table></figure>
+<p>Session的使用也类似：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> res2 = <span class="type">Ok</span>(<span class="string">"Good Scala"</span>) withSession <span class="type">Session</span>(<span class="string">"fuck"</span>, <span class="string">"shit"</span>)</div><div class="line"><span class="keyword">val</span> res_rm = res2 withNewSession <span class="comment">// clear session</span></div></pre></td></tr></table></figure>
+<p>但是Play里的session有个坑，它没实现expiration的功能，因此需要我们自己在session中加个时间戳，然后自己实现expiration的逻辑。</p>
+<p>另外还有个<strong>大坑</strong>！如果需要添加session的话，需要这样：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="type">Ok</span>(<span class="string">"Good Scala"</span>) withSession (request.session + <span class="type">Session</span>(<span class="string">"fuck"</span>, <span class="string">"shit"</span>))</div></pre></td></tr></table></figure>
+<p>因为<code>withSession(s)</code>方法会将<code>s</code>设为当前的session，原先的session将会被抹掉。<br>。所以一定要把原先的session加上，要不然原先的session会丢失。</p>
+<p>Flash和Session类似，但Flash只在一个request内有效，多用于request之间数据的传递：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="type">Ok</span>(<span class="string">"Good Scala"</span>) flashing <span class="string">"fuck"</span> -&gt; <span class="string">"shit"</span></div></pre></td></tr></table></figure>
+<h1 id="自定义Action">自定义Action</h1><p>比如有一些逻辑中，我们需要验证用户是否登录，如果没有登录就自动跳转到登录界面。如果在每个Action中都写上登录验证逻辑的话会非常不优美，因此我们可以自定义一个<code>AuthenticatedAction</code>，里面包装了权限验证的逻辑：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">AuthenticatedAction</span> <span class="keyword">extends</span> <span class="title">ActionBuilder</span>[<span class="type">Request</span>] </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">invokeBlock</span></span>[<span class="type">A</span>](request: <span class="type">Request</span>[<span class="type">A</span>],</div><div class="line">                              block: (<span class="type">Request</span>[<span class="type">A</span>]) =&gt; <span class="type">Future</span>[<span class="type">Result</span>]): <span class="type">Future</span>[<span class="type">Result</span>] = &#123;</div><div class="line">    utils.<span class="type">DateUtils</span>.ensureSession(request)</div><div class="line">    request.session.get(<span class="string">"user_token"</span>) <span class="keyword">match</span> &#123;</div><div class="line">      <span class="keyword">case</span> <span class="type">Some</span>(u) =&gt;</div><div class="line">        block(request)</div><div class="line">      <span class="keyword">case</span> <span class="type">None</span> =&gt;</div><div class="line">        <span class="type">Future</span>.successful(<span class="type">Redirect</span>(routes.<span class="type">UserController</span>.loginIndex()))</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们自定义的Action需要实现<code>ActionBuilder[Request]</code>接口，并重写<code>invokeBlock</code>函数。</p>
+<h1 id="拦截器">拦截器</h1><p>在Play中使用Filter也非常方便。比如我们想给应用添加安全拦截器，我们可以写一个Filter：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> filters</div><div class="line"></div><div class="line"><span class="keyword">import</span> javax.inject.<span class="type">Inject</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> play.api.http.<span class="type">HttpFilters</span></div><div class="line"><span class="keyword">import</span> play.filters.headers.<span class="type">SecurityHeadersFilter</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Filters</span> <span class="title">@Inject</span>(<span class="params"></span>) (<span class="params">security: <span class="type">SecurityHeadersFilter</span></span>) <span class="keyword">extends</span> <span class="title">HttpFilters</span> </span>&#123;</div><div class="line"></div><div class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">filters</span> </span>= <span class="type">Seq</span>(security)</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中我们通过依赖注入获取安全拦截器<code>SecurityHeadersFilter</code>实例。然后，我们在<code>application.conf</code>中配置拦截器：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">play.http.filters=filters.<span class="type">Filters</span></div></pre></td></tr></table></figure>
+<h1 id="依赖注入">依赖注入</h1><p>Play Framework 2.4.0开始又引入了依赖注入（学习Spring大乱炖的节奏）。之前写了一篇总结：<a href="http://www.sczyh30.com/posts/Scala/play-framework-2-5-dependency-injection-di/">Play Framework 2.5 | Dependency Injection总结</a>。</p>
+<h1 id="Twirl模板引擎">Twirl模板引擎</h1><p>这次开发还顺便玩了玩Play 2的Twirl模板引擎，用起来还比较顺手～不过现在一般都用前后端分离的架构了，后端模板引擎也用的少了。</p>
+<h1 id="微服务架构思考">微服务架构思考</h1><p>用Play做微服务应用是一个不错的选择，那么如何将单体架构重构成微服务架构呢？这里面就有一个主要的问题：如何将各个组件解耦。一种最简单的思路就是用Play实现一个API Gateway作为网关服务(需要多实例部署+负载均衡+高可用)，API Gateway将请求分派到各个组件中，组件之间通过Actor进行通信。可以总结为两点：事件驱动+异步通信。事件驱动可以使整个微服务架构更加灵活，各个组件的耦合度降低，而基于Akka Actor的异步通信可以提高并发性能，提高吞吐量。当然实际生产环境中还要考虑容错、高可用等等的问题，设计起来会更加复杂。</p>
+<hr>
+<h1 id="TODO">TODO</h1><ul>
+<li>Play 2.5 Streaming(Iteratees/Enumerator/Akka Stream)</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Scala/">Scala</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Play-Framework/">Play Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Web开发/">Web开发</a></li></ul>
     </div>
 
       

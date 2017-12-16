@@ -1430,77 +1430,6 @@ java -jar kue-http/build/libs/vertx-blueprint-kue-http<span class="class">.jar</
 
 
   
-    <article id="post-concurrency-treiber-stack" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/posts/Concurrency/concurrency-treiber-stack/" class="article-date">
-      <time datetime="2016-05-21T16:00:00.000Z" itemprop="datePublished">2016-05-22</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/posts/Concurrency/concurrency-treiber-stack/">并发编程算法 | Treiber Stack实现lock-free stack</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p>多线程环境下各种数据结构的实现有了很大的变化，每当我们更新某个数据的时候，我们都要考虑其它线程是否对其进行了修改。最简单的一种方法就是加锁，不过加锁会导致性能低下，而且可能阻塞其他线程。因此，我们引入了非阻塞(non-blocking)的算法 —— 通过CAS操作保证操作的原子性，同时我们还引入了 <em>lock-free</em> 的概念，它指的是一个线程出现问题（如阻塞，失败）但不影响其他线程（从总体看程序仍然是在运行的）。这里就来看一下Non-blocking stack的一个实现 —— <strong>Treiber Stack</strong>。</p>
-<h1 id="Treiber_Stack">Treiber Stack</h1><p>这里给出的是Treiber Stack的一个简化版的Java实现：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Concurrent stack implementation</div><div class="line"> * Treiber's Algorithm</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcurrentStack</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">    <span class="keyword">private</span> AtomicReference&lt;Node&lt;E&gt;&gt; top = <span class="keyword">new</span> AtomicReference&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E elem)</span> </span>&#123;</div><div class="line">        Node&lt;E&gt; newHead = <span class="keyword">new</span> Node&lt;&gt;(elem);</div><div class="line">        Node&lt;E&gt; oldHead;</div><div class="line">        <span class="keyword">do</span> &#123;</div><div class="line">            oldHead = top.get();</div><div class="line">            newHead.next = oldHead;</div><div class="line">        &#125; <span class="keyword">while</span> (!top.compareAndSet(oldHead, newHead));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span> </span>&#123;</div><div class="line">        Node&lt;E&gt; oldHead;</div><div class="line">        Node&lt;E&gt; newHead;</div><div class="line">        <span class="keyword">do</span> &#123;</div><div class="line">            oldHead = top.get();</div><div class="line">            <span class="keyword">if</span> (oldHead == <span class="keyword">null</span>)</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            newHead = oldHead.next;</div><div class="line">        &#125; <span class="keyword">while</span> (!top.compareAndSet(oldHead, newHead));</div><div class="line">        <span class="keyword">return</span> oldHead.item;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">final</span> E item;</div><div class="line">        <span class="keyword">public</span> Node&lt;E&gt; next;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(E item)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.item = item;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>我们使用了<code>AtomicReference</code>来实现Treiber Stack。每当我们<code>push</code>进去一个元素的时候，我们首先根据要添加的元素创建一个<code>Node</code>，然后获取原栈顶结点，并将新结点的下一个结点指向原栈顶结点。此时我们使用CAS操作来更改栈顶结点，如果此时的栈顶和之前的相同，代表CAS操作成功，那么就把新插入的元素设为栈顶；如果此时的栈顶和之前的不同（即其他线程改变了栈顶结点），CAS操作失败，那么需要重复上述操作（更新当前的栈顶元素并且重设next），直到成功。<code>pop</code>操作的原理也相似。</p>
-<hr>
-<h1 id="References">References</h1><ul>
-<li><em>Java Concurrency In Practice</em></li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Concurrency/">Concurrency</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Algorithm/">Algorithm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/并发/">并发</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-distributed-system-base" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1642,6 +1571,77 @@ java -jar kue-http/build/libs/vertx-blueprint-kue-http<span class="class">.jar</
       
     <div class="article-tag tagcloud">
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CAP/">CAP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/分布式系统/">分布式系统</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-concurrency-treiber-stack" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Concurrency/concurrency-treiber-stack/" class="article-date">
+      <time datetime="2016-05-21T16:00:00.000Z" itemprop="datePublished">2016-05-22</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/posts/Concurrency/concurrency-treiber-stack/">并发编程算法 | Treiber Stack实现lock-free stack</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>多线程环境下各种数据结构的实现有了很大的变化，每当我们更新某个数据的时候，我们都要考虑其它线程是否对其进行了修改。最简单的一种方法就是加锁，不过加锁会导致性能低下，而且可能阻塞其他线程。因此，我们引入了非阻塞(non-blocking)的算法 —— 通过CAS操作保证操作的原子性，同时我们还引入了 <em>lock-free</em> 的概念，它指的是一个线程出现问题（如阻塞，失败）但不影响其他线程（从总体看程序仍然是在运行的）。这里就来看一下Non-blocking stack的一个实现 —— <strong>Treiber Stack</strong>。</p>
+<h1 id="Treiber_Stack">Treiber Stack</h1><p>这里给出的是Treiber Stack的一个简化版的Java实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Concurrent stack implementation</div><div class="line"> * Treiber's Algorithm</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcurrentStack</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">    <span class="keyword">private</span> AtomicReference&lt;Node&lt;E&gt;&gt; top = <span class="keyword">new</span> AtomicReference&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E elem)</span> </span>&#123;</div><div class="line">        Node&lt;E&gt; newHead = <span class="keyword">new</span> Node&lt;&gt;(elem);</div><div class="line">        Node&lt;E&gt; oldHead;</div><div class="line">        <span class="keyword">do</span> &#123;</div><div class="line">            oldHead = top.get();</div><div class="line">            newHead.next = oldHead;</div><div class="line">        &#125; <span class="keyword">while</span> (!top.compareAndSet(oldHead, newHead));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">pop</span><span class="params">()</span> </span>&#123;</div><div class="line">        Node&lt;E&gt; oldHead;</div><div class="line">        Node&lt;E&gt; newHead;</div><div class="line">        <span class="keyword">do</span> &#123;</div><div class="line">            oldHead = top.get();</div><div class="line">            <span class="keyword">if</span> (oldHead == <span class="keyword">null</span>)</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            newHead = oldHead.next;</div><div class="line">        &#125; <span class="keyword">while</span> (!top.compareAndSet(oldHead, newHead));</div><div class="line">        <span class="keyword">return</span> oldHead.item;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">final</span> E item;</div><div class="line">        <span class="keyword">public</span> Node&lt;E&gt; next;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(E item)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.item = item;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们使用了<code>AtomicReference</code>来实现Treiber Stack。每当我们<code>push</code>进去一个元素的时候，我们首先根据要添加的元素创建一个<code>Node</code>，然后获取原栈顶结点，并将新结点的下一个结点指向原栈顶结点。此时我们使用CAS操作来更改栈顶结点，如果此时的栈顶和之前的相同，代表CAS操作成功，那么就把新插入的元素设为栈顶；如果此时的栈顶和之前的不同（即其他线程改变了栈顶结点），CAS操作失败，那么需要重复上述操作（更新当前的栈顶元素并且重设next），直到成功。<code>pop</code>操作的原理也相似。</p>
+<hr>
+<h1 id="References">References</h1><ul>
+<li><em>Java Concurrency In Practice</em></li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Concurrency/">Concurrency</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Algorithm/">Algorithm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/并发/">并发</a></li></ul>
     </div>
 
       
