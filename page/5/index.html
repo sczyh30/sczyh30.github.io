@@ -483,6 +483,71 @@
 
 
   
+    <article id="post-tcp-flow-control" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Network/tcp-flow-control/" class="article-date">
+      <time datetime="2016-01-26T16:00:00.000Z" itemprop="datePublished">2016-01-27</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>TCP 流量控制通过滑动窗口机制实现。</p>
+<p><em>TODO: 待详细总结。。。</em></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Network/">Network</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Network/">Network</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TCP/">TCP</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-tcp-retransmission" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -531,71 +596,6 @@
 <p>例如，即使包 2（假设从 0 到 9 的序列）是在传送过程中惟一丢失的包，接收方也只能对包 1 发出一个普通的 ACK，因为这是连续接收到的包中的最后一个。另一方面，SACK 接收方可以发出包 1 的 ACK 和包 3 到包 9 的 SACK 选项。这样，发送端就可以根据回传的SACK来知道哪些数据到了，哪些数据丢失了，进而可以优化Fast Retransmit。SACK需要两端的协议都支持，在目前的Linux Kernal中默认为开启状态。</p>
 <h1 id="low-rate_DoS_attacks">low-rate DoS attacks</h1><p>应用层应用：Slowloris (HTTP slow headers)</p>
 <p>防范：随机化RTO</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Network/">Network</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Network/">Network</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TCP/">TCP</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-tcp-flow-control" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/posts/Network/tcp-flow-control/" class="article-date">
-      <time datetime="2016-01-26T16:00:00.000Z" itemprop="datePublished">2016-01-27</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/posts/Network/tcp-flow-control/">TCP 流量控制</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p>TCP 流量控制通过滑动窗口机制实现。</p>
-<p><em>TODO: 待详细总结。。。</em></p>
 
       
     </div>
@@ -1315,7 +1315,7 @@
     <div class="outer">
         <div id="footer-info">
             <div class="footer-left">
-                &copy; 2015 - 2017 sczyh30's blog
+                &copy; 2015 - 2018 sczyh30's blog
             </div>
             <div class="footer-right">
                 <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));

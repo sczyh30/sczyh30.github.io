@@ -568,99 +568,6 @@
 
 
   
-    <article id="post-type-system-refinement-types" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/posts/Functional-Programming/type-system-refinement-types/" class="article-date">
-      <time datetime="2016-04-16T16:00:00.000Z" itemprop="datePublished">2016-04-17</time>
-</a>
-
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/posts/Functional-Programming/type-system-refinement-types/">类型系统 | Refinement Type</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-        <p>最近在看某个Slide的时候里了解到了Refinement type这个玩意儿，今天拿来总结总结。</p>
-<h1 id="何为Refinement_Type">何为Refinement Type</h1><p>言简意赅的讲：</p>
-<blockquote>
-<p>Refinement Types = Types + Logical Predicates</p>
-</blockquote>
-<p>即Refinement Type是由类型和谓词逻辑组合而成的，其中谓词逻辑可以对类型的值域进行约束。也就是说，我们可以在原有类型的基础上给它加个值的限定，并且可以在编译时检测是否符合谓词逻辑限定。</p>
-<p>下面我们来玩一下Haskell和Scala中典型的Refinement Type库。</p>
-<h1 id="LiquidHaskell">LiquidHaskell</h1><p><a href="https://github.com/ucsd-progsys/liquidhaskell" target="_blank" rel="external">LiquidHaskell</a>是Haskell上一个基于Liquid Types的静态分析器，可以通过Refinement Type进行静态检查。安装的时候注意需要系统环境中有logic solvers(比如<code>z3</code>)。</p>
-<p>下边我们来看看如何使用LiquidHaskell：</p>
-<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">module</span> RfT <span class="keyword">where</span></div><div class="line"></div><div class="line"><span class="comment">&#123;-@ zero'' :: &#123;v: Int | v &gt;= 0 &amp;&amp; v &lt; 24 &#125; @-&#125;</span></div><div class="line"><span class="title">zero'</span> :: <span class="type">Int</span></div><div class="line"><span class="title">zero'</span> = <span class="number">0</span></div><div class="line"></div><div class="line"><span class="comment">&#123;-@ zero'' :: &#123;v: Int | v &gt; 5 &#125; @-&#125;</span></div><div class="line"><span class="title">zero''</span> :: <span class="type">Int</span></div><div class="line"><span class="title">zero''</span> = <span class="number">0</span></div></pre></td></tr></table></figure>
-<p>我们定义了两个函数<code>zero&#39;</code>和<code>zero&#39;&#39;</code>，这两个函数的值都是0。我们在每个函数的声明前都加了一行谓词逻辑的限定，语法类似于：<br><figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&#123;-@ f :: &#123;x: T | predicate &#125; @-&#125;</span></div></pre></td></tr></table></figure></p>
-<p>比如<code>{-@ zero&#39;&#39; :: {v: Int | v &gt; 5 } @-}</code>代表<code>zero&#39;&#39;</code>函数有一个类型为Int的参数，而且接受的值必须大于5，这就是谓词逻辑限定。我们运行一下看看结果：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ liquid --diff rft1.hs</div></pre></td></tr></table></figure>
-<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="type">LiquidHaskell</span> <span class="type">Copyright</span> <span class="number">2009</span><span class="number">-15</span> <span class="type">Regents</span> <span class="keyword">of</span> the <span class="type">University</span> <span class="keyword">of</span> <span class="type">California</span>. <span class="type">All</span> <span class="type">Rights</span> <span class="type">Reserved</span>.</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  <span class="type">Parsed</span> <span class="type">All</span> <span class="type">Specifications</span> ******************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  <span class="type">Loaded</span> <span class="type">Targets</span> *****************************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  <span class="type">Extracted</span> <span class="type">Core</span> using <span class="type">GHC</span> *******************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  generateConstraints ************************************************</div><div class="line"></div><div class="line"><span class="type">Done</span> solving.</div><div class="line"><span class="type">Safe</span></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  solve **************************************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  annotate ***********************************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">Checked</span> <span class="type">Binders</span>: <span class="type">None</span> *****************************************************</div><div class="line"></div><div class="line">**** <span class="type">RESULT</span>: <span class="type">UNSAFE</span> ************************************************************</div><div class="line"></div><div class="line"></div><div class="line"> rft1.hs:<span class="number">10</span>:<span class="number">1</span><span class="number">-6</span>: <span class="type">Error</span>: <span class="type">Liquid</span> <span class="type">Type</span> <span class="type">Mismatch</span></div><div class="line">  <span class="type">Inferred</span> <span class="class"><span class="keyword">type</span></span></div><div class="line">    <span class="type">VV</span> : &#123;<span class="type">VV</span> : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | <span class="type">VV</span> == (<span class="number">0</span> : int)&#125;</div><div class="line"></div><div class="line">  not a subtype <span class="keyword">of</span> <span class="type">Required</span> <span class="class"><span class="keyword">type</span></span></div><div class="line">    <span class="type">VV</span> : &#123;<span class="type">VV</span> : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | <span class="type">VV</span> &gt; <span class="number">5</span>&#125;</div><div class="line"></div><div class="line">  <span class="type">In</span> <span class="type">Context</span></div></pre></td></tr></table></figure>
-<p>LiquidHaskell成功地检测出了错误 —— <code>zero&#39;&#39;</code>函数不符合谓词逻辑限定。</p>
-<p>下边再举个对函数参数和返回值进行refine的例子：</p>
-<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&#123;- Preconditions -&#125;</span></div><div class="line"></div><div class="line"><span class="comment">&#123;-@ divide :: Int -&gt; &#123;v: Int | v != 0 &#125; -&gt; Int @-&#125;</span></div><div class="line"><span class="title">divide</span> :: <span class="type">Int</span> -&gt; <span class="type">Int</span> -&gt; <span class="type">Int</span></div><div class="line"><span class="title">divide</span> n d = n `div` d</div><div class="line"></div><div class="line"><span class="title">f1</span> :: <span class="type">Int</span></div><div class="line"><span class="title">f1</span> = divide <span class="number">1</span> <span class="number">0</span></div><div class="line"></div><div class="line"><span class="title">f2</span> :: <span class="type">Int</span></div><div class="line"><span class="title">f2</span> = divide <span class="number">1</span> <span class="number">1</span></div><div class="line"></div><div class="line"><span class="comment">&#123;- Postconditions -&#125;</span></div><div class="line"><span class="comment">&#123;-@ abs' :: Int -&gt; &#123;v: Int | v &gt;= 0 &#125; @-&#125;</span></div><div class="line"><span class="title">abs'</span> :: <span class="type">Int</span> -&gt; <span class="type">Int</span></div><div class="line"><span class="title">abs'</span> n | n &gt; <span class="number">0</span> 	   = n</div><div class="line">	   | otherwise = <span class="number">0</span> - n</div></pre></td></tr></table></figure>
-<p>验证结果符合我们的期望：</p>
-<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="title">rft1</span>.hs:<span class="number">19</span>:<span class="number">6</span><span class="number">-15</span>: <span class="type">Error</span>: <span class="type">Liquid</span> <span class="type">Type</span> <span class="type">Mismatch</span></div><div class="line"></div><div class="line"><span class="number">19</span> | f1 = divide <span class="number">1</span> <span class="number">0</span></div><div class="line">          ^^^^^^^^^^</div><div class="line"></div><div class="line">  <span class="type">Inferred</span> <span class="class"><span class="keyword">type</span></span></div><div class="line">    <span class="type">VV</span> : &#123;<span class="type">VV</span> : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | <span class="type">VV</span> == ?a&#125;</div><div class="line"></div><div class="line">  not a subtype <span class="keyword">of</span> <span class="type">Required</span> <span class="class"><span class="keyword">type</span></span></div><div class="line">    <span class="type">VV</span> : &#123;<span class="type">VV</span> : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | <span class="type">VV</span> /= <span class="number">0</span>&#125;</div><div class="line"></div><div class="line">  <span class="type">In</span> <span class="type">Context</span></div><div class="line">    ?a := &#123;?a : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | ?a == (<span class="number">0</span> : int)&#125;</div></pre></td></tr></table></figure>
-<p>可以看到LiquidHaskell可以验证函数的先验条件和后验条件。</p>
-<p>至于其中的实现原理，可以参考这篇论文：<a href="http://goto.ucsd.edu/~rjhala/liquid/liquid_types.pdf" target="_blank" rel="external">Liquid Types</a>（数学推导太多，没看懂&gt;_&lt;）</p>
-<h1 id="refined(Scala)">refined(Scala)</h1><p><a href="https://github.com/fthomas/refined" target="_blank" rel="external">refined</a>是Scala中一个Refinement Type的实现（貌似也是借鉴的Haskell的库，连名字都抄过来了）。我们在REPL里玩玩，首先导入相关的包：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> eu.timepit.refined._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.api.<span class="type">Refined</span></div><div class="line"><span class="keyword">import</span> eu.timepit.refined.auto._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.numeric._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.boolean._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.char._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.collection._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.generic._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.string._</div><div class="line"><span class="keyword">import</span> shapeless.&#123; ::, <span class="type">HNil</span> &#125;</div></pre></td></tr></table></figure>
-<p>refined这个库直接在类型系统上进行限定，通过一个<code>Refined[T, P]</code>类型(aka <code>T Refined P</code>, T - 类型， P - 谓词逻辑)来表示，比如正整数可以表示为<code>Int Refined Positive</code>，非空字符串可以表示为<code>String Refined NonEmpty</code>。几个例子：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">scala&gt; <span class="keyword">val</span> i1: <span class="type">Int</span> <span class="type">Refined</span> <span class="type">Positive</span> = <span class="number">5</span></div><div class="line">i1: eu.timepit.refined.api.<span class="type">Refined</span>[<span class="type">Int</span>,eu.timepit.refined.numeric.<span class="type">Positive</span>] = <span class="number">5</span></div><div class="line"></div><div class="line">scala&gt; <span class="keyword">val</span> i2: <span class="type">Int</span> <span class="type">Refined</span> <span class="type">Positive</span> = <span class="number">-5</span></div><div class="line">&lt;console&gt;:<span class="number">21</span>: error: <span class="type">Predicate</span> failed: (<span class="number">-5</span> &gt; <span class="number">0</span>).</div><div class="line">       <span class="keyword">val</span> i2: <span class="type">Int</span> <span class="type">Refined</span> <span class="type">Positive</span> = <span class="number">-5</span></div><div class="line"></div><div class="line">scala&gt; <span class="keyword">val</span> i3: <span class="type">String</span> <span class="type">Refined</span> <span class="type">NonEmpty</span> = <span class="string">""</span></div><div class="line">&lt;console&gt;:<span class="number">37</span>: error: <span class="type">Predicate</span> isEmpty() did not fail.</div><div class="line">       <span class="keyword">val</span> i3: <span class="type">String</span> <span class="type">Refined</span> <span class="type">NonEmpty</span> = <span class="string">""</span></div><div class="line">                                         ^</div><div class="line"></div><div class="line">scala&gt; <span class="keyword">val</span> u1: <span class="type">String</span> <span class="type">Refined</span> <span class="type">Url</span> = <span class="string">"htp://example.com"</span></div><div class="line">&lt;console&gt;:<span class="number">37</span>: error: <span class="type">Url</span> predicate failed: unknown protocol: htp</div><div class="line">       <span class="keyword">val</span> u1: <span class="type">String</span> <span class="type">Refined</span> <span class="type">Url</span> = <span class="string">"htp://example.com"</span></div><div class="line">                                    ^</div></pre></td></tr></table></figure></p>
-<p>可以看到refined内置不少Predicate，也可以自己自定义Predicate。</p>
-<hr>
-<h1 id="References">References</h1><ul>
-<li><a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/blog/2013/01/01/refinement-types-101.lhs" target="_blank" rel="external">Refinement Types 101 - LiquidHaskell</a></li>
-<li><a href="http://refined.timepit.eu" target="_blank" rel="external">refined: simple refinement types for Scala</a></li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Functional-Programming/">Functional Programming</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Type-Theory/">Type Theory</a></li></ul>
-    </div>
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
     <article id="post-play-framework-2-5-web-summary" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -735,6 +642,99 @@
       
     <div class="article-tag tagcloud">
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Play-Framework/">Play Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Web开发/">Web开发</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-type-system-refinement-types" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/Functional-Programming/type-system-refinement-types/" class="article-date">
+      <time datetime="2016-04-16T16:00:00.000Z" itemprop="datePublished">2016-04-17</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/posts/Functional-Programming/type-system-refinement-types/">类型系统 | Refinement Type</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>最近在看某个Slide的时候里了解到了Refinement type这个玩意儿，今天拿来总结总结。</p>
+<h1 id="何为Refinement_Type">何为Refinement Type</h1><p>言简意赅的讲：</p>
+<blockquote>
+<p>Refinement Types = Types + Logical Predicates</p>
+</blockquote>
+<p>即Refinement Type是由类型和谓词逻辑组合而成的，其中谓词逻辑可以对类型的值域进行约束。也就是说，我们可以在原有类型的基础上给它加个值的限定，并且可以在编译时检测是否符合谓词逻辑限定。</p>
+<p>下面我们来玩一下Haskell和Scala中典型的Refinement Type库。</p>
+<h1 id="LiquidHaskell">LiquidHaskell</h1><p><a href="https://github.com/ucsd-progsys/liquidhaskell" target="_blank" rel="external">LiquidHaskell</a>是Haskell上一个基于Liquid Types的静态分析器，可以通过Refinement Type进行静态检查。安装的时候注意需要系统环境中有logic solvers(比如<code>z3</code>)。</p>
+<p>下边我们来看看如何使用LiquidHaskell：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">module</span> RfT <span class="keyword">where</span></div><div class="line"></div><div class="line"><span class="comment">&#123;-@ zero'' :: &#123;v: Int | v &gt;= 0 &amp;&amp; v &lt; 24 &#125; @-&#125;</span></div><div class="line"><span class="title">zero'</span> :: <span class="type">Int</span></div><div class="line"><span class="title">zero'</span> = <span class="number">0</span></div><div class="line"></div><div class="line"><span class="comment">&#123;-@ zero'' :: &#123;v: Int | v &gt; 5 &#125; @-&#125;</span></div><div class="line"><span class="title">zero''</span> :: <span class="type">Int</span></div><div class="line"><span class="title">zero''</span> = <span class="number">0</span></div></pre></td></tr></table></figure>
+<p>我们定义了两个函数<code>zero&#39;</code>和<code>zero&#39;&#39;</code>，这两个函数的值都是0。我们在每个函数的声明前都加了一行谓词逻辑的限定，语法类似于：<br><figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&#123;-@ f :: &#123;x: T | predicate &#125; @-&#125;</span></div></pre></td></tr></table></figure></p>
+<p>比如<code>{-@ zero&#39;&#39; :: {v: Int | v &gt; 5 } @-}</code>代表<code>zero&#39;&#39;</code>函数有一个类型为Int的参数，而且接受的值必须大于5，这就是谓词逻辑限定。我们运行一下看看结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ liquid --diff rft1.hs</div></pre></td></tr></table></figure>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="type">LiquidHaskell</span> <span class="type">Copyright</span> <span class="number">2009</span><span class="number">-15</span> <span class="type">Regents</span> <span class="keyword">of</span> the <span class="type">University</span> <span class="keyword">of</span> <span class="type">California</span>. <span class="type">All</span> <span class="type">Rights</span> <span class="type">Reserved</span>.</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  <span class="type">Parsed</span> <span class="type">All</span> <span class="type">Specifications</span> ******************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  <span class="type">Loaded</span> <span class="type">Targets</span> *****************************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  <span class="type">Extracted</span> <span class="type">Core</span> using <span class="type">GHC</span> *******************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  generateConstraints ************************************************</div><div class="line"></div><div class="line"><span class="type">Done</span> solving.</div><div class="line"><span class="type">Safe</span></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  solve **************************************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">DONE</span>:  annotate ***********************************************************</div><div class="line"></div><div class="line"></div><div class="line">**** <span class="type">Checked</span> <span class="type">Binders</span>: <span class="type">None</span> *****************************************************</div><div class="line"></div><div class="line">**** <span class="type">RESULT</span>: <span class="type">UNSAFE</span> ************************************************************</div><div class="line"></div><div class="line"></div><div class="line"> rft1.hs:<span class="number">10</span>:<span class="number">1</span><span class="number">-6</span>: <span class="type">Error</span>: <span class="type">Liquid</span> <span class="type">Type</span> <span class="type">Mismatch</span></div><div class="line">  <span class="type">Inferred</span> <span class="class"><span class="keyword">type</span></span></div><div class="line">    <span class="type">VV</span> : &#123;<span class="type">VV</span> : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | <span class="type">VV</span> == (<span class="number">0</span> : int)&#125;</div><div class="line"></div><div class="line">  not a subtype <span class="keyword">of</span> <span class="type">Required</span> <span class="class"><span class="keyword">type</span></span></div><div class="line">    <span class="type">VV</span> : &#123;<span class="type">VV</span> : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | <span class="type">VV</span> &gt; <span class="number">5</span>&#125;</div><div class="line"></div><div class="line">  <span class="type">In</span> <span class="type">Context</span></div></pre></td></tr></table></figure>
+<p>LiquidHaskell成功地检测出了错误 —— <code>zero&#39;&#39;</code>函数不符合谓词逻辑限定。</p>
+<p>下边再举个对函数参数和返回值进行refine的例子：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&#123;- Preconditions -&#125;</span></div><div class="line"></div><div class="line"><span class="comment">&#123;-@ divide :: Int -&gt; &#123;v: Int | v != 0 &#125; -&gt; Int @-&#125;</span></div><div class="line"><span class="title">divide</span> :: <span class="type">Int</span> -&gt; <span class="type">Int</span> -&gt; <span class="type">Int</span></div><div class="line"><span class="title">divide</span> n d = n `div` d</div><div class="line"></div><div class="line"><span class="title">f1</span> :: <span class="type">Int</span></div><div class="line"><span class="title">f1</span> = divide <span class="number">1</span> <span class="number">0</span></div><div class="line"></div><div class="line"><span class="title">f2</span> :: <span class="type">Int</span></div><div class="line"><span class="title">f2</span> = divide <span class="number">1</span> <span class="number">1</span></div><div class="line"></div><div class="line"><span class="comment">&#123;- Postconditions -&#125;</span></div><div class="line"><span class="comment">&#123;-@ abs' :: Int -&gt; &#123;v: Int | v &gt;= 0 &#125; @-&#125;</span></div><div class="line"><span class="title">abs'</span> :: <span class="type">Int</span> -&gt; <span class="type">Int</span></div><div class="line"><span class="title">abs'</span> n | n &gt; <span class="number">0</span> 	   = n</div><div class="line">	   | otherwise = <span class="number">0</span> - n</div></pre></td></tr></table></figure>
+<p>验证结果符合我们的期望：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="title">rft1</span>.hs:<span class="number">19</span>:<span class="number">6</span><span class="number">-15</span>: <span class="type">Error</span>: <span class="type">Liquid</span> <span class="type">Type</span> <span class="type">Mismatch</span></div><div class="line"></div><div class="line"><span class="number">19</span> | f1 = divide <span class="number">1</span> <span class="number">0</span></div><div class="line">          ^^^^^^^^^^</div><div class="line"></div><div class="line">  <span class="type">Inferred</span> <span class="class"><span class="keyword">type</span></span></div><div class="line">    <span class="type">VV</span> : &#123;<span class="type">VV</span> : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | <span class="type">VV</span> == ?a&#125;</div><div class="line"></div><div class="line">  not a subtype <span class="keyword">of</span> <span class="type">Required</span> <span class="class"><span class="keyword">type</span></span></div><div class="line">    <span class="type">VV</span> : &#123;<span class="type">VV</span> : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | <span class="type">VV</span> /= <span class="number">0</span>&#125;</div><div class="line"></div><div class="line">  <span class="type">In</span> <span class="type">Context</span></div><div class="line">    ?a := &#123;?a : <span class="type">GHC</span>.<span class="type">Types</span>.<span class="type">Int</span> | ?a == (<span class="number">0</span> : int)&#125;</div></pre></td></tr></table></figure>
+<p>可以看到LiquidHaskell可以验证函数的先验条件和后验条件。</p>
+<p>至于其中的实现原理，可以参考这篇论文：<a href="http://goto.ucsd.edu/~rjhala/liquid/liquid_types.pdf" target="_blank" rel="external">Liquid Types</a>（数学推导太多，没看懂&gt;_&lt;）</p>
+<h1 id="refined(Scala)">refined(Scala)</h1><p><a href="https://github.com/fthomas/refined" target="_blank" rel="external">refined</a>是Scala中一个Refinement Type的实现（貌似也是借鉴的Haskell的库，连名字都抄过来了）。我们在REPL里玩玩，首先导入相关的包：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> eu.timepit.refined._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.api.<span class="type">Refined</span></div><div class="line"><span class="keyword">import</span> eu.timepit.refined.auto._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.numeric._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.boolean._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.char._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.collection._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.generic._</div><div class="line"><span class="keyword">import</span> eu.timepit.refined.string._</div><div class="line"><span class="keyword">import</span> shapeless.&#123; ::, <span class="type">HNil</span> &#125;</div></pre></td></tr></table></figure>
+<p>refined这个库直接在类型系统上进行限定，通过一个<code>Refined[T, P]</code>类型(aka <code>T Refined P</code>, T - 类型， P - 谓词逻辑)来表示，比如正整数可以表示为<code>Int Refined Positive</code>，非空字符串可以表示为<code>String Refined NonEmpty</code>。几个例子：<br><figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">scala&gt; <span class="keyword">val</span> i1: <span class="type">Int</span> <span class="type">Refined</span> <span class="type">Positive</span> = <span class="number">5</span></div><div class="line">i1: eu.timepit.refined.api.<span class="type">Refined</span>[<span class="type">Int</span>,eu.timepit.refined.numeric.<span class="type">Positive</span>] = <span class="number">5</span></div><div class="line"></div><div class="line">scala&gt; <span class="keyword">val</span> i2: <span class="type">Int</span> <span class="type">Refined</span> <span class="type">Positive</span> = <span class="number">-5</span></div><div class="line">&lt;console&gt;:<span class="number">21</span>: error: <span class="type">Predicate</span> failed: (<span class="number">-5</span> &gt; <span class="number">0</span>).</div><div class="line">       <span class="keyword">val</span> i2: <span class="type">Int</span> <span class="type">Refined</span> <span class="type">Positive</span> = <span class="number">-5</span></div><div class="line"></div><div class="line">scala&gt; <span class="keyword">val</span> i3: <span class="type">String</span> <span class="type">Refined</span> <span class="type">NonEmpty</span> = <span class="string">""</span></div><div class="line">&lt;console&gt;:<span class="number">37</span>: error: <span class="type">Predicate</span> isEmpty() did not fail.</div><div class="line">       <span class="keyword">val</span> i3: <span class="type">String</span> <span class="type">Refined</span> <span class="type">NonEmpty</span> = <span class="string">""</span></div><div class="line">                                         ^</div><div class="line"></div><div class="line">scala&gt; <span class="keyword">val</span> u1: <span class="type">String</span> <span class="type">Refined</span> <span class="type">Url</span> = <span class="string">"htp://example.com"</span></div><div class="line">&lt;console&gt;:<span class="number">37</span>: error: <span class="type">Url</span> predicate failed: unknown protocol: htp</div><div class="line">       <span class="keyword">val</span> u1: <span class="type">String</span> <span class="type">Refined</span> <span class="type">Url</span> = <span class="string">"htp://example.com"</span></div><div class="line">                                    ^</div></pre></td></tr></table></figure></p>
+<p>可以看到refined内置不少Predicate，也可以自己自定义Predicate。</p>
+<hr>
+<h1 id="References">References</h1><ul>
+<li><a href="http://goto.ucsd.edu/~rjhala/liquid/haskell/blog/blog/2013/01/01/refinement-types-101.lhs" target="_blank" rel="external">Refinement Types 101 - LiquidHaskell</a></li>
+<li><a href="http://refined.timepit.eu" target="_blank" rel="external">refined: simple refinement types for Scala</a></li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Functional-Programming/">Functional Programming</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Functional-Programming/">Functional Programming</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Haskell/">Haskell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Scala/">Scala</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Type-Theory/">Type Theory</a></li></ul>
     </div>
 
       
@@ -1213,7 +1213,7 @@
     <div class="outer">
         <div id="footer-info">
             <div class="footer-left">
-                &copy; 2015 - 2017 sczyh30's blog
+                &copy; 2015 - 2018 sczyh30's blog
             </div>
             <div class="footer-right">
                 <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1255963745'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1255963745%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));
