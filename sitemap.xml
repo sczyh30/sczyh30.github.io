@@ -4,602 +4,588 @@
   <url>
     <loc>http://www.sczyh30.com/about/index.html</loc>
     
-    <lastmod>2018-01-01T14:16:23.096Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-metaspace/</loc>
-    
-    <lastmod>2017-12-16T15:53:07.853Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84/netflix-hystrix-1-5-sliding-window/</loc>
-    
-    <lastmod>2017-12-16T15:40:23.280Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-demystifying-thread-model/</loc>
-    
-    <lastmod>2017-12-04T08:10:00.960Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Microservice/netflix-hystrix-how-it-works-summary/</loc>
-    
-    <lastmod>2017-12-04T08:06:55.197Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Scala/scala-for-comprehensions-detail/</loc>
-    
-    <lastmod>2017-05-26T11:19:51.038Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/java-8-completable-future/</loc>
-    
-    <lastmod>2017-04-16T13:02:29.494Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Distributed-System/distributed-system-base/</loc>
-    
-    <lastmod>2017-02-24T06:32:44.984Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Distributed-System/spark-rdd-paper-summary/</loc>
-    
-    <lastmod>2017-02-24T02:59:03.762Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Distributed-System/distributed-system-rpc-design/</loc>
-    
-    <lastmod>2017-02-23T14:54:34.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Distributed-System/distributed-computing-system-gc-osdi16-yak/</loc>
-    
-    <lastmod>2017-02-23T09:13:14.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Algorithm/algorithm-quicksort/</loc>
-    
-    <lastmod>2017-02-22T06:07:44.915Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-classloader-parent-delegation-model/</loc>
-    
-    <lastmod>2017-02-22T06:07:29.414Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Architecture/rabbitmq-summary/</loc>
-    
-    <lastmod>2017-02-21T13:09:13.908Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/java-hashcode-equal/</loc>
-    
-    <lastmod>2017-02-21T12:42:28.525Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/C-C/cpp-stl-hashmap/</loc>
-    
-    <lastmod>2017-02-21T12:32:12.121Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/haskell-category-basic/</loc>
-    
-    <lastmod>2017-02-21T12:29:54.024Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Android/android-performance-1/</loc>
-    
-    <lastmod>2017-02-21T12:28:05.837Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Algorithm/algorithm-linkedlist-leetcode/</loc>
-    
-    <lastmod>2017-02-21T12:25:09.048Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Web/web-frontend-01/</loc>
-    
-    <lastmod>2017-02-21T12:22:49.596Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/functional-programming-type-and-kind/</loc>
-    
-    <lastmod>2017-02-21T10:48:07.646Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/C-C/cpp-move-semantic/</loc>
-    
-    <lastmod>2017-02-21T10:41:46.504Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Algorithm/algorithm-cache/</loc>
-    
-    <lastmod>2017-02-21T10:40:48.697Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Scala/play-framework-2-5-web-summary/</loc>
-    
-    <lastmod>2017-02-04T14:05:42.889Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-hotspot-implements/</loc>
-    
-    <lastmod>2017-02-04T14:05:39.618Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Miscellaneous/play-music-on-linux/</loc>
-    
-    <lastmod>2017-02-02T14:26:35.620Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/type-system-refinement-types/</loc>
-    
-    <lastmod>2017-02-02T14:20:41.853Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Scala/play-framework-2-5-dependency-injection-di/</loc>
-    
-    <lastmod>2017-02-02T04:52:03.119Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-1/</loc>
-    
-    <lastmod>2017-02-01T15:22:05.306Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Android/android-event-dispatcher/</loc>
-    
-    <lastmod>2017-02-01T15:19:37.369Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Develop/android-view-draw-notes/</loc>
-    
-    <lastmod>2017-02-01T15:16:24.382Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-3/</loc>
-    
-    <lastmod>2017-02-01T15:12:58.924Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/call-with-current-continuation/</loc>
-    
-    <lastmod>2017-02-01T12:48:20.273Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Network/network-io-model/</loc>
-    
-    <lastmod>2017-01-04T09:10:46.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/y-combinator/</loc>
-    
-    <lastmod>2016-12-29T03:58:54.518Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/typeclass-scala-haskell/</loc>
-    
-    <lastmod>2016-12-22T08:37:35.759Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Scala/slick-3-type-system-query-prolouge/</loc>
-    
-    <lastmod>2016-12-14T15:39:52.379Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Summary/struct_sizeof/</loc>
-    
-    <lastmod>2016-12-14T15:39:45.728Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/type-system-existential-types-scala-java/</loc>
-    
-    <lastmod>2016-12-12T12:49:32.365Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Concurrency/concurrency-treiber-stack/</loc>
-    
-    <lastmod>2016-12-11T14:46:46.387Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Android/android-aysnc-message/</loc>
-    
-    <lastmod>2016-12-11T14:45:40.503Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Develop/game-dev-ue4ce3/</loc>
-    
-    <lastmod>2016-12-05T08:38:38.228Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Develop/game-dev-unity/</loc>
-    
-    <lastmod>2016-12-05T08:16:47.912Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Microservice/circuit-breaker-pattern/</loc>
-    
-    <lastmod>2016-12-05T07:26:46.575Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Scala/scala-fp-union-curry-howard-isomorphism/</loc>
-    
-    <lastmod>2016-12-05T07:16:26.681Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
-    
-    <lastmod>2016-12-05T07:08:50.847Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Functional-Programming/scala-type-lambda/</loc>
-    
-    <lastmod>2016-12-05T07:01:50.178Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/C-C/cpp-stl-functional/</loc>
-    
-    <lastmod>2016-12-05T06:53:24.934Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Web/web-frontend-02/</loc>
-    
-    <lastmod>2016-12-05T06:50:52.237Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Android/android-refactor-mvp/</loc>
-    
-    <lastmod>2016-12-05T06:40:26.368Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Scala/akka-actor-sender-enclosing/</loc>
-    
-    <lastmod>2016-12-05T06:39:20.788Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Architecture/quorum-based-voting-for-replica-control/</loc>
-    
-    <lastmod>2016-12-05T06:38:52.685Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Scala/slick-3-summary-functional-relational-mapping/</loc>
-    
-    <lastmod>2016-12-05T06:37:40.742Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Network/tcp-connection/</loc>
-    
-    <lastmod>2016-11-24T06:23:08.284Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Network/tcp-congestion-control/</loc>
-    
-    <lastmod>2016-11-24T06:18:13.396Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Network/tcp-retransmission/</loc>
-    
-    <lastmod>2016-11-24T06:17:10.401Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Network/tcp-series/</loc>
-    
-    <lastmod>2016-11-24T06:16:45.503Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Develop/gradle-annotation-processing-vertx-codegen/</loc>
-    
-    <lastmod>2016-11-24T06:12:12.430Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.976Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.968Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.954Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.923Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-local-event-bus-internal/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.882Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-execute-blocking-internal/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.868Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.834Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-async-rpc/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.827Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Life/test-migrate/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.789Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Network/tcp-keepalive-heartbeat/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.763Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Network/tcp-flow-control/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.754Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Architecture/service-with-docker-compose/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.683Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Network/network-basis/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.500Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-memory/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.451Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-safepoint-condition/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.416Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-method-types/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.415Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-intro-count-vs-reachability/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.403Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/java-reflection-2/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.360Z</lastmod>
+    <lastmod>2018-09-23T15:42:52.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Java/java-reflection-1/</loc>
     
-    <lastmod>2016-11-24T06:07:29.348Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://www.sczyh30.com/posts/Java/java-reference-type/</loc>
-    
-    <lastmod>2016-11-24T06:07:29.341Z</lastmod>
+    <lastmod>2018-09-23T15:39:24.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Java/java-concurrent-threadlocal/</loc>
     
-    <lastmod>2016-11-24T06:07:29.319Z</lastmod>
+    <lastmod>2018-09-23T15:24:24.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://www.sczyh30.com/posts/Java/java-basic-summary-01/</loc>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/y-combinator/</loc>
     
-    <lastmod>2016-11-24T06:07:29.309Z</lastmod>
+    <lastmod>2018-09-23T14:56:32.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Web/web-frontend-02/</loc>
+    
+    <lastmod>2018-09-23T14:56:26.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/type-system-existential-types-scala-java/</loc>
+    
+    <lastmod>2018-09-23T14:55:54.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Network/tcp-connection/</loc>
+    
+    <lastmod>2018-09-23T14:54:57.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Summary/struct_sizeof/</loc>
+    
+    <lastmod>2018-09-23T14:54:49.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/slick-3-type-system-query-prolouge/</loc>
+    
+    <lastmod>2018-09-23T14:54:43.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/slick-3-summary-functional-relational-mapping/</loc>
+    
+    <lastmod>2018-09-23T14:54:13.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/scala-fp-union-curry-howard-isomorphism/</loc>
+    
+    <lastmod>2018-09-23T14:54:03.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/scala-for-comprehensions-detail/</loc>
+    
+    <lastmod>2018-09-23T14:53:55.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Architecture/quorum-based-voting-for-replica-control/</loc>
+    
+    <lastmod>2018-09-23T14:53:47.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Miscellaneous/play-music-on-linux/</loc>
+    
+    <lastmod>2018-09-23T14:53:36.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/play-framework-2-5-web-summary/</loc>
+    
+    <lastmod>2018-09-23T14:53:31.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/play-framework-2-5-dependency-injection-di/</loc>
+    
+    <lastmod>2018-09-23T14:53:17.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Network/network-io-model/</loc>
+    
+    <lastmod>2018-09-23T14:53:08.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Microservice/netflix-hystrix-how-it-works-summary/</loc>
+    
+    <lastmod>2018-09-23T14:52:51.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-metaspace/</loc>
+    
+    <lastmod>2018-09-23T14:52:43.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-klass-oop/</loc>
+    
+    <lastmod>2018-09-23T14:52:39.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-memory/</loc>
+    
+    <lastmod>2018-09-23T14:52:36.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-safepoint-condition/</loc>
+    
+    <lastmod>2018-09-23T14:52:21.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-method-types/</loc>
+    
+    <lastmod>2018-09-23T14:52:14.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-intro-count-vs-reachability/</loc>
+    
+    <lastmod>2018-09-23T14:52:01.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-gc-hotspot-implements/</loc>
+    
+    <lastmod>2018-09-23T14:51:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/jvm-classloader-parent-delegation-model/</loc>
+    
+    <lastmod>2018-09-23T14:50:53.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/java-reference-type/</loc>
+    
+    <lastmod>2018-09-23T14:50:46.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/java-hashcode-equal/</loc>
+    
+    <lastmod>2018-09-23T14:50:38.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/java-8-completable-future/</loc>
+    
+    <lastmod>2018-09-23T14:39:07.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/haskell-category-basic/</loc>
+    
+    <lastmod>2018-09-23T14:38:53.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Develop/gradle-annotation-processing-vertx-codegen/</loc>
+    
+    <lastmod>2018-09-23T14:37:40.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Develop/gdb-simple/</loc>
     
-    <lastmod>2016-11-24T06:07:29.238Z</lastmod>
+    <lastmod>2018-09-23T14:37:20.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Architecture/docker-tutorial/</loc>
     
-    <lastmod>2016-11-24T06:07:29.190Z</lastmod>
+    <lastmod>2018-09-23T14:36:08.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/C-C/cpp-stl-functional/</loc>
+    
+    <lastmod>2018-09-23T14:34:50.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/C-C/cpp-stl-hashmap/</loc>
+    
+    <lastmod>2018-09-23T14:33:59.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Android/android-refactor-mvp/</loc>
+    
+    <lastmod>2018-09-23T14:28:33.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Android/android-performance-1/</loc>
+    
+    <lastmod>2018-09-23T14:28:29.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Android/android-aysnc-message/</loc>
+    
+    <lastmod>2018-09-23T14:28:24.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9E%B6%E6%9E%84/netflix-hystrix-1-5-sliding-window/</loc>
+    
+    <lastmod>2018-09-23T14:18:08.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Microservice/circuit-breaker-pattern/</loc>
+    
+    <lastmod>2018-09-23T14:15:46.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/functional-programming-type-and-kind/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Network/network-basis/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-local-event-bus-internal/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Distributed-System/spark-rdd-paper-summary/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/C-C/cpp-move-semantic/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Life/chemistry-jt-2014/</loc>
     
-    <lastmod>2016-11-24T06:07:29.030Z</lastmod>
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Life/chemistry-jt-2013/</loc>
     
-    <lastmod>2016-11-24T06:07:29.014Z</lastmod>
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Life/test-migrate/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-demystifying-thread-model/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/posts/Life/busy-enough-2016-08/</loc>
     
-    <lastmod>2016-11-24T06:07:29.003Z</lastmod>
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-async-rpc/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-3/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Develop/game-dev-unity/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Architecture/service-with-docker-compose/</loc>
+    
+    <lastmod>2018-09-23T14:15:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Algorithm/algorithm-quicksort/</loc>
+    
+    <lastmod>2018-09-23T13:13:25.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Algorithm/algorithm-linkedlist-leetcode/</loc>
+    
+    <lastmod>2018-09-23T13:11:39.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Algorithm/algorithm-cache/</loc>
+    
+    <lastmod>2018-09-23T13:11:30.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Concurrency/concurrency-treiber-stack/</loc>
+    
+    <lastmod>2018-09-23T13:02:46.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Scala/akka-actor-sender-enclosing/</loc>
+    
+    <lastmod>2018-09-23T13:02:04.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/java-basic-summary-01/</loc>
+    
+    <lastmod>2018-09-23T12:59:12.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Distributed-System/distributed-system-rpc-design/</loc>
+    
+    <lastmod>2018-09-23T12:46:18.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/call-with-current-continuation/</loc>
+    
+    <lastmod>2018-09-23T12:19:04.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Distributed-System/distributed-computing-system-gc-osdi16-yak/</loc>
+    
+    <lastmod>2018-09-23T12:17:55.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Distributed-System/distributed-system-base/</loc>
+    
+    <lastmod>2017-02-24T06:32:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Architecture/rabbitmq-summary/</loc>
+    
+    <lastmod>2017-02-21T13:09:12.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Web/web-frontend-01/</loc>
+    
+    <lastmod>2017-02-21T12:22:48.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/type-system-refinement-types/</loc>
+    
+    <lastmod>2017-02-02T14:20:40.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/C-C/inside-cpp-object-model-summary-1/</loc>
+    
+    <lastmod>2017-02-01T15:22:04.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Android/android-event-dispatcher/</loc>
+    
+    <lastmod>2017-02-01T15:19:36.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/typeclass-scala-haskell/</loc>
+    
+    <lastmod>2016-12-22T08:37:34.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Functional-Programming/scala-type-lambda/</loc>
+    
+    <lastmod>2016-12-05T07:01:50.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Network/tcp-congestion-control/</loc>
+    
+    <lastmod>2016-11-24T06:18:12.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Network/tcp-retransmission/</loc>
+    
+    <lastmod>2016-11-24T06:17:10.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Network/tcp-series/</loc>
+    
+    <lastmod>2016-11-24T06:16:44.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Network/tcp-keepalive-heartbeat/</loc>
+    
+    <lastmod>2016-11-24T06:07:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-clustered-event-bus-internal/</loc>
+    
+    <lastmod>2016-11-24T06:07:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-3-micro-shop-microservice/</loc>
+    
+    <lastmod>2016-11-24T06:07:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Java/java-reflection-2/</loc>
+    
+    <lastmod>2016-11-24T06:07:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Network/tcp-flow-control/</loc>
+    
+    <lastmod>2016-11-24T06:07:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-2-vertx-kue-http-tutorial/</loc>
+    
+    <lastmod>2016-11-24T06:07:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-1-todo-backend-tutorial/</loc>
+    
+    <lastmod>2016-11-24T06:07:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Asynchronous/vertx-blueprint-2-vertx-kue-core-tutorial/</loc>
+    
+    <lastmod>2016-11-24T06:07:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://www.sczyh30.com/posts/Vert-x/vertx-advanced-execute-blocking-internal/</loc>
+    
+    <lastmod>2016-11-24T06:07:28.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://www.sczyh30.com/tags/index.html</loc>
     
-    <lastmod>2016-02-26T16:44:21.457Z</lastmod>
+    <lastmod>2016-02-26T16:44:20.000Z</lastmod>
     
   </url>
   
